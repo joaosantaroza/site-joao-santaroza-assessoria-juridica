@@ -101,3 +101,71 @@ export const SERVICES: Record<string, Service> = {
 };
 
 export type ViewType = 'home' | 'practice_areas' | 'tax_hub' | keyof typeof SERVICES;
+
+// Blog Articles
+export interface BlogArticle {
+  id: string;
+  title: string;
+  excerpt: string;
+  category: string;
+  date: string;
+  readTime: string;
+  image: string;
+}
+
+export const BLOG_ARTICLES: BlogArticle[] = [
+  {
+    id: 'isencao-ir-hiv',
+    title: 'Isenção de IR para Portadores de HIV: Direito Mesmo Sem Sintomas',
+    excerpt: 'O STJ já consolidou: portadores do HIV têm direito à isenção total de imposto de renda sobre aposentadorias e pensões, independentemente de apresentarem sintomas. Saiba como requerer.',
+    category: 'Isenção Fiscal',
+    date: '15 Dez 2024',
+    readTime: '5 min',
+    image: 'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+  },
+  {
+    id: 'molestias-graves-lei',
+    title: 'Lista Completa: Doenças que Garantem Isenção de Imposto de Renda',
+    excerpt: 'A Lei 7.713/88 prevê isenção para aposentados com moléstias graves. Câncer, cardiopatia grave, Parkinson e outras 14 condições estão no rol. Confira se você tem direito.',
+    category: 'Isenção Fiscal',
+    date: '10 Dez 2024',
+    readTime: '7 min',
+    image: 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+  },
+  {
+    id: 'restituicao-retroativa',
+    title: 'Como Recuperar o IR Pago Indevidamente nos Últimos 5 Anos',
+    excerpt: 'Além da isenção futura, é possível reaver todo o imposto retido nos últimos 60 meses. Entenda o processo de restituição e os documentos necessários.',
+    category: 'Isenção Fiscal',
+    date: '05 Dez 2024',
+    readTime: '6 min',
+    image: 'https://images.unsplash.com/photo-1554224154-26032ffc0d07?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+  },
+  {
+    id: 'direitos-demissao',
+    title: 'Demissão: Conheça Todos os Seus Direitos Trabalhistas',
+    excerpt: 'Verbas rescisórias, multa do FGTS, aviso prévio, seguro-desemprego. Um guia completo sobre o que você tem direito a receber ao ser desligado da empresa.',
+    category: 'Trabalho',
+    date: '28 Nov 2024',
+    readTime: '8 min',
+    image: 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+  },
+  {
+    id: 'horas-extras-calculo',
+    title: 'Horas Extras Não Pagas? Saiba Como Calcular e Cobrar',
+    excerpt: 'Muitos trabalhadores têm direito a horas extras que nunca foram pagas. Aprenda a calcular corretamente e entenda o prazo para reclamar na Justiça.',
+    category: 'Trabalho',
+    date: '20 Nov 2024',
+    readTime: '6 min',
+    image: 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+  },
+  {
+    id: 'assedio-moral-trabalho',
+    title: 'Assédio Moral no Trabalho: Como Identificar e Agir',
+    excerpt: 'Humilhações, cobranças excessivas e isolamento são formas de assédio. Saiba como documentar, denunciar e buscar reparação pelos danos sofridos.',
+    category: 'Trabalho',
+    date: '12 Nov 2024',
+    readTime: '7 min',
+    image: 'https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+  }
+];
