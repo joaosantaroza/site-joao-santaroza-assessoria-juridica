@@ -116,7 +116,7 @@ export const HomePage = ({ onNavigate, onContact, onArticleClick }: HomePageProp
             <img 
               src={CONTACT_INFO.lawyerPhoto} 
               alt="Dr. João" 
-              className="relative w-full max-w-md mx-auto rounded-xl shadow-2xl grayscale hover:grayscale-0 transition-all duration-700 z-10" 
+              className="relative w-full max-w-md mx-auto rounded-xl shadow-2xl transition-all duration-700 z-10" 
             />
           </motion.div>
           <motion.div 
