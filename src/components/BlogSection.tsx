@@ -5,15 +5,25 @@ import { BLOG_ARTICLES, BlogArticle } from "@/lib/constants";
 
 interface BlogSectionProps {
   onContact: () => void;
+  onArticleClick: (articleId: string) => void;
 }
 
-const ArticleCard = ({ article, index }: { article: BlogArticle; index: number }) => (
+const ArticleCard = ({ 
+  article, 
+  index, 
+  onClick 
+}: { 
+  article: BlogArticle; 
+  index: number;
+  onClick: () => void;
+}) => (
   <motion.article
     initial={{ opacity: 0, y: 20 }}
     whileInView={{ opacity: 1, y: 0 }}
     viewport={{ once: true }}
     transition={{ duration: 0.5, delay: index * 0.1 }}
-    className="group bg-card rounded-xl border border-border overflow-hidden hover:border-accent hover:shadow-xl transition-all duration-300"
+    onClick={onClick}
+    className="group bg-card rounded-xl border border-border overflow-hidden hover:border-accent hover:shadow-xl transition-all duration-300 cursor-pointer"
   >
     {/* Article Image */}
     <div className="relative h-48 overflow-hidden">
@@ -57,7 +67,7 @@ const ArticleCard = ({ article, index }: { article: BlogArticle; index: number }
   </motion.article>
 );
 
-export const BlogSection = ({ onContact }: BlogSectionProps) => (
+export const BlogSection = ({ onContact, onArticleClick }: BlogSectionProps) => (
   <section className="py-24 bg-secondary">
     <div className="container mx-auto px-4">
       <motion.div
@@ -82,7 +92,12 @@ export const BlogSection = ({ onContact }: BlogSectionProps) => (
       {/* Articles Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto mb-12">
         {BLOG_ARTICLES.map((article, index) => (
-          <ArticleCard key={article.id} article={article} index={index} />
+          <ArticleCard 
+            key={article.id} 
+            article={article} 
+            index={index}
+            onClick={() => onArticleClick(article.id)}
+          />
         ))}
       </div>
 
