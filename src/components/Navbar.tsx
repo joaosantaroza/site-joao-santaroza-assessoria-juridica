@@ -1,9 +1,10 @@
 import { useState } from "react";
-import { Menu, X, Scale } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CONTACT_INFO } from "@/lib/constants";
 import { ViewType } from "@/lib/constants";
 import { motion, AnimatePresence } from "framer-motion";
+import logoIcon from "@/assets/logo-icon.png";
 
 interface NavbarProps {
   onNavigate: (view: ViewType) => void;
@@ -22,9 +23,11 @@ export const Navbar = ({ onNavigate, onContact }: NavbarProps) => {
           onClick={() => onNavigate('home')} 
           className="flex items-center gap-3 cursor-pointer group"
         >
-          <div className="w-12 h-12 rounded-lg flex items-center justify-center bg-primary text-primary-foreground font-serif font-bold text-xl shadow-lg transition-transform group-hover:scale-105">
-            JS
-          </div>
+          <img 
+            src={logoIcon} 
+            alt="João Santaroza Logo" 
+            className="h-14 w-auto transition-transform group-hover:scale-105"
+          />
           <div>
             <h1 className="font-extrabold text-lg leading-none tracking-tight text-primary font-heading">
               {CONTACT_INFO.firmName}
