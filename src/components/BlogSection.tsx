@@ -116,7 +116,7 @@ export const BlogSection = ({ onContact, onArticleClick }: BlogSectionProps) => 
           onClick={onContact}
           className="inline-flex items-center gap-2 px-8 py-4 bg-primary text-primary-foreground font-bold uppercase tracking-wide rounded-lg hover:bg-accent transition-colors shadow-lg"
         >
-          Fale com um Especialista
+          Agende um Atendimento
           <ArrowRight className="w-4 h-4" />
         </button>
       </motion.div>

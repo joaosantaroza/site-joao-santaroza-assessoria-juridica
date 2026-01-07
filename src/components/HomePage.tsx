@@ -37,12 +37,12 @@ export const HomePage = ({ onNavigate, onContact, onArticleClick }: HomePageProp
           </div>
           
           <h1 className="text-4xl lg:text-6xl font-extrabold tracking-tight text-primary-foreground mb-8 leading-tight font-heading">
-            Superação de Entraves Financeiros e{" "}
-            <span className="text-accent">Execuções Judiciais.</span>
+            Assessoria Jurídica Especializada em{" "}
+            <span className="text-accent">Direito Tributário e Empresarial.</span>
           </h1>
           
           <p className="text-xl text-primary-foreground/70 mb-12 leading-relaxed max-w-3xl font-light">
-            Diagnóstico preciso para liberação de contas e reestruturação de passivos. Combatemos a morosidade com técnica e agilidade, garantindo a defesa efetiva dos interesses do seu negócio.
+            Atuação técnica em isenção de imposto de renda para portadores de moléstias graves, desbloqueio de contas e reestruturação de passivos. Atendimento personalizado com foco na orientação jurídica preventiva.
           </p>
           
           <div className="flex flex-col sm:flex-row gap-5">
@@ -60,7 +60,7 @@ export const HomePage = ({ onNavigate, onContact, onArticleClick }: HomePageProp
               size="lg"
               className="border-primary-foreground text-primary-foreground bg-transparent hover:bg-primary-foreground hover:text-primary"
             >
-              Falar com Especialista
+              Agende um Atendimento
             </Button>
           </div>
         </motion.div>
@@ -162,10 +162,10 @@ export const HomePage = ({ onNavigate, onContact, onArticleClick }: HomePageProp
         >
           <div className="lg:w-1/2 p-12 flex flex-col justify-center">
             <h3 className="text-3xl font-extrabold mb-4 text-primary font-heading">
-              Vamos Conversar?
+              Entre em Contato
             </h3>
             <p className="text-muted-foreground mb-10">
-              Sem compromisso. Uma análise rápida pode salvar seu patrimônio.
+              Atendimento mediante agendamento para análise individualizada do seu caso.
             </p>
             
             <div className="space-y-6">

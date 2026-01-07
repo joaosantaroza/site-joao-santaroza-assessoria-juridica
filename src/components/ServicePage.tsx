@@ -53,9 +53,9 @@ export const ServicePage = ({ service, onBack, onContact }: ServicePageProps) =>
               <Info className="w-6 h-6 flex-shrink-0 mt-1 text-primary" />
               <div className="text-sm text-muted-foreground leading-relaxed">
                 {isHIV ? (
-                  <><strong className="text-foreground">Privacidade Total:</strong> Conforme a Lei 14.289/2022, garantimos que seu processo tramitará em Segredo de Justiça. Ninguém terá acesso ao seu diagnóstico.</>
+                  <><strong className="text-foreground">Privacidade Total:</strong> Conforme a Lei 14.289/2022, seu processo poderá tramitar em Segredo de Justiça, preservando seu diagnóstico.</>
                 ) : (
-                  <><strong className="text-foreground">Análise Técnica:</strong> Cada caso é único. Nossa atuação é baseada em análise documental prévia para garantir a melhor estratégia jurídica.</>
+                  <><strong className="text-foreground">Análise Técnica:</strong> Cada caso exige análise individualizada. Nossa orientação é baseada em estudo documental para definição da estratégia adequada.</>
                 )}
               </div>
             </div>
@@ -63,10 +63,10 @@ export const ServicePage = ({ service, onBack, onContact }: ServicePageProps) =>
 
           <div className="flex flex-col sm:flex-row justify-center gap-4">
             <Button onClick={onContact} size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90">
-              {isHIV ? "Atendimento Sigiloso" : "Falar com Advogado"}
+              {isHIV ? "Atendimento Sigiloso" : "Agende um Atendimento"}
             </Button>
             <Button onClick={onContact} variant="outline" size="lg">
-              Agendar Análise
+              Tire suas Dúvidas
             </Button>
           </div>
         </motion.div>
