@@ -101,7 +101,10 @@ export const PracticeAreasHub = ({ onNavigate, onBack }: PracticeAreasHubProps) 
           {/* Quick Contact Card */}
           <motion.div variants={itemVariants}>
             <div 
-              onClick={() => window.open(`https://wa.me/55${CONTACT_INFO.whatsapp.replace(/\D/g, '')}`, '_blank')} 
+              onClick={() => {
+                const text = `Olá, Dr. João Victor! Gostaria de tirar algumas dúvidas jurídicas. Pode me ajudar?`;
+                window.open(`https://wa.me/55${CONTACT_INFO.whatsapp.replace(/\D/g, '')}?text=${encodeURIComponent(text)}`, '_blank');
+              }} 
               className="rounded-xl p-8 flex flex-col items-center justify-center text-center cursor-pointer transition-colors border-2 border-dashed border-accent hover:bg-card/50 h-full"
             >
               <div className="w-12 h-12 rounded-full flex items-center justify-center mb-4 bg-whatsapp">
