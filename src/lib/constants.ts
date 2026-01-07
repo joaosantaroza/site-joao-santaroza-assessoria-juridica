@@ -37,15 +37,15 @@ export const SERVICES: Record<string, Service> = {
   hiv: {
     id: 'hiv',
     title: 'Isenção de IR (HIV)',
-    shortDesc: 'Direito garantido pelo STJ para portadores do vírus. Processo sigiloso.',
+    shortDesc: 'Direito previsto na legislação para portadores do vírus. Processo sigiloso.',
     icon: Lock, 
-    heroTitle: 'Isenção de IR: Direito Garantido e Sigiloso',
-    heroSubtitle: 'Se você é portador do HIV (mesmo assintomático), a lei garante a isenção total sobre sua aposentadoria ou pensão. Recuperamos os valores dos últimos 5 anos sem expor sua condição.',
+    heroTitle: 'Isenção de IR: Conheça seus Direitos',
+    heroSubtitle: 'Se você é portador do HIV (mesmo assintomático), a lei prevê a isenção do imposto de renda sobre aposentadoria ou pensão. Saiba como requerer a restituição dos valores dos últimos 5 anos.',
     features: [
       'Isenção para Assintomáticos (Súmula 627 STJ)',
-      'Sigilo Absoluto (Lei 14.289)',
+      'Sigilo Processual (Lei 14.289)',
       'Restituição Retroativa (5 anos)',
-      'Inclusão de Previdência Privada'
+      'Aplicação à Previdência Privada'
     ]
   },
   general_tax: {
@@ -53,29 +53,29 @@ export const SERVICES: Record<string, Service> = {
     title: 'Isenção por Moléstia Grave',
     shortDesc: 'Câncer, Cardiopatia e outras condições da Lei 7.713/88.',
     icon: Activity,
-    heroTitle: 'Alívio Fiscal por Motivo de Saúde',
-    heroSubtitle: 'Aposentados e reformados com doenças graves têm direito legal de parar de pagar imposto de renda e focar os recursos na saúde.',
-    features: ['Análise de Laudos', 'Rol da Lei 7.713/88', 'Restituição de Valores Pagos', 'Isenção Vitalícia']
+    heroTitle: 'Isenção de IR por Moléstia Grave',
+    heroSubtitle: 'Aposentados e reformados com doenças graves podem ter direito à isenção do imposto de renda, conforme previsto na Lei 7.713/88.',
+    features: ['Análise de Laudos', 'Rol da Lei 7.713/88', 'Restituição de Valores', 'Orientação Técnica']
   },
   unlock: {
     id: 'unlock',
     title: 'Desbloqueio de Contas',
-    shortDesc: 'Devolvemos o fluxo de caixa para sua empresa respirar.',
+    shortDesc: 'Assessoria jurídica para liberação de contas bloqueadas.',
     icon: Shield,
-    heroTitle: 'Sua empresa travou? Nós destravamos.',
-    heroSubtitle: 'Bloqueios judiciais (SISBAJUD) sufocam o negócio. Atuamos com urgência para liberar contas, impugnar penhoras indevidas e devolver o oxigênio financeiro.',
-    features: ['Defesa contra Teimosinha', 'Impugnação de Penhora', 'Tutela de Urgência', 'Liberação de Capital de Giro']
+    heroTitle: 'Assessoria em Desbloqueio de Contas',
+    heroSubtitle: 'Bloqueios judiciais (SISBAJUD) podem comprometer o fluxo de caixa. Atuamos na análise técnica e defesa para buscar a liberação de valores.',
+    features: ['Defesa em Bloqueios', 'Impugnação de Penhora', 'Tutela de Urgência', 'Análise de Impenhorabilidade']
   },
   labor: {
     id: 'labor',
     title: 'Direito do Trabalho',
-    shortDesc: 'Soluções para Empresas e Empregados.',
+    shortDesc: 'Orientação jurídica para Empresas e Empregados.',
     icon: Users,
-    heroTitle: 'Equilíbrio nas Relações de Trabalho',
-    heroSubtitle: 'Atuamos de forma técnica tanto na defesa de empresas (mitigação de passivos) quanto na garantia de direitos de empregados.',
+    heroTitle: 'Direito do Trabalho',
+    heroSubtitle: 'Atuação técnica na orientação de empresas e na defesa de direitos de trabalhadores, com foco em soluções negociadas.',
     features: [
-      'Defesa Patronal em Reclamatórias', 
-      'Cálculos Rescisórios Precisos', 
+      'Defesa Patronal', 
+      'Cálculos Rescisórios', 
       'Reconhecimento de Vínculo',
       'Acordos Extrajudiciais'
     ]
@@ -85,18 +85,18 @@ export const SERVICES: Record<string, Service> = {
     title: 'Gestão de Passivos',
     shortDesc: 'Análise de prescrição de dívidas antigas.',
     icon: Clock,
-    heroTitle: 'Limpeza de Passivo Tributário e Cível',
-    heroSubtitle: 'Dívidas antigas podem estar prescritas. Analisamos a inércia processual para extinguir execuções fiscais e bancárias que não deveriam mais existir.',
-    features: ['Análise de Prescrição Intercorrente', 'Defesa em Execução Fiscal', 'Baixa de Restrições', 'Extinção de Processos']
+    heroTitle: 'Análise de Passivos',
+    heroSubtitle: 'Dívidas antigas podem estar prescritas. Analisamos a viabilidade de defesa em execuções fiscais e cíveis.',
+    features: ['Análise de Prescrição', 'Defesa em Execução Fiscal', 'Baixa de Restrições', 'Estudo de Viabilidade']
   },
   contracts: {
     id: 'contracts',
     title: 'Contratos e Societário',
-    shortDesc: 'Blindagem jurídica através de contratos sólidos.',
+    shortDesc: 'Elaboração e revisão de contratos empresariais.',
     icon: FileText,
-    heroTitle: 'Engenharia Contratual',
-    heroSubtitle: 'Um contrato mal feito é um passivo oculto. Elaboramos e revisamos instrumentos para garantir previsibilidade e segurança nas suas relações comerciais.',
-    features: ['Elaboração de Contratos Comerciais', 'Revisão de Cláusulas de Risco', 'Alterações de Contrato Social', 'Acordos de Sócios']
+    heroTitle: 'Assessoria Contratual',
+    heroSubtitle: 'Elaboração e revisão de instrumentos contratuais para conferir maior segurança jurídica às suas relações comerciais.',
+    features: ['Elaboração de Contratos', 'Revisão de Cláusulas', 'Alterações Societárias', 'Acordos de Sócios']
   }
 };
 
