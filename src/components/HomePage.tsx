@@ -170,7 +170,10 @@ export const HomePage = ({ onNavigate, onContact, onArticleClick }: HomePageProp
             
             <div className="space-y-6">
               <button 
-                onClick={onContact} 
+                onClick={() => {
+                  const text = `Olá, Dr. João Victor! Vi seu site e gostaria de uma orientação jurídica. Pode me ajudar?`;
+                  window.open(`https://wa.me/55${CONTACT_INFO.whatsapp.replace(/\D/g, '')}?text=${encodeURIComponent(text)}`, '_blank');
+                }} 
                 className="w-full flex items-center gap-5 p-5 rounded-xl bg-secondary hover:bg-card border border-transparent hover:border-accent transition-all group text-left"
               >
                 <div className="w-12 h-12 bg-whatsapp text-white rounded-full flex items-center justify-center shadow-md">
