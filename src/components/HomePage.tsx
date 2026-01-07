@@ -1,4 +1,4 @@
-import { Scale, ArrowRight, Layers, MessageCircle, Mail } from "lucide-react";
+import { Scale, ArrowRight, Layers, MessageCircle, Mail, Instagram } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CONTACT_INFO, ViewType } from "@/lib/constants";
 import { motion } from "framer-motion";
@@ -186,6 +186,23 @@ export const HomePage = ({ onNavigate, onContact, onArticleClick }: HomePageProp
                   <p className="text-xl font-bold text-primary">{CONTACT_INFO.whatsapp}</p>
                 </div>
               </button>
+
+              <a 
+                href={`https://instagram.com/${CONTACT_INFO.instagram.replace('@', '')}`}
+                target="_blank"
+                rel="noreferrer"
+                className="flex items-center gap-5 p-5 rounded-xl bg-secondary hover:bg-card border border-transparent hover:border-accent transition-all group text-left"
+              >
+                <div className="w-12 h-12 bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400 text-white rounded-full flex items-center justify-center shadow-md">
+                  <Instagram className="w-6 h-6" />
+                </div>
+                <div>
+                  <p className="text-xs font-bold uppercase text-muted-foreground mb-1">
+                    Instagram
+                  </p>
+                  <p className="text-xl font-bold text-primary">{CONTACT_INFO.instagram}</p>
+                </div>
+              </a>
 
               <div className="flex items-center gap-5 p-5">
                 <div className="w-12 h-12 bg-card border border-border text-muted-foreground rounded-full flex items-center justify-center">
