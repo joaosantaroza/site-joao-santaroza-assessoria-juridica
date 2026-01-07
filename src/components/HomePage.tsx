@@ -7,9 +7,10 @@ import { BlogSection } from "@/components/BlogSection";
 interface HomePageProps {
   onNavigate: (view: ViewType) => void;
   onContact: () => void;
+  onArticleClick: (articleId: string) => void;
 }
 
-export const HomePage = ({ onNavigate, onContact }: HomePageProps) => (
+export const HomePage = ({ onNavigate, onContact, onArticleClick }: HomePageProps) => (
   <>
     {/* Hero Section */}
     <section className="relative pt-24 pb-32 lg:pt-40 lg:pb-48 overflow-hidden bg-primary">
@@ -147,7 +148,7 @@ export const HomePage = ({ onNavigate, onContact }: HomePageProps) => (
     </section>
 
     {/* Blog Section */}
-    <BlogSection onContact={onContact} />
+    <BlogSection onContact={onContact} onArticleClick={onArticleClick} />
 
     {/* Contact Section */}
     <section className="py-24 bg-background">
