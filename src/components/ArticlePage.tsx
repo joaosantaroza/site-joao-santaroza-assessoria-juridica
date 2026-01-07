@@ -118,7 +118,7 @@ export const ArticlePage = ({ article, onBack, onContact }: ArticlePageProps) =>
             <img 
               src={CONTACT_INFO.lawyerPhoto} 
               alt={CONTACT_INFO.lawyerName}
-              className="w-20 h-20 rounded-full object-cover grayscale"
+              className="w-20 h-20 rounded-full object-cover"
             />
             <div className="text-center md:text-left">
               <p className="text-xs font-bold uppercase tracking-wider text-accent mb-1">Autor</p>
