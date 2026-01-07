@@ -1,14 +1,17 @@
 import { Instagram, Mail } from "lucide-react";
 import { CONTACT_INFO } from "@/lib/constants";
+import logoFull from "@/assets/logo-full.png";
 
 export const Footer = () => (
   <footer className="bg-card border-t border-border py-16">
     <div className="container mx-auto px-4">
       <div className="flex flex-col md:flex-row justify-between items-start gap-10 mb-12">
         <div>
-          <div className="font-extrabold text-xl mb-4 text-primary font-heading">
-            {CONTACT_INFO.firmName}
-          </div>
+          <img 
+            src={logoFull} 
+            alt="João Santaroza - Assessoria Jurídica" 
+            className="h-12 w-auto mb-4"
+          />
           <p className="text-sm text-muted-foreground mb-1">{CONTACT_INFO.address}</p>
           <p className="text-sm font-bold text-accent">{CONTACT_INFO.oab}</p>
         </div>
