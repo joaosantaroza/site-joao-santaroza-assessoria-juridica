@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { CONTACT_INFO, ViewType } from "@/lib/constants";
 import { motion } from "framer-motion";
 import { BlogSection } from "@/components/BlogSection";
+import FAQSection from "@/components/FAQSection";
 
 interface HomePageProps {
   onNavigate: (view: ViewType) => void;
@@ -149,6 +150,9 @@ export const HomePage = ({ onNavigate, onContact, onArticleClick }: HomePageProp
 
     {/* Blog Section */}
     <BlogSection onContact={onContact} onArticleClick={onArticleClick} />
+
+    {/* FAQ Section */}
+    <FAQSection />
 
     {/* Contact Section */}
     <section className="py-24 bg-background">
