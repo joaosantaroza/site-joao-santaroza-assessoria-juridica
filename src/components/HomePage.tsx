@@ -1,4 +1,4 @@
-import { Scale, ArrowRight, Layers, MessageCircle, Mail, Instagram } from "lucide-react";
+import { Scale, ArrowRight, Layers, MessageCircle, Mail, Instagram, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CONTACT_INFO, ViewType } from "@/lib/constants";
 import { motion } from "framer-motion";
@@ -96,6 +96,29 @@ export const HomePage = ({ onNavigate, onContact, onArticleClick }: HomePageProp
           
           <div className="flex items-center text-sm font-bold uppercase tracking-wide px-8 py-4 rounded-lg bg-primary text-primary-foreground hover:bg-accent transition-colors">
             Acessar <ArrowRight className="w-4 h-4 ml-2" />
+          </div>
+        </div>
+        {/* Articles Gateway Card */}
+        <div 
+          onClick={() => onNavigate('blog')} 
+          className="flex flex-col md:flex-row items-center justify-between p-8 md:p-12 rounded-2xl cursor-pointer shadow-2xl transition-all transform hover:-translate-y-1 bg-card border-l-8 border-primary"
+        >
+          <div className="flex items-center gap-8 mb-6 md:mb-0">
+            <div className="p-5 rounded-2xl bg-secondary">
+              <FileText className="w-10 h-10 text-primary" />
+            </div>
+            <div>
+              <h3 className="text-2xl font-bold mb-2 text-primary font-heading">
+                Artigos e Informativos
+              </h3>
+              <p className="text-muted-foreground text-sm">
+                Isenção de IR • Direitos do Trabalhador • Orientações Jurídicas
+              </p>
+            </div>
+          </div>
+          
+          <div className="flex items-center text-sm font-bold uppercase tracking-wide px-8 py-4 rounded-lg bg-primary text-primary-foreground hover:bg-accent transition-colors">
+            Ler Artigos <ArrowRight className="w-4 h-4 ml-2" />
           </div>
         </div>
       </motion.div>
