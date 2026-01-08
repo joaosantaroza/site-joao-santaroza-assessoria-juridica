@@ -6,6 +6,7 @@ import { PracticeAreasHub } from '@/components/PracticeAreasHub';
 import { TaxExemptionHub } from '@/components/TaxExemptionHub';
 import { ServicePage } from '@/components/ServicePage';
 import { ArticlePage } from '@/components/ArticlePage';
+import { BlogPage } from '@/components/BlogPage';
 import { ContactModal } from '@/components/ContactModal';
 import { SERVICES, BLOG_ARTICLES, ViewType } from '@/lib/constants';
 
@@ -54,6 +55,13 @@ const Index = () => {
           <HomePage 
             onNavigate={setCurrentView as (view: ViewType) => void} 
             onContact={() => setShowModal(true)}
+            onArticleClick={handleArticleClick}
+          />
+        );
+      case 'blog':
+        return (
+          <BlogPage 
+            onBack={() => setCurrentView('home')} 
             onArticleClick={handleArticleClick}
           />
         );
