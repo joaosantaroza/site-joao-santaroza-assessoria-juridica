@@ -146,10 +146,10 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     readTime: '7 min',
     image: 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
     content: `
-      <p class="text-xl font-medium mb-8">A Lei 7.713/88, em seu artigo 6º, inciso XIV, estabelece um rol de doenças graves que garantem aos aposentados e pensionistas a <strong>isenção total do Imposto de Renda</strong> sobre seus proventos.</p>
+      <p class="text-xl font-medium mb-8 text-justify">A Lei 7.713/88, em seu artigo 6º, inciso XIV, estabelece um rol de doenças graves que garantem aos aposentados e pensionistas a <strong>isenção total do Imposto de Renda</strong> sobre seus proventos.</p>
 
       <h2>Lista oficial de doenças graves</h2>
-      <p>As seguintes condições garantem o direito à isenção:</p>
+      <p class="text-justify">As seguintes condições garantem o direito à isenção:</p>
       <ul>
         <li><strong>AIDS</strong> (Síndrome da Imunodeficiência Adquirida)</li>
         <li><strong>Alienação mental</strong></li>
@@ -170,7 +170,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
       </ul>
 
       <h2>Importante: a lista não é taxativa</h2>
-      <p>Apesar de a lei trazer um rol específico, a jurisprudência tem entendido que <strong>outras doenças graves podem garantir a isenção</strong>, especialmente quando:</p>
+      <p class="text-justify">Apesar de a lei trazer um rol específico, a jurisprudência tem entendido que <strong>outras doenças graves podem garantir a isenção</strong>, especialmente quando:</p>
       <ul>
         <li>Causam incapacidade ou limitação significativa</li>
         <li>Exigem tratamento contínuo e dispendioso</li>
@@ -178,16 +178,16 @@ export const BLOG_ARTICLES: BlogArticle[] = [
       </ul>
 
       <h2>Não precisa estar incapacitado</h2>
-      <p>Muitas pessoas deixam de buscar seu direito por acharem que precisam estar "muito doentes". Isso é um mito. A Súmula 627 do STJ é clara: <strong>não é necessário demonstrar sintomas atuais</strong> para ter direito à isenção.</p>
+      <p class="text-justify">Muitas pessoas deixam de buscar seu direito por acharem que precisam estar "muito doentes". Isso é um mito. A Súmula 627 do STJ é clara: <strong>não é necessário demonstrar sintomas atuais</strong> para ter direito à isenção.</p>
 
       <h2>Como comprovar a doença?</h2>
-      <p>A comprovação é feita por meio de <strong>laudo médico</strong> que ateste:</p>
+      <p class="text-justify">A comprovação é feita por meio de <strong>laudo médico</strong> que ateste:</p>
       <ul>
         <li>O diagnóstico da doença</li>
         <li>A data de início da enfermidade (se possível)</li>
         <li>CID (Classificação Internacional de Doenças)</li>
       </ul>
-      <p>O laudo pode ser emitido por médico particular ou do SUS. Não é necessário perícia do INSS para o pedido judicial.</p>
+      <p class="text-justify">O laudo pode ser emitido por médico particular ou do SUS. Não é necessário perícia do INSS para o pedido judicial.</p>
 
       <h2>Benefícios da isenção</h2>
       <ul>
@@ -207,19 +207,19 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     readTime: '6 min',
     image: 'https://images.unsplash.com/photo-1554224154-26032ffc0d07?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
     content: `
-      <p class="text-xl font-medium mb-8">Se você tem direito à isenção de IR por moléstia grave e não sabia, provavelmente pagou imposto que não deveria. A boa notícia: <strong>você pode recuperar tudo o que foi retido nos últimos 5 anos</strong>, com correção monetária.</p>
+      <p class="text-xl font-medium mb-8 text-justify">Se você tem direito à isenção de IR por moléstia grave e não sabia, provavelmente pagou imposto que não deveria. A boa notícia: <strong>você pode recuperar tudo o que foi retido nos últimos 5 anos</strong>, com correção monetária.</p>
 
       <h2>O que é a restituição retroativa?</h2>
-      <p>Quando o direito à isenção é reconhecido, ele retroage à <strong>data do diagnóstico da doença</strong> ou, no máximo, aos últimos 5 anos (prazo prescricional). Todo o IR que foi descontado da sua aposentadoria ou pensão nesse período deve ser devolvido.</p>
+      <p class="text-justify">Quando o direito à isenção é reconhecido, ele retroage à <strong>data do diagnóstico da doença</strong> ou, no máximo, aos últimos 5 anos (prazo prescricional). Todo o IR que foi descontado da sua aposentadoria ou pensão nesse período deve ser devolvido.</p>
 
       <h2>Como calcular quanto você pode receber?</h2>
-      <p>O cálculo considera:</p>
+      <p class="text-justify">O cálculo considera:</p>
       <ul>
         <li>Valor do IR retido mensalmente na fonte</li>
         <li>Número de meses (até 60 meses)</li>
         <li>Correção pela taxa SELIC acumulada</li>
       </ul>
-      <p>Exemplo prático:</p>
+      <p class="text-justify">Exemplo prático:</p>
       <blockquote class="border-l-4 border-accent pl-6 my-6">
         <p>Aposentado com retenção média de R$ 800/mês</p>
         <p>Período: 5 anos = 60 meses</p>
@@ -237,7 +237,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
       </ol>
 
       <h2>Via administrativa ou judicial?</h2>
-      <p>Embora seja possível pedir administrativamente junto ao INSS ou órgão pagador, a <strong>via judicial é mais vantajosa</strong> porque:</p>
+      <p class="text-justify">Embora seja possível pedir administrativamente junto ao INSS ou órgão pagador, a <strong>via judicial é mais vantajosa</strong> porque:</p>
       <ul>
         <li>É mais rápida (possibilidade de tutela de urgência)</li>
         <li>Garante a restituição retroativa completa</li>
@@ -246,7 +246,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
       </ul>
 
       <h2>Prazo para requerer</h2>
-      <p>O prazo prescricional é de <strong>5 anos</strong>. Isso significa que a cada mês que passa, você perde o direito de recuperar um mês de IR pago. Por isso, é importante agir rapidamente.</p>
+      <p class="text-justify">O prazo prescricional é de <strong>5 anos</strong>. Isso significa que a cada mês que passa, você perde o direito de recuperar um mês de IR pago. Por isso, é importante agir rapidamente.</p>
 
       <h2>Documentos necessários</h2>
       <ul>
@@ -268,10 +268,10 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     readTime: '8 min',
     image: 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
     content: `
-      <p class="text-xl font-medium mb-8">Ser demitido nunca é fácil, mas conhecer seus direitos pode fazer toda a diferença. Este guia explica <strong>tudo o que você tem direito a receber</strong> em cada modalidade de desligamento.</p>
+      <p class="text-xl font-medium mb-8 text-justify">Ser demitido nunca é fácil, mas conhecer seus direitos pode fazer toda a diferença. Este guia explica <strong>tudo o que você tem direito a receber</strong> em cada modalidade de desligamento.</p>
 
       <h2>Demissão sem justa causa</h2>
-      <p>Quando o empregador dispensa o funcionário sem motivo justificado, este tem direito a:</p>
+      <p class="text-justify">Quando o empregador dispensa o funcionário sem motivo justificado, este tem direito a:</p>
       <ul>
         <li><strong>Saldo de salário</strong> – dias trabalhados no mês da demissão</li>
         <li><strong>Aviso prévio</strong> – trabalhado ou indenizado (30 dias + 3 dias por ano de serviço)</li>
@@ -284,25 +284,25 @@ export const BLOG_ARTICLES: BlogArticle[] = [
       </ul>
 
       <h2>Demissão por justa causa</h2>
-      <p>Nas hipóteses do art. 482 da CLT (falta grave), o trabalhador recebe apenas:</p>
+      <p class="text-justify">Nas hipóteses do art. 482 da CLT (falta grave), o trabalhador recebe apenas:</p>
       <ul>
         <li>Saldo de salário</li>
         <li>Férias vencidas + 1/3 (se houver)</li>
       </ul>
-      <p><strong>Perde o direito a:</strong> aviso prévio, 13º proporcional, férias proporcionais, multa do FGTS, saque do FGTS e seguro-desemprego.</p>
+      <p class="text-justify"><strong>Perde o direito a:</strong> aviso prévio, 13º proporcional, férias proporcionais, multa do FGTS, saque do FGTS e seguro-desemprego.</p>
 
       <h2>Pedido de demissão</h2>
-      <p>Quando o empregado pede para sair, tem direito a:</p>
+      <p class="text-justify">Quando o empregado pede para sair, tem direito a:</p>
       <ul>
         <li>Saldo de salário</li>
         <li>13º proporcional</li>
         <li>Férias vencidas + 1/3</li>
         <li>Férias proporcionais + 1/3</li>
       </ul>
-      <p><strong>Não tem direito a:</strong> multa de 40%, saque do FGTS, seguro-desemprego. Deve cumprir aviso prévio ou ter desconto.</p>
+      <p class="text-justify"><strong>Não tem direito a:</strong> multa de 40%, saque do FGTS, seguro-desemprego. Deve cumprir aviso prévio ou ter desconto.</p>
 
       <h2>Acordo entre as partes (art. 484-A CLT)</h2>
-      <p>Desde a Reforma Trabalhista, é possível fazer acordo:</p>
+      <p class="text-justify">Desde a Reforma Trabalhista, é possível fazer acordo:</p>
       <ul>
         <li>Aviso prévio – 50% se indenizado</li>
         <li>Multa do FGTS – 20% (metade)</li>
@@ -312,7 +312,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
       </ul>
 
       <h2>Prazo para pagamento</h2>
-      <p>A empresa tem <strong>até 10 dias corridos</strong> após o término do contrato para pagar todas as verbas rescisórias. O descumprimento gera multa equivalente a um salário.</p>
+      <p class="text-justify">A empresa tem <strong>até 10 dias corridos</strong> após o término do contrato para pagar todas as verbas rescisórias. O descumprimento gera multa equivalente a um salário.</p>
 
       <h2>O que fazer se não receber corretamente?</h2>
       <ol>
@@ -332,41 +332,41 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     readTime: '6 min',
     image: 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
     content: `
-      <p class="text-xl font-medium mb-8">Trabalhou além do horário e não recebeu? Isso é mais comum do que parece. Entenda <strong>como calcular suas horas extras</strong> e o que fazer para cobrar o que é seu por direito.</p>
+      <p class="text-xl font-medium mb-8 text-justify">Trabalhou além do horário e não recebeu? Isso é mais comum do que parece. Entenda <strong>como calcular suas horas extras</strong> e o que fazer para cobrar o que é seu por direito.</p>
 
       <h2>O que são horas extras?</h2>
-      <p>Horas extras são aquelas trabalhadas <strong>além da jornada regular</strong>. Para a maioria dos trabalhadores CLT, a jornada padrão é:</p>
+      <p class="text-justify">Horas extras são aquelas trabalhadas <strong>além da jornada regular</strong>. Para a maioria dos trabalhadores CLT, a jornada padrão é:</p>
       <ul>
         <li><strong>8 horas diárias</strong></li>
         <li><strong>44 horas semanais</strong></li>
       </ul>
-      <p>Tudo o que exceder esses limites deve ser pago como hora extra.</p>
+      <p class="text-justify">Tudo o que exceder esses limites deve ser pago como hora extra.</p>
 
       <h2>Qual o valor da hora extra?</h2>
-      <p>O adicional mínimo previsto na Constituição é de <strong>50%</strong> sobre o valor da hora normal:</p>
+      <p class="text-justify">O adicional mínimo previsto na Constituição é de <strong>50%</strong> sobre o valor da hora normal:</p>
       <blockquote class="border-l-4 border-accent pl-6 my-6">
         <p><strong>Hora extra = Hora normal × 1,5</strong></p>
         <p>Exemplo: Salário R$ 2.200 / 220 horas = R$ 10,00/hora</p>
         <p>Hora extra: R$ 10,00 × 1,5 = <strong>R$ 15,00</strong></p>
       </blockquote>
-      <p>Algumas convenções coletivas preveem adicional maior (60%, 70%, 100%).</p>
+      <p class="text-justify">Algumas convenções coletivas preveem adicional maior (60%, 70%, 100%).</p>
 
       <h2>Horas extras em domingos e feriados</h2>
-      <p>O trabalho em dias de descanso tem adicional de <strong>100%</strong> (hora em dobro), salvo compensação:</p>
+      <p class="text-justify">O trabalho em dias de descanso tem adicional de <strong>100%</strong> (hora em dobro), salvo compensação:</p>
       <ul>
         <li>Hora extra em domingo/feriado = Hora normal × 2</li>
         <li>Exemplo: R$ 10,00 × 2 = R$ 20,00</li>
       </ul>
 
       <h2>Hora noturna</h2>
-      <p>O trabalho entre 22h e 5h tem adicional de <strong>20%</strong> e a hora é "reduzida" (52min30seg = 1 hora):</p>
+      <p class="text-justify">O trabalho entre 22h e 5h tem adicional de <strong>20%</strong> e a hora é "reduzida" (52min30seg = 1 hora):</p>
       <ul>
         <li>Hora noturna = Hora normal × 1,2</li>
         <li>Se for extra e noturna, os adicionais se acumulam</li>
       </ul>
 
       <h2>Reflexos das horas extras</h2>
-      <p>As horas extras habituais refletem em outras verbas:</p>
+      <p class="text-justify">As horas extras habituais refletem em outras verbas:</p>
       <ul>
         <li>13º salário</li>
         <li>Férias + 1/3</li>
@@ -376,17 +376,17 @@ export const BLOG_ARTICLES: BlogArticle[] = [
       </ul>
 
       <h2>Como provar as horas extras?</h2>
-      <p>As principais provas são:</p>
+      <p class="text-justify">As principais provas são:</p>
       <ul>
         <li><strong>Cartão de ponto</strong> – registros de entrada e saída</li>
         <li><strong>Testemunhas</strong> – colegas que presenciaram</li>
         <li><strong>E-mails e mensagens</strong> – com horários fora do expediente</li>
         <li><strong>Registros de sistema</strong> – logs de acesso, relatórios</li>
       </ul>
-      <p>Se a empresa tem mais de 20 funcionários e não apresentar os cartões de ponto, presume-se verdadeira a jornada alegada pelo trabalhador.</p>
+      <p class="text-justify">Se a empresa tem mais de 20 funcionários e não apresentar os cartões de ponto, presume-se verdadeira a jornada alegada pelo trabalhador.</p>
 
       <h2>Prazo para reclamar</h2>
-      <p>Você pode cobrar as horas extras dos <strong>últimos 5 anos</strong>, mas precisa entrar com a ação em até <strong>2 anos após a demissão</strong>.</p>
+      <p class="text-justify">Você pode cobrar as horas extras dos <strong>últimos 5 anos</strong>, mas precisa entrar com a ação em até <strong>2 anos após a demissão</strong>.</p>
     `
   },
   {
@@ -398,10 +398,10 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     readTime: '7 min',
     image: 'https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
     content: `
-      <p class="text-xl font-medium mb-8">O assédio moral no trabalho é uma violência silenciosa que afeta milhões de trabalhadores. Reconhecer os sinais e saber como agir é fundamental para <strong>proteger sua saúde mental e seus direitos</strong>.</p>
+      <p class="text-xl font-medium mb-8 text-justify">O assédio moral no trabalho é uma violência silenciosa que afeta milhões de trabalhadores. Reconhecer os sinais e saber como agir é fundamental para <strong>proteger sua saúde mental e seus direitos</strong>.</p>
 
       <h2>O que caracteriza assédio moral?</h2>
-      <p>Assédio moral é a <strong>exposição repetitiva do trabalhador a situações humilhantes e constrangedoras</strong> durante a jornada de trabalho. Características principais:</p>
+      <p class="text-justify">Assédio moral é a <strong>exposição repetitiva do trabalhador a situações humilhantes e constrangedoras</strong> durante a jornada de trabalho. Características principais:</p>
       <ul>
         <li><strong>Repetição</strong> – condutas reiteradas ao longo do tempo</li>
         <li><strong>Intencionalidade</strong> – objetivo de desestabilizar a vítima</li>
@@ -432,7 +432,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
       </ul>
 
       <h2>Consequências para a vítima</h2>
-      <p>O assédio moral pode causar sérios danos à saúde:</p>
+      <p class="text-justify">O assédio moral pode causar sérios danos à saúde:</p>
       <ul>
         <li>Ansiedade e depressão</li>
         <li>Síndrome de burnout</li>
@@ -443,7 +443,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
       </ul>
 
       <h2>Como documentar o assédio</h2>
-      <p>A prova é essencial para responsabilizar o agressor:</p>
+      <p class="text-justify">A prova é essencial para responsabilizar o agressor:</p>
       <ol>
         <li><strong>Anote tudo</strong> – data, hora, local, testemunhas, o que foi dito/feito</li>
         <li><strong>Guarde provas</strong> – e-mails, mensagens, áudios (se permitido)</li>
@@ -453,7 +453,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
       </ol>
 
       <h2>Seus direitos</h2>
-      <p>A vítima de assédio moral pode buscar:</p>
+      <p class="text-justify">A vítima de assédio moral pode buscar:</p>
       <ul>
         <li><strong>Rescisão indireta</strong> – "justa causa do empregador" com todos os direitos</li>
         <li><strong>Indenização por danos morais</strong></li>
@@ -462,7 +462,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
       </ul>
 
       <h2>Próximos passos</h2>
-      <p>Se você está sofrendo assédio moral, não fique em silêncio. Procure ajuda psicológica e orientação jurídica especializada para entender as melhores opções para o seu caso.</p>
+      <p class="text-justify">Se você está sofrendo assédio moral, não fique em silêncio. Procure ajuda psicológica e orientação jurídica especializada para entender as melhores opções para o seu caso.</p>
     `
   }
 ];
