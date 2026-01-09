@@ -117,59 +117,24 @@ export interface BlogArticle {
 export const BLOG_ARTICLES: BlogArticle[] = [
   {
     id: 'isencao-ir-hiv',
-    title: 'Isenção de IR para Portadores de HIV: Direito Mesmo Sem Sintomas',
-    excerpt: 'O STJ já consolidou: portadores do HIV têm direito à isenção total de imposto de renda sobre aposentadorias e pensões, independentemente de apresentarem sintomas. Saiba como requerer.',
+    title: 'Isenção de Imposto de Renda para Portadores de HIV: O Entendimento Jurídico sobre a Ausência de Sintomas',
+    excerpt: 'A evolução da medicina transformou o HIV em uma doença crônica manejável. Saiba por que a isenção de IR não depende de sintomas ativos e como garantir seu direito.',
     category: 'Isenção Fiscal',
     date: '15 Dez 2024',
-    readTime: '5 min',
+    readTime: '6 min',
     image: 'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
     content: `
-      <p class="text-xl font-medium mb-8">A legislação brasileira assegura aos portadores do vírus HIV o direito à isenção do Imposto de Renda sobre proventos de aposentadoria, reforma ou pensão. O mais importante: <strong>você não precisa estar doente ou apresentar sintomas para ter esse direito</strong>.</p>
+      <p class="text-xl font-medium mb-8 text-center">A evolução da medicina transformou o diagnóstico do vírus da imunodeficiência humana (HIV) de uma condição outrora fatal em uma doença crônica perfeitamente manejável. Graças à eficácia da terapia antirretroviral (TARV), muitas pessoas vivem hoje décadas com saúde e plena qualidade de vida. No entanto, essa vitória da ciência trouxe consigo um paradoxo jurídico: frequentemente, a Receita Federal nega a isenção de Imposto de Renda a quem não apresenta sintomas ativos da AIDS. Essa prática pode ignorar a finalidade do benefício fiscal, que visa apoiar o tratamento contínuo e preservar a dignidade do paciente.</p>
       
-      <h2>O que diz a Súmula 627 do STJ?</h2>
-      <p>O Superior Tribunal de Justiça consolidou o entendimento na Súmula 627:</p>
-      <blockquote class="border-l-4 border-accent pl-6 my-6 italic text-lg">"O contribuinte faz jus à concessão ou à manutenção da isenção do imposto de renda, não se lhe exigindo a demonstração da contemporaneidade dos sintomas da doença nem da recidiva da enfermidade."</blockquote>
-      <p>Isso significa que basta ser portador do HIV para ter direito à isenção, independentemente de:</p>
-      <ul>
-        <li>Apresentar sintomas ativos</li>
-        <li>Ter desenvolvido AIDS</li>
-        <li>Estar em tratamento</li>
-        <li>Ter carga viral detectável ou indetectável</li>
-      </ul>
-
-      <h2>Quem tem direito?</h2>
-      <p>A isenção se aplica a:</p>
-      <ul>
-        <li><strong>Aposentados do INSS</strong> (por idade, tempo de contribuição ou invalidez)</li>
-        <li><strong>Aposentados do serviço público</strong> (federal, estadual ou municipal)</li>
-        <li><strong>Militares reformados</strong></li>
-        <li><strong>Pensionistas</strong> (que recebem pensão por morte)</li>
-        <li><strong>Beneficiários de previdência privada complementar</strong></li>
-      </ul>
-
-      <h2>Como funciona a restituição retroativa?</h2>
-      <p>Além de parar de pagar o imposto a partir do diagnóstico, você pode <strong>recuperar todo o IR retido nos últimos 5 anos</strong>. Esse valor é corrigido pela taxa SELIC e pode representar uma quantia significativa.</p>
-      <p>Por exemplo: se você teve R$ 500 retidos mensalmente, pode ter direito a receber mais de R$ 30.000 de volta.</p>
-
-      <h2>Sigilo absoluto garantido</h2>
-      <p>A Lei 14.289/2022 garante que processos envolvendo HIV tramitem em <strong>segredo de justiça</strong>. Seu diagnóstico não será exposto em nenhum momento do processo. Isso inclui:</p>
-      <ul>
-        <li>Processos judiciais sob sigilo</li>
-        <li>Documentos protegidos</li>
-        <li>Nenhuma informação pública sobre sua condição</li>
-      </ul>
-
-      <h2>Documentos necessários</h2>
-      <p>Para requerer a isenção, você precisará de:</p>
-      <ul>
-        <li>Laudo médico atestando a condição de portador do HIV</li>
-        <li>Documentos pessoais (RG, CPF)</li>
-        <li>Comprovante de aposentadoria ou pensão</li>
-        <li>Declarações de IR dos últimos 5 anos (para restituição)</li>
-      </ul>
-
-      <h2>Próximos passos</h2>
-      <p>O processo pode ser feito administrativamente junto ao órgão pagador ou judicialmente. A via judicial costuma ser mais rápida e garante a restituição dos valores passados.</p>
+      <p class="text-lg mb-6 text-center">Para compreender o alcance desse direito, é preciso identificar as hipóteses legais. A isenção, prevista na Lei nº 7.713/1988, é destinada especificamente aos rendimentos de aposentadoria, pensões e reformas militares. Conforme o entendimento consolidado pelo STJ no Tema 1037, o benefício não se estende aos trabalhadores que ainda estão na ativa, focando naqueles que enfrentam os custos da saúde na inatividade.</p>
+      
+      <p class="text-lg mb-6 text-center">Um dos maiores obstáculos reside no "mito dos sintomas". O Judiciário pacificou a questão através da Súmula 627 do STJ, estabelecendo que o contribuinte tem direito ao benefício independentemente da demonstração de sintomas contemporâneos. A justiça reconhece que o estado de saúde estável é fruto de disciplina e gastos constantes.</p>
+      
+      <p class="text-lg mb-6 text-center">Além das aposentadorias, o direito pode se estender à previdência complementar (PGBL/VGBL) e reformas militares. Para viabilizar a análise, embora a lei mencione laudo oficial, a Súmula 598 do STJ permite que o magistrado reconheça a isenção com base em outras provas, como exames e relatórios particulares. É possível, ainda, pleitear a devolução de valores pagos indevidamente nos últimos cinco anos.</p>
+      
+      <p class="text-lg mb-6 text-center">Por fim, a Lei 14.289/2022 garante o sigilo sobre a condição de saúde em processos administrativos e judiciais. A busca pela isenção é uma ferramenta de justiça social para garantir recursos necessários ao bem-estar e à longevidade.</p>
+      
+      <p class="text-xl font-semibold text-center text-primary">Saiba mais sobre seus direitos e agende um atendimento inicial para análise do seu caso.</p>
     `
   },
   {
