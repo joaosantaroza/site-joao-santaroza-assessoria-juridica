@@ -75,7 +75,7 @@ export const ArticlePage = ({ article, onBack, onContact }: ArticlePageProps) =>
 
           {/* Article Body */}
           <div 
-            className="prose prose-lg max-w-none prose-headings:font-heading prose-headings:text-primary prose-p:text-muted-foreground prose-strong:text-foreground prose-li:text-muted-foreground"
+            className="article-content prose prose-lg max-w-none"
             dangerouslySetInnerHTML={{ __html: article.content || '' }}
           />
 
