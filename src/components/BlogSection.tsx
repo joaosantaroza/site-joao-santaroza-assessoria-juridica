@@ -22,21 +22,31 @@ const ArticleCard = ({
     whileInView={{ opacity: 1, y: 0 }}
     viewport={{ once: true }}
     transition={{ duration: 0.5, delay: index * 0.1 }}
+    whileHover={{ 
+      y: -8,
+      transition: { duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }
+    }}
     onClick={onClick}
-    className="group bg-card rounded-xl border border-border overflow-hidden hover:border-accent hover:shadow-xl transition-all duration-300 cursor-pointer"
+    className="group bg-card rounded-xl border border-border overflow-hidden hover:border-accent hover:shadow-2xl transition-all duration-300 cursor-pointer"
   >
     {/* Article Image */}
     <div className="relative h-48 overflow-hidden">
-      <img
+      <motion.img
         src={article.image}
         alt={article.title}
-        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+        className="w-full h-full object-cover"
+        whileHover={{ scale: 1.1 }}
+        transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
       />
-      <div className="absolute top-4 left-4">
-        <span className="px-3 py-1 bg-accent text-accent-foreground text-xs font-bold uppercase tracking-wider rounded-full">
+      <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+      <motion.div 
+        className="absolute top-4 left-4"
+        whileHover={{ scale: 1.05 }}
+      >
+        <span className="px-3 py-1 bg-accent text-accent-foreground text-xs font-bold uppercase tracking-wider rounded-full shadow-lg">
           {article.category}
         </span>
-      </div>
+      </motion.div>
     </div>
 
     {/* Article Content */}
@@ -52,7 +62,7 @@ const ArticleCard = ({
         </span>
       </div>
 
-      <h3 className="text-lg font-bold text-primary font-heading mb-3 line-clamp-2 group-hover:text-accent transition-colors">
+      <h3 className="text-lg font-bold text-primary font-heading mb-3 line-clamp-2 group-hover:text-accent transition-colors duration-300">
         {article.title}
       </h3>
 
@@ -60,9 +70,20 @@ const ArticleCard = ({
         {article.excerpt}
       </p>
 
-      <div className="flex items-center text-sm font-bold text-accent group-hover:gap-3 transition-all">
-        Ler Artigo <ArrowRight className="w-4 h-4 ml-2" />
-      </div>
+      <motion.div 
+        className="flex items-center text-sm font-bold text-accent"
+        whileHover={{ x: 4 }}
+        transition={{ duration: 0.2 }}
+      >
+        Ler Artigo 
+        <motion.span
+          className="ml-2"
+          animate={{ x: [0, 4, 0] }}
+          transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+        >
+          <ArrowRight className="w-4 h-4" />
+        </motion.span>
+      </motion.div>
     </div>
   </motion.article>
 );
