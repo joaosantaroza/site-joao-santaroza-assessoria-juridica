@@ -1,4 +1,4 @@
-import { ArrowRight, Calendar, Clock, User, MessageCircle } from "lucide-react";
+import { ArrowRight, Calendar, Clock, User, MessageCircle, Download } from "lucide-react";
 import { motion } from "framer-motion";
 import { BlogArticle, CONTACT_INFO } from "@/lib/constants";
 import { Button } from "@/components/ui/button";
@@ -121,6 +121,46 @@ export const ArticlePage = ({ article, onBack, onContact }: ArticlePageProps) =>
             viewport={{ once: true, margin: "-50px" }}
             transition={{ duration: 0.7, ease: "easeOut" }}
           />
+
+          {/* Download PDF Section - Only for HIV article */}
+          {article.id === 'isencao-ir-hiv' && (
+            <motion.div 
+              className="mt-12 p-8 bg-gradient-to-br from-accent/10 to-accent/5 border-2 border-accent/30 rounded-2xl"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-50px" }}
+              transition={{ duration: 0.6, ease: "easeOut" }}
+            >
+              <div className="text-center">
+                <h3 className="text-xl md:text-2xl font-extrabold text-primary font-heading mb-3">
+                  📘 E-book Gratuito
+                </h3>
+                <p className="text-muted-foreground mb-6 max-w-lg mx-auto">
+                  Baixe nosso guia completo sobre isenção de Imposto de Renda para portadores de HIV e entenda todos os seus direitos.
+                </p>
+                <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                  <Button 
+                    asChild
+                    size="lg"
+                    className="bg-accent hover:bg-accent/90 text-accent-foreground"
+                  >
+                    <a href="/assets/ebook-isencao-ir-hiv.pdf" download="Ebook-Isencao-IR-HIV.pdf">
+                      <Download className="w-5 h-5 mr-2" />
+                      Baixar E-book em PDF
+                    </a>
+                  </Button>
+                  <Button 
+                    onClick={handleWhatsAppContact}
+                    size="lg"
+                    className="bg-whatsapp hover:bg-whatsapp/90 text-white"
+                  >
+                    <MessageCircle className="w-5 h-5 mr-2" />
+                    Falar com Advogado
+                  </Button>
+                </div>
+              </div>
+            </motion.div>
+          )}
 
           {/* CTA Box */}
           <motion.div 
