@@ -1,8 +1,9 @@
 import { ArrowRight, Calendar, Clock, User, MessageCircle, Download } from "lucide-react";
 import { motion } from "framer-motion";
+import { useMemo } from "react";
+import DOMPurify from "dompurify";
 import { BlogArticle, CONTACT_INFO } from "@/lib/constants";
 import { Button } from "@/components/ui/button";
-
 interface ArticlePageProps {
   article: BlogArticle;
   onBack: () => void;
@@ -112,10 +113,10 @@ export const ArticlePage = ({ article, onBack, onContact }: ArticlePageProps) =>
             </span>
           </motion.div>
 
-          {/* Article Body */}
+          {/* Article Body - Sanitized to prevent XSS */}
           <motion.div 
             className="article-content prose prose-lg max-w-none"
-            dangerouslySetInnerHTML={{ __html: article.content || '' }}
+            dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(article.content || '') }}
             initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-50px" }}
