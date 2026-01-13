@@ -102,25 +102,39 @@ serve(async (req) => {
                      req.headers.get("cf-connecting-ip") || 
                      "unknown";
 
-    // Verify authorization header exists
+    // Capture caller credentials (public site, no user login)
     const authHeader = req.headers.get("Authorization");
-    if (!authHeader?.startsWith("Bearer ")) {
-      console.error("Missing or invalid authorization header");
+    const apiKeyHeader = req.headers.get("apikey") || req.headers.get("x-api-key");
+
+    // Initialize backend clients
+    const supabaseUrl = Deno.env.get("SUPABASE_URL");
+    const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY");
+    const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+
+    if (!supabaseUrl || !supabaseAnonKey || !supabaseServiceKey) {
+      console.error("Backend configuration missing");
       return new Response(
-        JSON.stringify({ error: CLIENT_ERRORS.UNAUTHORIZED }),
-        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        JSON.stringify({ error: CLIENT_ERRORS.GENERIC }),
+        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } },
       );
     }
 
-    // Initialize Supabase client for rate limiting
-    const supabaseUrl = Deno.env.get("SUPABASE_URL");
-    const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
-    
-    if (!supabaseUrl || !supabaseServiceKey) {
-      console.error("Supabase configuration missing");
+    // Validate request authorization.
+    // This endpoint is public (no user login), so we require the project's public key.
+    // The frontend can send it via either `Authorization: Bearer <anon>` or `apikey: <anon>`.
+    const bearerToken = authHeader?.startsWith("Bearer ")
+      ? authHeader.slice("Bearer ".length).trim()
+      : null;
+
+    const isAuthorized =
+      (bearerToken && bearerToken === supabaseAnonKey) ||
+      (apiKeyHeader && apiKeyHeader === supabaseAnonKey);
+
+    if (!isAuthorized) {
+      console.error("Unauthorized request (missing/invalid public key)");
       return new Response(
-        JSON.stringify({ error: CLIENT_ERRORS.GENERIC }),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        JSON.stringify({ error: CLIENT_ERRORS.UNAUTHORIZED }),
+        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } },
       );
     }
 
