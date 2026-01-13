@@ -1,9 +1,9 @@
 import { ArrowRight, Calendar, Clock, User, MessageCircle, Download } from "lucide-react";
 import { motion } from "framer-motion";
-import { useMemo } from "react";
 import DOMPurify from "dompurify";
 import { BlogArticle, CONTACT_INFO } from "@/lib/constants";
 import { Button } from "@/components/ui/button";
+import { ArticleAudioPlayer } from "@/components/ArticleAudioPlayer";
 interface ArticlePageProps {
   article: BlogArticle;
   onBack: () => void;
@@ -111,6 +111,17 @@ export const ArticlePage = ({ article, onBack, onContact }: ArticlePageProps) =>
               <Clock className="w-4 h-4" />
               {article.readTime} de leitura
             </span>
+          </motion.div>
+
+          {/* Audio Player */}
+          <motion.div
+            className="mb-10"
+            variants={fadeInUp}
+          >
+            <ArticleAudioPlayer 
+              articleContent={article.content || ''} 
+              articleTitle={article.title} 
+            />
           </motion.div>
 
           {/* Article Body - Sanitized to prevent XSS */}
