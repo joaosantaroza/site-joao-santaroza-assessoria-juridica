@@ -6,7 +6,6 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 const ALLOWED_ORIGINS = [
   "https://lovable.dev",
   "https://lovableproject.com",
-  // Add production domain when deployed
 ];
 
 // Helper to check if origin is allowed (including Lovable preview domains)
@@ -35,6 +34,10 @@ const getCorsHeaders = (origin: string | null) => ({
 // Whitelist of allowed voice IDs - only the custom "advogado de joao santaroza" voice
 const ALLOWED_VOICE_IDS = ["yfy5M61ODLwWnWbM7u5R"];
 
+// Rate limit configuration
+const RATE_LIMIT_MAX = 10; // Max requests per window
+const RATE_LIMIT_WINDOW_MINUTES = 60; // 1 hour window
+
 // Input validation schema
 const RequestSchema = z.object({
   text: z.string()
@@ -45,26 +48,15 @@ const RequestSchema = z.object({
     .max(50, "VoiceId too long"),
 });
 
-// Simple in-memory rate limiting (per IP, resets on function cold start)
-const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
-const RATE_LIMIT_MAX = 10; // Max requests per window
-const RATE_LIMIT_WINDOW = 60000; // 1 minute window
-
-const checkRateLimit = (ip: string): boolean => {
-  const now = Date.now();
-  const record = rateLimitMap.get(ip);
-  
-  if (!record || now > record.resetTime) {
-    rateLimitMap.set(ip, { count: 1, resetTime: now + RATE_LIMIT_WINDOW });
-    return true;
-  }
-  
-  if (record.count >= RATE_LIMIT_MAX) {
-    return false;
-  }
-  
-  record.count++;
-  return true;
+// Generic error messages for clients (security: don't expose internal details)
+const CLIENT_ERRORS = {
+  GENERIC: "Falha ao gerar áudio. Por favor, tente novamente.",
+  RATE_LIMIT: "Muitas solicitações. Por favor, aguarde alguns minutos.",
+  UNAUTHORIZED: "Acesso não autorizado.",
+  INVALID_INPUT: "Dados de entrada inválidos.",
+  VOICE_NOT_ALLOWED: "Voz não autorizada.",
+  TEXT_TOO_SHORT: "Texto muito curto para gerar áudio.",
+  TIMEOUT: "Tempo limite excedido. Por favor, tente novamente.",
 };
 
 serve(async (req) => {
@@ -89,58 +81,68 @@ serve(async (req) => {
     if (!isAllowedOrigin(origin)) {
       console.error("Blocked request from unauthorized origin:", origin);
       return new Response(
-        JSON.stringify({ error: "Unauthorized origin" }),
+        JSON.stringify({ error: CLIENT_ERRORS.UNAUTHORIZED }),
         { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
-    // Rate limiting by IP
+    // Get client IP for rate limiting
     const clientIP = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || 
                      req.headers.get("cf-connecting-ip") || 
                      "unknown";
-    
-    if (!checkRateLimit(clientIP)) {
-      console.warn("Rate limit exceeded for IP:", clientIP);
-      return new Response(
-        JSON.stringify({ error: "Too many requests. Please try again later." }),
-        { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
 
-    // Verify authorization header exists (even if using anon key)
+    // Verify authorization header exists
     const authHeader = req.headers.get("Authorization");
     if (!authHeader?.startsWith("Bearer ")) {
+      console.error("Missing or invalid authorization header");
       return new Response(
-        JSON.stringify({ error: "Missing authorization" }),
+        JSON.stringify({ error: CLIENT_ERRORS.UNAUTHORIZED }),
         { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
-    // Verify the token is valid using Supabase
+    // Initialize Supabase client for rate limiting
     const supabaseUrl = Deno.env.get("SUPABASE_URL");
-    const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY");
+    const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
     
-    if (!supabaseUrl || !supabaseAnonKey) {
-      throw new Error("Supabase configuration missing");
+    if (!supabaseUrl || !supabaseServiceKey) {
+      console.error("Supabase configuration missing");
+      return new Response(
+        JSON.stringify({ error: CLIENT_ERRORS.GENERIC }),
+        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
     }
 
-    const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-      global: { headers: { Authorization: authHeader } },
-    });
+    // Use service role for rate limit check (bypasses RLS)
+    const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey);
 
-    // Validate the token - getClaims validates the JWT
-    const token = authHeader.replace("Bearer ", "");
-    const { error: authError } = await supabase.auth.getUser(token);
-    
-    // For public access, we accept the anon key token even without a logged-in user
-    // The key validation happens through Supabase's infrastructure
-    // We rely on origin check + rate limiting for abuse prevention
+    // Check persistent rate limit
+    const { data: isAllowed, error: rateLimitError } = await supabaseAdmin.rpc(
+      "check_tts_rate_limit",
+      { 
+        p_ip_address: clientIP,
+        p_max_requests: RATE_LIMIT_MAX,
+        p_window_minutes: RATE_LIMIT_WINDOW_MINUTES
+      }
+    );
+
+    if (rateLimitError) {
+      console.error("Rate limit check failed:", rateLimitError.message);
+      // Don't block on rate limit DB errors, but log for monitoring
+    } else if (!isAllowed) {
+      console.warn("Rate limit exceeded for IP:", clientIP);
+      return new Response(
+        JSON.stringify({ error: CLIENT_ERRORS.RATE_LIMIT }),
+        { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
 
     // Check content-length to prevent oversized payloads
     const contentLength = req.headers.get("content-length");
     if (contentLength && parseInt(contentLength) > 50000) {
+      console.error("Payload too large:", contentLength);
       return new Response(
-        JSON.stringify({ error: "Request payload too large" }),
+        JSON.stringify({ error: CLIENT_ERRORS.INVALID_INPUT }),
         { status: 413, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
@@ -152,10 +154,7 @@ serve(async (req) => {
     if (!validationResult.success) {
       console.error("Validation error:", validationResult.error.errors);
       return new Response(
-        JSON.stringify({ 
-          error: "Invalid input", 
-          details: validationResult.error.errors.map(e => e.message) 
-        }),
+        JSON.stringify({ error: CLIENT_ERRORS.INVALID_INPUT }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
@@ -164,16 +163,20 @@ serve(async (req) => {
 
     // Validate voiceId against whitelist
     if (!ALLOWED_VOICE_IDS.includes(voiceId)) {
-      console.error("Unauthorized voice ID attempted:", voiceId);
+      console.error("Unauthorized voice ID attempted:", voiceId, "from IP:", clientIP);
       return new Response(
-        JSON.stringify({ error: "Voice not authorized" }),
+        JSON.stringify({ error: CLIENT_ERRORS.VOICE_NOT_ALLOWED }),
         { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
     const ELEVENLABS_API_KEY = Deno.env.get("ELEVENLABS_API_KEY");
     if (!ELEVENLABS_API_KEY) {
-      throw new Error("ELEVENLABS_API_KEY not configured");
+      console.error("ELEVENLABS_API_KEY not configured");
+      return new Response(
+        JSON.stringify({ error: CLIENT_ERRORS.GENERIC }),
+        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
     }
 
     // Clean and prepare text - remove HTML tags and limit length
@@ -189,13 +192,14 @@ serve(async (req) => {
       .slice(0, 5000);         // ElevenLabs limit
 
     if (!cleanText || cleanText.length < 10) {
+      console.error("Text too short after cleaning:", cleanText.length);
       return new Response(
-        JSON.stringify({ error: "Text is too short after cleaning" }),
+        JSON.stringify({ error: CLIENT_ERRORS.TEXT_TOO_SHORT }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
-    console.log(`Generating TTS for ${cleanText.length} characters with voice ${voiceId} from ${clientIP}`);
+    console.log(`Generating TTS: ${cleanText.length} chars, voice ${voiceId}, IP ${clientIP}`);
 
     // Call ElevenLabs API with timeout
     const controller = new AbortController();
@@ -229,13 +233,16 @@ serve(async (req) => {
 
       if (!response.ok) {
         const errorText = await response.text();
-        console.error("ElevenLabs API error:", errorText);
-        throw new Error(`ElevenLabs API error: ${response.status}`);
+        console.error("ElevenLabs API error:", response.status, errorText);
+        return new Response(
+          JSON.stringify({ error: CLIENT_ERRORS.GENERIC }),
+          { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
       }
 
       const audioBuffer = await response.arrayBuffer();
 
-      console.log(`Successfully generated ${audioBuffer.byteLength} bytes of audio`);
+      console.log(`Success: ${audioBuffer.byteLength} bytes generated for IP ${clientIP}`);
 
       return new Response(audioBuffer, {
         headers: {
@@ -246,15 +253,22 @@ serve(async (req) => {
     } catch (fetchError) {
       clearTimeout(timeoutId);
       if (fetchError instanceof Error && fetchError.name === "AbortError") {
-        throw new Error("Request timeout - ElevenLabs API took too long");
+        console.error("ElevenLabs API timeout");
+        return new Response(
+          JSON.stringify({ error: CLIENT_ERRORS.TIMEOUT }),
+          { status: 504, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
       }
       throw fetchError;
     }
   } catch (error: unknown) {
+    // Log detailed error server-side only
     const errorMessage = error instanceof Error ? error.message : "Unknown error";
     console.error("TTS Error:", errorMessage);
+    
+    // Return generic error to client (security: don't expose internal details)
     return new Response(
-      JSON.stringify({ error: errorMessage }),
+      JSON.stringify({ error: CLIENT_ERRORS.GENERIC }),
       {
         status: 500,
         headers: {
