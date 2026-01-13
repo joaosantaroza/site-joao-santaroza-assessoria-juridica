@@ -33,9 +33,13 @@ const isAllowedOrigin = (origin: string | null): boolean => {
 };
 
 const getCorsHeaders = (origin: string | null) => ({
-  "Access-Control-Allow-Origin": isAllowedOrigin(origin) ? origin! : ALLOWED_ORIGINS[0],
+  // Important: always echo the request Origin so browsers don't fail the request
+  // with a generic "Failed to fetch" due to preflight mismatch.
+  // We still enforce the real origin allowlist below before doing any work.
+  "Access-Control-Allow-Origin": origin ?? "null",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
   "Access-Control-Allow-Methods": "POST, OPTIONS",
+  Vary: "Origin",
 });
 
 // Whitelist of allowed voice IDs - only the custom "advogado de joao santaroza" voice
