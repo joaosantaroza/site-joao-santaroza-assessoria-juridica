@@ -116,11 +116,29 @@ export const ArticleAudioPlayer = ({ articleContent, articleTitle }: ArticleAudi
         throw new Error(errorMessage);
       }
 
-      diagInfo.responseBody = "(audio/mpeg blob)";
+      let audioUrl: string;
+      const contentType = response.headers.get("content-type");
+      
+      // Check if response is JSON (cached URL) or audio blob
+      if (contentType?.includes("application/json")) {
+        const jsonData = await response.json();
+        
+        if (jsonData.cached && jsonData.url) {
+          diagInfo.responseBody = `(cached) ${jsonData.url}`;
+          audioUrl = jsonData.url;
+          console.log("TTS: Using cached audio from storage");
+        } else {
+          throw new Error("Formato de resposta inválido");
+        }
+      } else {
+        // Direct audio response (new generation)
+        diagInfo.responseBody = "(audio/mpeg blob)";
+        const audioBlob = await response.blob();
+        audioUrl = URL.createObjectURL(audioBlob);
+        console.log("TTS: Generated new audio");
+      }
+      
       setDiagnosticInfo(diagInfo);
-
-      const audioBlob = await response.blob();
-      const audioUrl = URL.createObjectURL(audioBlob);
       audioUrlRef.current = audioUrl;
 
       const audio = new Audio(audioUrl);
