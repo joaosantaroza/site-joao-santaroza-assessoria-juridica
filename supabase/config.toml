@@ -1,1 +1,5 @@
 project_id = "vlojfdgcbokneeammddo"
+
+[functions.elevenlabs-tts]
+# Required for signing-keys projects; auth is validated in code when needed.
+verify_jwt = false
