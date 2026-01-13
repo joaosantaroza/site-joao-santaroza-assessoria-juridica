@@ -12,8 +12,15 @@ const ALLOWED_ORIGINS = [
 const isAllowedOrigin = (origin: string | null): boolean => {
   if (!origin) return false;
   
-  // Allow Lovable preview domains
-  if (origin.includes(".lovableproject.com") || origin.includes(".lovable.app")) {
+  // Allow Lovable preview domains (various formats)
+  if (
+    origin.includes(".lovableproject.com") || 
+    origin.includes(".lovable.app") ||
+    origin.includes("lovableproject.com") ||
+    origin.includes("id.lovable.app") ||
+    origin.match(/https:\/\/[a-z0-9-]+\.lovableproject\.com/) ||
+    origin.match(/https:\/\/[a-z0-9-]+--[a-z0-9-]+\.lovable\.app/)
+  ) {
     return true;
   }
   
