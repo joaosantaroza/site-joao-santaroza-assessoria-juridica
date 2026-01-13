@@ -9,7 +9,7 @@ interface ArticleAudioPlayerProps {
 }
 
 // Voice ID for "advogado de joao santaroza" - custom cloned voice
-const CUSTOM_VOICE_ID = "advogado_joao_santaroza"; // Will be replaced with actual Voice ID
+const CUSTOM_VOICE_ID = "yfy5M61ODLwWnWbM7u5R";
 
 export const ArticleAudioPlayer = ({ articleContent, articleTitle }: ArticleAudioPlayerProps) => {
   const [isLoading, setIsLoading] = useState(false);
