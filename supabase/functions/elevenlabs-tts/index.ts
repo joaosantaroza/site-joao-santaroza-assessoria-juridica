@@ -1,6 +1,8 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { crypto } from "https://deno.land/std@0.168.0/crypto/mod.ts";
+import { encode as encodeHex } from "https://deno.land/std@0.168.0/encoding/hex.ts";
 
 // Get allowed origins from environment or use defaults
 const ALLOWED_ORIGINS = [
@@ -59,6 +61,9 @@ const ALLOWED_VOICE_IDS = ["yfy5M61ODLwWnWbM7u5R"];
 const RATE_LIMIT_MAX = 10; // Max requests per window
 const RATE_LIMIT_WINDOW_MINUTES = 60; // 1 hour window
 
+// Cache bucket name
+const CACHE_BUCKET = "tts-cache";
+
 // Input validation schema
 const RequestSchema = z.object({
   text: z.string()
@@ -79,6 +84,17 @@ const CLIENT_ERRORS = {
   TEXT_TOO_SHORT: "Texto muito curto para gerar áudio.",
   TIMEOUT: "Tempo limite excedido. Por favor, tente novamente.",
 };
+
+// Generate MD5 hash for cache key
+async function generateHash(text: string, voiceId: string): Promise<string> {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(`${voiceId}:${text}`);
+  const hashBuffer = await crypto.subtle.digest("MD5", data);
+  const hashArray = new Uint8Array(hashBuffer);
+  const hexBytes = encodeHex(hashArray);
+  const decoder = new TextDecoder();
+  return decoder.decode(hexBytes);
+}
 
 serve(async (req) => {
   const origin = req.headers.get("origin");
@@ -148,29 +164,8 @@ serve(async (req) => {
       );
     }
 
-    // Use service role for rate limit check (bypasses RLS)
+    // Use service role for rate limit check and storage (bypasses RLS)
     const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey);
-
-    // Check persistent rate limit
-    const { data: isAllowed, error: rateLimitError } = await supabaseAdmin.rpc(
-      "check_tts_rate_limit",
-      { 
-        p_ip_address: clientIP,
-        p_max_requests: RATE_LIMIT_MAX,
-        p_window_minutes: RATE_LIMIT_WINDOW_MINUTES
-      }
-    );
-
-    if (rateLimitError) {
-      console.error("Rate limit check failed:", rateLimitError.message);
-      // Don't block on rate limit DB errors, but log for monitoring
-    } else if (!isAllowed) {
-      console.warn("Rate limit exceeded for IP:", clientIP);
-      return new Response(
-        JSON.stringify({ error: CLIENT_ERRORS.RATE_LIMIT }),
-        { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
 
     // Check content-length to prevent oversized payloads
     const contentLength = req.headers.get("content-length");
@@ -205,15 +200,6 @@ serve(async (req) => {
       );
     }
 
-    const ELEVENLABS_API_KEY = Deno.env.get("ELEVENLABS_API_KEY");
-    if (!ELEVENLABS_API_KEY) {
-      console.error("ELEVENLABS_API_KEY not configured");
-      return new Response(
-        JSON.stringify({ error: CLIENT_ERRORS.GENERIC }),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
-
     // Clean and prepare text - remove HTML tags and limit length
     const cleanText = text
       .replace(/<[^>]*>/g, "") // Remove HTML tags
@@ -234,15 +220,80 @@ serve(async (req) => {
       );
     }
 
-    console.log(`Generating TTS: ${cleanText.length} chars, voice ${voiceId}, IP ${clientIP}`);
+    // Generate cache key based on text and voice
+    const cacheKey = await generateHash(cleanText, voiceId);
+    const cacheFileName = `audio_${cacheKey}.mp3`;
 
-    // Call ElevenLabs API with timeout
+    console.log(`TTS Request: ${cleanText.length} chars, voice ${voiceId}, cache key ${cacheKey}`);
+
+    // Check if audio exists in cache
+    const { data: cachedFile } = await supabaseAdmin.storage
+      .from(CACHE_BUCKET)
+      .list("", { search: cacheFileName });
+
+    if (cachedFile && cachedFile.length > 0) {
+      // Audio exists in cache - return public URL
+      const { data: urlData } = supabaseAdmin.storage
+        .from(CACHE_BUCKET)
+        .getPublicUrl(cacheFileName);
+
+      if (urlData?.publicUrl) {
+        console.log(`Cache HIT: ${cacheFileName} - returning cached audio (0 credits used)`);
+        
+        return new Response(
+          JSON.stringify({ 
+            cached: true, 
+            url: urlData.publicUrl 
+          }),
+          {
+            headers: {
+              ...corsHeaders,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+      }
+    }
+
+    console.log(`Cache MISS: ${cacheFileName} - generating new audio`);
+
+    // Check persistent rate limit (only for new generations, not cached)
+    const { data: isAllowed, error: rateLimitError } = await supabaseAdmin.rpc(
+      "check_tts_rate_limit",
+      { 
+        p_ip_address: clientIP,
+        p_max_requests: RATE_LIMIT_MAX,
+        p_window_minutes: RATE_LIMIT_WINDOW_MINUTES
+      }
+    );
+
+    if (rateLimitError) {
+      console.error("Rate limit check failed:", rateLimitError.message);
+      // Don't block on rate limit DB errors, but log for monitoring
+    } else if (!isAllowed) {
+      console.warn("Rate limit exceeded for IP:", clientIP);
+      return new Response(
+        JSON.stringify({ error: CLIENT_ERRORS.RATE_LIMIT }),
+        { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    const ELEVENLABS_API_KEY = Deno.env.get("ELEVENLABS_API_KEY");
+    if (!ELEVENLABS_API_KEY) {
+      console.error("ELEVENLABS_API_KEY not configured");
+      return new Response(
+        JSON.stringify({ error: CLIENT_ERRORS.GENERIC }),
+        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // Call ElevenLabs API with timeout - using Flash model for faster/cheaper generation
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 60000); // 60 second timeout
 
     try {
       const response = await fetch(
-        `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}?output_format=mp3_44100_128`,
+        `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}?output_format=mp3_22050_32`,
         {
           method: "POST",
           headers: {
@@ -251,7 +302,7 @@ serve(async (req) => {
           },
           body: JSON.stringify({
             text: cleanText,
-            model_id: "eleven_multilingual_v2",
+            model_id: "eleven_flash_v2_5", // Flash model - faster and cheaper
             voice_settings: {
               stability: 0.6,
               similarity_boost: 0.8,
@@ -276,9 +327,27 @@ serve(async (req) => {
       }
 
       const audioBuffer = await response.arrayBuffer();
+      const audioBytes = new Uint8Array(audioBuffer);
 
-      console.log(`Success: ${audioBuffer.byteLength} bytes generated for IP ${clientIP}`);
+      console.log(`Generated: ${audioBuffer.byteLength} bytes for IP ${clientIP}`);
 
+      // Save to cache for future requests
+      const { error: uploadError } = await supabaseAdmin.storage
+        .from(CACHE_BUCKET)
+        .upload(cacheFileName, audioBytes, {
+          contentType: "audio/mpeg",
+          cacheControl: "31536000", // Cache for 1 year
+          upsert: false, // Don't overwrite if exists
+        });
+
+      if (uploadError) {
+        console.error("Cache upload failed:", uploadError.message);
+        // Continue anyway - just return the audio directly
+      } else {
+        console.log(`Cached: ${cacheFileName} saved to storage`);
+      }
+
+      // Return audio directly
       return new Response(audioBuffer, {
         headers: {
           ...corsHeaders,
