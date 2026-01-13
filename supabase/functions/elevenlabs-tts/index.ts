@@ -6,30 +6,40 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 const ALLOWED_ORIGINS = [
   "https://lovable.dev",
   "https://lovableproject.com",
+  // Custom domain(s)
+  "https://joaosantarozaadvocacia.com.br",
+  "https://www.joaosantarozaadvocacia.com.br",
 ];
 
 // Helper to check if origin is allowed (including Lovable preview domains)
 const isAllowedOrigin = (origin: string | null): boolean => {
-  if (!origin) return false;
-  
+  const o = origin?.trim();
+  if (!o) return false;
+
+  // In some sandboxed preview iframes the browser sends Origin: null.
+  // We allow it so the in-editor preview can call this function.
+  if (o === "null") return true;
+
   // Allow Lovable preview domains (various formats)
   if (
-    origin.includes(".lovableproject.com") || 
-    origin.includes(".lovable.app") ||
-    origin.includes("lovableproject.com") ||
-    origin.includes("id.lovable.app") ||
-    origin.match(/https:\/\/[a-z0-9-]+\.lovableproject\.com/) ||
-    origin.match(/https:\/\/[a-z0-9-]+--[a-z0-9-]+\.lovable\.app/)
+    o.includes(".lovableproject.com") ||
+    o.includes(".lovable.app") ||
+    o.includes(".lovable.dev") ||
+    o.includes("lovableproject.com") ||
+    o.includes("id.lovable.app") ||
+    o.match(/https:\/\/[a-z0-9-]+\.lovableproject\.com/) ||
+    o.match(/https:\/\/[a-z0-9-]+--[a-z0-9-]+\.lovable\.app/) ||
+    o.match(/https:\/\/[a-z0-9-]+\.lovable\.dev/)
   ) {
     return true;
   }
-  
+
   // Allow localhost for development
-  if (origin.startsWith("http://localhost:") || origin.startsWith("http://127.0.0.1:")) {
+  if (o.startsWith("http://localhost:") || o.startsWith("http://127.0.0.1:")) {
     return true;
   }
-  
-  return ALLOWED_ORIGINS.includes(origin);
+
+  return ALLOWED_ORIGINS.includes(o);
 };
 
 const getCorsHeaders = (origin: string | null) => ({
@@ -102,14 +112,13 @@ serve(async (req) => {
                      req.headers.get("cf-connecting-ip") || 
                      "unknown";
 
-    // Capture caller credentials (public site, no user login)
     const authHeader = req.headers.get("Authorization");
-    const apiKeyHeader = req.headers.get("apikey") || req.headers.get("x-api-key");
+    const apiKeyHeader = (req.headers.get("apikey") || req.headers.get("x-api-key"))?.trim() || null;
 
     // Initialize backend clients
-    const supabaseUrl = Deno.env.get("SUPABASE_URL");
-    const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY");
-    const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+    const supabaseUrl = Deno.env.get("SUPABASE_URL")?.trim();
+    const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY")?.trim();
+    const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")?.trim();
 
     if (!supabaseUrl || !supabaseAnonKey || !supabaseServiceKey) {
       console.error("Backend configuration missing");
