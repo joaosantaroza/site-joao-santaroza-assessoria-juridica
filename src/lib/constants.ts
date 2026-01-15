@@ -464,5 +464,48 @@ export const BLOG_ARTICLES: BlogArticle[] = [
       <h2>Próximos passos</h2>
       <p class="text-justify">Se você está sofrendo assédio moral, não fique em silêncio. Procure ajuda psicológica e orientação jurídica especializada para entender as melhores opções para o seu caso.</p>
     `
+  },
+  {
+    id: 'direitos-gestante-demitida',
+    title: 'Demitida Grávida no Contrato de Experiência? Entenda Seus Direitos e a Proteção do Seu Bebê',
+    excerpt: 'Muitas gestantes acreditam que perderam seus direitos ao serem demitidas em contrato de experiência ou sem avisar sobre a gravidez. A lei e os tribunais dizem o contrário.',
+    category: 'Trabalho',
+    date: '15 Jan 2025',
+    readTime: '5 min',
+    image: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+    content: `
+      <p class="text-xl font-medium mb-8 text-justify">Receber a notícia de uma demissão é sempre um momento delicado, mas, quando isso acontece durante uma gestação, a insegurança se multiplica instantaneamente. O medo de ficar sem renda para o enxoval e, principalmente, a angústia pela perda do plano de saúde no momento em que mais se precisa de acompanhamento médico são dores reais e urgentes.</p>
+
+      <p class="text-lg mb-6 text-justify">Diante desse cenário, muitas trabalhadoras acreditam que, por estarem em contrato de experiência ou por não terem avisado o patrão sobre a gravidez antes da dispensa, perderam seus direitos — <strong>mas a legislação brasileira e o entendimento atual dos tribunais dizem exatamente o contrário</strong>.</p>
+
+      <h2>O mito do aviso prévio sobre a gravidez</h2>
+      <p class="text-lg mb-6 text-justify">Um dos maiores mitos no mercado de trabalho é a ideia de que a funcionária precisa avisar a empresa sobre a gravidez para ter direito à estabilidade. O <strong>Supremo Tribunal Federal (STF)</strong> firmou um entendimento baseado na chamada <strong>Responsabilidade Objetiva</strong>, o que significa, em termos simples, que o fator determinante é a <strong>data da concepção biológica</strong>, e não a data da comunicação ao empregador.</p>
+
+      <p class="text-lg mb-6 text-justify">Se o ultrassom confirmar que, no dia da demissão, você já estava grávida — mesmo que nem você e nem seu chefe soubessem — a lei protege o seu emprego e o sustento do seu bebê, pois a prioridade jurídica é garantir a vida e o bem-estar da criança que vai nascer.</p>
+
+      <h2>Gestante em contrato de experiência tem estabilidade?</h2>
+      <p class="text-lg mb-6 text-justify">Outra situação muito comum que gera desistência de direitos é quando a empresa alega que, por se tratar de um contrato de experiência que chegou ao fim do prazo, não deve nada à funcionária. <strong>É preciso ter muito cuidado com essa informação.</strong></p>
+
+      <p class="text-lg mb-6 text-justify">O <strong>Tribunal Superior do Trabalho (TST)</strong> reforçou recentemente o entendimento de que a <strong>gestante em contrato de experiência tem, sim, direito à estabilidade provisória</strong>. A lógica é constitucional: a proteção à maternidade está acima da natureza do contrato e, portanto, se você foi dispensada no 45º ou no 90º dia de experiência e estava grávida, essa dispensa pode ser considerada nula.</p>
+
+      <blockquote class="border-l-4 border-accent pl-6 my-6 bg-muted/30 py-4">
+        <p class="text-lg font-medium"><strong>Importante:</strong> Vale um alerta para contratos de trabalho temporário, aqueles regidos por lei específica e feitos via agências, onde a jurisprudência atual tende a não reconhecer a mesma estabilidade.</p>
+      </blockquote>
+
+      <h2>Reintegração ou indenização: o que a lei garante</h2>
+      <p class="text-lg mb-6 text-justify">O objetivo principal dessa proteção legal é a <strong>reintegração</strong>, garantindo que a gestante volte ao trabalho, receba seus salários e tenha seu plano de saúde restabelecido imediatamente, evitando as carências que um novo convênio exigiria para cobrir o parto.</p>
+
+      <p class="text-lg mb-6 text-justify">No entanto, sabemos que nem sempre o clima para o retorno é amigável e, quando voltar se torna insustentável devido a humilhações ou animosidade, a Justiça pode converter essa obrigação em uma <strong>indenização substitutiva</strong>, obrigando a empresa a pagar todos os salários e reflexos compreendidos entre a data da demissão até cinco meses após o parto.</p>
+
+      <h2>E se a gestante pediu demissão?</h2>
+      <p class="text-lg mb-6 text-justify">Mesmo nos casos em que a gestante pediu demissão, seja por desconhecimento ou coação, a lei oferece uma camada extra de proteção. O <strong>artigo 500 da CLT</strong> determina que o pedido de demissão de uma funcionária gestante só é válido se for feito com a assistência do Sindicato da categoria ou autoridade competente.</p>
+
+      <p class="text-lg mb-6 text-justify">Um pedido feito apenas "de boca" ou em uma carta simples, sem essa homologação oficial, <strong>pode ser anulado judicialmente</strong>, revertendo-se a situação para uma dispensa sem justa causa com todos os direitos garantidos.</p>
+
+      <h2>Próximos passos</h2>
+      <p class="text-lg mb-6 text-justify">Se você está passando por isso, lembre-se de que o tempo é precioso: reúna seus documentos, especialmente o ultrassom com a idade gestacional e o termo de rescisão, e busque orientação especializada, pois <strong>garantir seus direitos é o primeiro passo para garantir a segurança do seu filho</strong>.</p>
+
+      <p class="text-xl font-semibold text-center text-primary">Agende uma consulta para análise do seu caso e defesa dos seus direitos.</p>
+    `
   }
 ];
