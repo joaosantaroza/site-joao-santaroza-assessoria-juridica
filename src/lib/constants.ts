@@ -8,6 +8,8 @@ import {
   LucideIcon 
 } from 'lucide-react';
 
+import gestanteProfissional from '@/assets/gestante-profissional.jpg';
+
 export const CONTACT_INFO = {
   firmName: "JOÃO SANTAROZA",
   firmSub: "Assessoria Jurídica",
@@ -472,7 +474,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     category: 'Trabalho',
     date: '15 Jan 2025',
     readTime: '5 min',
-    image: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+    image: gestanteProfissional,
     content: `
       <p class="text-xl font-medium mb-8 text-justify">Receber a notícia de uma demissão é sempre um momento delicado, mas, quando isso acontece durante uma gestação, a insegurança se multiplica instantaneamente. O medo de ficar sem renda para o enxoval e, principalmente, a angústia pela perda do plano de saúde no momento em que mais se precisa de acompanhamento médico são dores reais e urgentes.</p>
 
