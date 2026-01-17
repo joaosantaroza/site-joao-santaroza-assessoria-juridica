@@ -203,7 +203,7 @@ export const ArticlePage = ({ article, onBack, onContact }: ArticlePageProps) =>
                     Baixe nosso guia completo sobre a Estabilidade dos Direitos 
                     Trabalhistas das Gestantes e entenda todos os seus direitos.
                   </p>
-                  <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+                  <div className="flex justify-center lg:justify-start">
                     <Button 
                       asChild
                       size="lg"
@@ -213,14 +213,6 @@ export const ArticlePage = ({ article, onBack, onContact }: ArticlePageProps) =>
                         <Download className="w-5 h-5 mr-2" />
                         Baixar E-book em PDF
                       </a>
-                    </Button>
-                    <Button 
-                      onClick={handleWhatsAppContact}
-                      size="lg"
-                      className="bg-whatsapp hover:bg-whatsapp/90 text-white"
-                    >
-                      <MessageCircle className="w-5 h-5 mr-2" />
-                      Falar com Advogado
                     </Button>
                   </div>
                 </div>
