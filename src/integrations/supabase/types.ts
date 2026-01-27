@@ -14,6 +14,33 @@ export type Database = {
   }
   public: {
     Tables: {
+      ebook_lead_rate_limits: {
+        Row: {
+          created_at: string
+          id: string
+          ip_address: string
+          request_count: number
+          updated_at: string
+          window_start: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          ip_address: string
+          request_count?: number
+          updated_at?: string
+          window_start?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          ip_address?: string
+          request_count?: number
+          updated_at?: string
+          window_start?: string
+        }
+        Relationships: []
+      }
       ebook_leads: {
         Row: {
           created_at: string
@@ -73,6 +100,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      check_ebook_lead_rate_limit: {
+        Args: {
+          p_ip_address: string
+          p_max_requests?: number
+          p_window_minutes?: number
+        }
+        Returns: boolean
+      }
       check_tts_rate_limit: {
         Args: {
           p_ip_address: string
