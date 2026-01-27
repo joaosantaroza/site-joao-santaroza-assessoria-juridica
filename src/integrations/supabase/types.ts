@@ -14,6 +14,33 @@ export type Database = {
   }
   public: {
     Tables: {
+      ebook_leads: {
+        Row: {
+          created_at: string
+          ebook_id: string
+          ebook_title: string
+          id: string
+          name: string
+          phone: string
+        }
+        Insert: {
+          created_at?: string
+          ebook_id: string
+          ebook_title: string
+          id?: string
+          name: string
+          phone: string
+        }
+        Update: {
+          created_at?: string
+          ebook_id?: string
+          ebook_title?: string
+          id?: string
+          name?: string
+          phone?: string
+        }
+        Relationships: []
+      }
       tts_rate_limits: {
         Row: {
           created_at: string
