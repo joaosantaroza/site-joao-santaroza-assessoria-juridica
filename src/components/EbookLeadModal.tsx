@@ -41,7 +41,7 @@ export const EbookLeadModal = ({
     e.preventDefault();
     setErrors({});
 
-    // Validate inputs
+    // Client-side validation first
     const result = leadSchema.safeParse({ name, phone });
     if (!result.success) {
       const fieldErrors: { name?: string; phone?: string } = {};
@@ -56,15 +56,33 @@ export const EbookLeadModal = ({
     setIsSubmitting(true);
 
     try {
-      // Save lead to database
-      const { error } = await supabase.from("ebook_leads").insert({
-        name: result.data.name,
-        phone: result.data.phone,
-        ebook_id: ebookId,
-        ebook_title: ebookTitle,
+      // Submit lead via Edge Function (with rate limiting and server-side validation)
+      const { data, error } = await supabase.functions.invoke("submit-ebook-lead", {
+        body: {
+          name: result.data.name,
+          phone: result.data.phone,
+          ebook_id: ebookId,
+          ebook_title: ebookTitle,
+        },
       });
 
-      if (error) throw error;
+      if (error) {
+        // Check for rate limit error
+        if (error.message?.includes("429") || data?.error?.includes("solicitações")) {
+          toast({
+            title: "Limite atingido",
+            description: "Você já baixou muitos e-books recentemente. Tente novamente mais tarde.",
+            variant: "destructive",
+          });
+          return;
+        }
+        throw error;
+      }
+
+      // Check for error in response body
+      if (data?.error) {
+        throw new Error(data.error);
+      }
 
       // Trigger download
       const link = document.createElement("a");
