@@ -5,6 +5,7 @@ import { BlogArticle, CONTACT_INFO } from "@/lib/constants";
 import { Button } from "@/components/ui/button";
 import { ArticleAudioPlayer } from "@/components/ArticleAudioPlayer";
 import ebookGestanteCapa from '@/assets/ebook-gestante-capa.png';
+import ebookPontoBritanicoCapa from '@/assets/ebook-ponto-britanico-capa.png';
 interface ArticlePageProps {
   article: BlogArticle;
   onBack: () => void;
@@ -210,6 +211,51 @@ export const ArticlePage = ({ article, onBack, onContact }: ArticlePageProps) =>
                       className="bg-accent hover:bg-accent/90 text-accent-foreground"
                     >
                       <a href="/assets/ebook-estabilidade-gestante.pdf" download="Ebook-Estabilidade-Gestante.pdf">
+                        <Download className="w-5 h-5 mr-2" />
+                        Baixar E-book em PDF
+                      </a>
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          )}
+
+          {/* Download PDF Section - Horário Britânico article with banner */}
+          {article.id === 'horario-britanico-ponto' && (
+            <motion.div 
+              className="mt-12 p-8 bg-gradient-to-br from-primary/10 to-primary/5 border-2 border-primary/30 rounded-2xl"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-50px" }}
+              transition={{ duration: 0.6, ease: "easeOut" }}
+            >
+              <div className="flex flex-col lg:flex-row items-center gap-8">
+                {/* Banner com Capa do Ebook */}
+                <div className="w-full lg:w-1/3 flex-shrink-0">
+                  <img 
+                    src={ebookPontoBritanicoCapa} 
+                    alt="Ebook Evitando o Horário Britânico no Ponto"
+                    className="w-full max-w-[250px] mx-auto rounded-lg shadow-xl hover:shadow-2xl transition-shadow duration-300"
+                  />
+                </div>
+                
+                {/* Conteúdo e Botões */}
+                <div className="flex-1 text-center lg:text-left">
+                  <h3 className="text-xl md:text-2xl font-extrabold text-primary font-heading mb-3">
+                    📘 E-book Gratuito
+                  </h3>
+                  <p className="text-muted-foreground mb-6 max-w-lg">
+                    Baixe nosso guia completo sobre como evitar o "Horário Britânico" 
+                    no controle de ponto e proteja sua empresa de condenações trabalhistas.
+                  </p>
+                  <div className="flex justify-center lg:justify-start">
+                    <Button 
+                      asChild
+                      size="lg"
+                      className="bg-accent hover:bg-accent/90 text-accent-foreground"
+                    >
+                      <a href="/assets/ebook-ponto-britanico.pdf" download="Ebook-Horario-Britanico-Ponto.pdf">
                         <Download className="w-5 h-5 mr-2" />
                         Baixar E-book em PDF
                       </a>
