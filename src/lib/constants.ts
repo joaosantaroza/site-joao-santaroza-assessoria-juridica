@@ -509,5 +509,44 @@ export const BLOG_ARTICLES: BlogArticle[] = [
 
       <p class="text-xl font-semibold text-center text-primary">Agende uma consulta para análise do seu caso e defesa dos seus direitos.</p>
     `
+  },
+  {
+    id: 'horario-britanico-ponto',
+    title: 'A Transparência do Ponto: Por que a "Perfeição" Matemática pode Invalidar seu Cartão Ponto',
+    excerpt: 'Entenda a importância das variações reais de jornada e os riscos do "horário britânico" para a segurança jurídica das empresas.',
+    category: 'Trabalho',
+    date: '27 Jan 2026',
+    readTime: '5 min',
+    image: 'https://images.unsplash.com/photo-1508962914676-134849a727f0?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+    content: `
+      <p class="text-xl font-medium mb-8 text-justify">No universo das relações trabalhistas, a busca por uma organização documental impecável muitas vezes esbarra em um conceito que, embora pareça virtuoso, tornou-se uma armadilha jurídica: o chamado <strong>"horário britânico"</strong>. A validade de um controle de jornada não reside na simetria dos números, mas na sua fidedignidade, e é sobre essa linha tênue entre a organização e a presunção de fraude que as empresas devem se pautar para evitar condenações inesperadas em tribunais.</p>
+
+      <h2>O que é o "horário britânico"?</h2>
+      <p class="text-lg mb-6 text-justify">O termo "horário britânico" refere-se a registros de ponto que apresentam <strong>marcações invariavelmente idênticas todos os dias</strong>, como uma entrada rigorosa às 07:30 e saída exatamente às 17:30, sem qualquer variação de minutos ao longo de meses. O nome remete à fama mundial de pontualidade dos britânicos, mas, no contexto do Direito do Trabalho brasileiro, essa pontualidade "robótica" é vista com extrema desconfiança.</p>
+
+      <p class="text-lg mb-6 text-justify">O pensamento limpo e ordenado sobre a natureza humana revela que é natural haver pequenas oscilações diárias. Por essa razão, o <strong>Tribunal Superior do Trabalho consolidou, por meio da Súmula 338, item III</strong>, o entendimento de que registros que não apresentam variações reais de minutos são considerados inválidos como prova, invertendo o ônus de provar a jornada real contra a empresa.</p>
+
+      <h2>Como garantir registros válidos?</h2>
+      <p class="text-lg mb-6 text-justify">Para garantir que a defesa em um processo seja sólida, o registro deve refletir a realidade crua dos fatos. <strong>Pequenas variações</strong>, como marcar a entrada às 07:29 em um dia, 07:27 em outro e 07:35 em um terceiro, são a prova máxima de que o controle era feito pelo próprio empregado de forma honesta.</p>
+
+      <p class="text-lg mb-6 text-justify">Essas oscilações são amparadas legalmente pelo <strong>Artigo 58, §1º da CLT</strong>, que estabelece uma margem de tolerância de cinco minutos em cada marcação, não excedendo dez minutos diários. Quando o documento apresenta essas nuances, ele mantém sua idoneidade, e o dever de provar a existência de horas extras volta a ser do trabalhador.</p>
+
+      <h2>A importância da coerência documental</h2>
+      <p class="text-lg mb-6 text-justify">Além da análise visual das marcações, a segurança jurídica de uma empresa é fortalecida pela <strong>consistência entre diferentes documentos</strong>. Um sistema de ponto confiável deve "conversar" com o recibo de pagamento, o holerite.</p>
+
+      <p class="text-lg mb-6 text-justify">Se um cartão de ponto registra uma falta ou advertência de forma fidedigna, esse fato deve ser refletido com exatidão no desconto salarial correspondente. A lógica jurídica aplicada é de que, se o sistema é utilizado rigorosamente para punir ausências, ele também o seria para registrar e remunerar o labor extraordinário, caso este ocorresse. Essa coerência documental elimina teses abstratas e foca nos componentes essenciais da verdade factual.</p>
+
+      <h2>Medidas preventivas recomendadas</h2>
+      <p class="text-lg mb-6 text-justify">A transparência é a melhor estratégia para evitar que a defesa trabalhista desmorone por falta de bases sólidas:</p>
+      <ul>
+        <li><strong>Instruir os colaboradores</strong> sobre a importância de registrar o horário exato, sem arredondamentos</li>
+        <li><strong>Auditar periodicamente</strong> se as folhas de ponto não estão se tornando "britânicas"</li>
+        <li><strong>Aceitar a natureza humana</strong> — com seus pequenos atrasos e antecipações</li>
+      </ul>
+
+      <p class="text-lg mb-6 text-justify">Ao aceitar essas variações naturais, a empresa constrói registros muito mais resistentes a contestações judiciais. Afinal, a boa escrita de um destino jurídico seguro começa no relógio de ponto, garantindo que cada minuto registrado seja um aliado fiel da justiça e da integridade corporativa.</p>
+
+      <p class="text-xl font-semibold text-center text-primary">Precisa de orientação sobre gestão de ponto e segurança trabalhista? Agende uma consulta.</p>
+    `
   }
 ];
