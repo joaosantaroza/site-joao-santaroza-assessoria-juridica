@@ -1,18 +1,29 @@
+import { useState } from "react";
 import { ArrowRight, Calendar, Clock, User, MessageCircle, Download } from "lucide-react";
 import { motion } from "framer-motion";
 import DOMPurify from "dompurify";
 import { BlogArticle, CONTACT_INFO } from "@/lib/constants";
 import { Button } from "@/components/ui/button";
 import { ArticleAudioPlayer } from "@/components/ArticleAudioPlayer";
+import { EbookLeadModal } from "@/components/EbookLeadModal";
 import ebookGestanteCapa from '@/assets/ebook-gestante-capa.png';
 import ebookPontoBritanicoCapa from '@/assets/ebook-ponto-britanico-capa.png';
+
 interface ArticlePageProps {
   article: BlogArticle;
   onBack: () => void;
   onContact: () => void;
 }
 
+interface EbookConfig {
+  id: string;
+  title: string;
+  pdfPath: string;
+  downloadName: string;
+}
+
 export const ArticlePage = ({ article, onBack, onContact }: ArticlePageProps) => {
+  const [ebookModal, setEbookModal] = useState<EbookConfig | null>(null);
   const handleWhatsAppContact = () => {
     const text = `Olá, Dr. João Victor. Li o artigo "${article.title}" e gostaria de tirar algumas dúvidas sobre meu caso.`;
     window.open(`https://wa.me/55${CONTACT_INFO.whatsapp.replace(/\D/g, '')}?text=${encodeURIComponent(text)}`, '_blank');
@@ -154,14 +165,17 @@ export const ArticlePage = ({ article, onBack, onContact }: ArticlePageProps) =>
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
                   <Button 
-                    asChild
+                    onClick={() => setEbookModal({
+                      id: "isencao-ir-hiv",
+                      title: "Isenção de IR para Portadores de HIV",
+                      pdfPath: "/assets/ebook-isencao-ir-hiv.pdf",
+                      downloadName: "Ebook-Isencao-IR-HIV.pdf"
+                    })}
                     size="lg"
                     className="bg-accent hover:bg-accent/90 text-accent-foreground"
                   >
-                    <a href="/assets/ebook-isencao-ir-hiv.pdf" download="Ebook-Isencao-IR-HIV.pdf">
-                      <Download className="w-5 h-5 mr-2" />
-                      Baixar E-book em PDF
-                    </a>
+                    <Download className="w-5 h-5 mr-2" />
+                    Baixar E-book em PDF
                   </Button>
                   <Button 
                     onClick={handleWhatsAppContact}
@@ -206,14 +220,17 @@ export const ArticlePage = ({ article, onBack, onContact }: ArticlePageProps) =>
                   </p>
                   <div className="flex justify-center lg:justify-start">
                     <Button 
-                      asChild
+                      onClick={() => setEbookModal({
+                        id: "estabilidade-gestante",
+                        title: "Estabilidade dos Direitos Trabalhistas das Gestantes",
+                        pdfPath: "/assets/ebook-estabilidade-gestante.pdf",
+                        downloadName: "Ebook-Estabilidade-Gestante.pdf"
+                      })}
                       size="lg"
                       className="bg-accent hover:bg-accent/90 text-accent-foreground"
                     >
-                      <a href="/assets/ebook-estabilidade-gestante.pdf" download="Ebook-Estabilidade-Gestante.pdf">
-                        <Download className="w-5 h-5 mr-2" />
-                        Baixar E-book em PDF
-                      </a>
+                      <Download className="w-5 h-5 mr-2" />
+                      Baixar E-book em PDF
                     </Button>
                   </div>
                 </div>
@@ -251,14 +268,17 @@ export const ArticlePage = ({ article, onBack, onContact }: ArticlePageProps) =>
                   </p>
                   <div className="flex justify-center lg:justify-start">
                     <Button 
-                      asChild
+                      onClick={() => setEbookModal({
+                        id: "ponto-britanico",
+                        title: "Evitando o Horário Britânico no Ponto",
+                        pdfPath: "/assets/ebook-ponto-britanico.pdf",
+                        downloadName: "Ebook-Horario-Britanico-Ponto.pdf"
+                      })}
                       size="lg"
                       className="bg-accent hover:bg-accent/90 text-accent-foreground"
                     >
-                      <a href="/assets/ebook-ponto-britanico.pdf" download="Ebook-Horario-Britanico-Ponto.pdf">
-                        <Download className="w-5 h-5 mr-2" />
-                        Baixar E-book em PDF
-                      </a>
+                      <Download className="w-5 h-5 mr-2" />
+                      Baixar E-book em PDF
                     </Button>
                   </div>
                 </div>
@@ -331,6 +351,18 @@ export const ArticlePage = ({ article, onBack, onContact }: ArticlePageProps) =>
           </motion.div>
         </motion.div>
       </article>
+
+      {/* E-book Lead Capture Modal */}
+      {ebookModal && (
+        <EbookLeadModal
+          isOpen={!!ebookModal}
+          onClose={() => setEbookModal(null)}
+          ebookId={ebookModal.id}
+          ebookTitle={ebookModal.title}
+          ebookPdfPath={ebookModal.pdfPath}
+          ebookDownloadName={ebookModal.downloadName}
+        />
+      )}
     </div>
   );
 };
