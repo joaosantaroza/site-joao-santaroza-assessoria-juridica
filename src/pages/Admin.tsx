@@ -249,8 +249,8 @@ export default function Admin() {
           <Card>
             <CardContent className="pt-6">
               <div className="flex items-center gap-4">
-                <div className="h-12 w-12 rounded-lg bg-green-500/10 flex items-center justify-center">
-                  <Calendar className="h-6 w-6 text-green-500" />
+                <div className="h-12 w-12 rounded-lg bg-accent/10 flex items-center justify-center">
+                  <Calendar className="h-6 w-6 text-accent" />
                 </div>
                 <div>
                   <p className="text-2xl font-bold">
