@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
+import { LeadsChart } from '@/components/admin/LeadsChart';
 import { 
   Loader2, 
   LogOut, 
@@ -17,7 +18,8 @@ import {
   BookOpen,
   Phone,
   Calendar,
-  ShieldAlert
+  ShieldAlert,
+  BarChart3
 } from 'lucide-react';
 import {
   AlertDialog,
@@ -266,6 +268,9 @@ export default function Admin() {
             </CardContent>
           </Card>
         </div>
+
+        {/* Charts Section */}
+        <LeadsChart leads={leads} />
 
         {/* Leads Table */}
         <Card>
