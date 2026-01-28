@@ -1,4 +1,5 @@
 import { Instagram, Mail } from "lucide-react";
+import { Link } from "react-router-dom";
 import { CONTACT_INFO } from "@/lib/constants";
 import logoFull from "@/assets/logo-full.png";
 
@@ -39,7 +40,15 @@ export const Footer = () => (
           O conteúdo aqui exposto não constitui consultoria jurídica e não substitui a análise técnica individualizada. 
           Não garantimos resultados, pois a advocacia é uma atividade de meio.
         </p>
-        <p className="mt-6">&copy; {new Date().getFullYear()} {CONTACT_INFO.firmName}. Todos os direitos reservados.</p>
+        <div className="mt-6 flex items-center justify-between">
+          <p>&copy; {new Date().getFullYear()} {CONTACT_INFO.firmName}. Todos os direitos reservados.</p>
+          <Link 
+            to="/admin" 
+            className="text-muted-foreground/50 hover:text-muted-foreground transition-colors text-[10px]"
+          >
+            Área restrita
+          </Link>
+        </div>
       </div>
     </div>
   </footer>
