@@ -1,6 +1,8 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { ArrowRight, Calendar, Clock, User, MessageCircle, Download } from "lucide-react";
 import { motion } from "framer-motion";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import DOMPurify from "dompurify";
 import { BlogArticle, CONTACT_INFO } from "@/lib/constants";
 import { Button } from "@/components/ui/button";
@@ -24,6 +26,23 @@ interface EbookConfig {
 
 export const ArticlePage = ({ article, onBack, onContact }: ArticlePageProps) => {
   const [ebookModal, setEbookModal] = useState<EbookConfig | null>(null);
+
+  // Process content: convert literal \n to actual newlines and check if it's HTML or Markdown
+  const { isHtml, processedContent } = useMemo(() => {
+    let content = article.content || '';
+    
+    // Replace literal \n\n and \n with actual newlines
+    content = content.replace(/\\n\\n/g, '\n\n').replace(/\\n/g, '\n');
+    
+    // Check if content contains HTML tags
+    const hasHtmlTags = /<[a-z][\s\S]*>/i.test(content);
+    
+    return {
+      isHtml: hasHtmlTags,
+      processedContent: content
+    };
+  }, [article.content]);
+
   const handleWhatsAppContact = () => {
     const text = `Olá, Dr. João Victor. Li o artigo "${article.title}" e gostaria de tirar algumas dúvidas sobre meu caso.`;
     window.open(`https://wa.me/55${CONTACT_INFO.whatsapp.replace(/\D/g, '')}?text=${encodeURIComponent(text)}`, '_blank');
@@ -137,15 +156,22 @@ export const ArticlePage = ({ article, onBack, onContact }: ArticlePageProps) =>
             />
           </motion.div>
 
-          {/* Article Body - Sanitized to prevent XSS */}
+          {/* Article Body - Supports Markdown and HTML */}
           <motion.div 
-            className="article-content prose prose-lg max-w-none"
-            dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(article.content || '') }}
+            className="article-content prose prose-lg max-w-none prose-headings:text-primary prose-headings:font-heading prose-p:text-foreground prose-strong:text-foreground prose-a:text-accent prose-a:no-underline hover:prose-a:underline"
             initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-50px" }}
             transition={{ duration: 0.7, ease: "easeOut" }}
-          />
+          >
+            {isHtml ? (
+              <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(processedContent) }} />
+            ) : (
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                {processedContent}
+              </ReactMarkdown>
+            )}
+          </motion.div>
 
           {/* Download PDF Section - Only for HIV article */}
           {article.id === 'isencao-ir-hiv' && (
