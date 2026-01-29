@@ -28,7 +28,9 @@ import {
   Upload,
   Trash2,
   MonitorPlay,
-  CalendarIcon
+  CalendarIcon,
+  BookOpen,
+  FileDown
 } from 'lucide-react';
 
 export interface BlogPostEdit {
@@ -42,6 +44,11 @@ export interface BlogPostEdit {
   read_time: string;
   published: boolean;
   scheduled_at?: string | null;
+  has_ebook?: boolean;
+  ebook_title?: string | null;
+  ebook_subtitle?: string | null;
+  ebook_pdf_url?: string | null;
+  ebook_cover_url?: string | null;
 }
 
 interface ArticleFormProps {
@@ -64,7 +71,19 @@ export function ArticleForm({ onSuccess, editingArticle, onCancelEdit }: Article
   const [isSaving, setIsSaving] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+  
+  // eBook fields
+  const [hasEbook, setHasEbook] = useState(false);
+  const [ebookTitle, setEbookTitle] = useState('');
+  const [ebookSubtitle, setEbookSubtitle] = useState('');
+  const [ebookPdfUrl, setEbookPdfUrl] = useState('');
+  const [ebookCoverUrl, setEbookCoverUrl] = useState('');
+  const [isUploadingPdf, setIsUploadingPdf] = useState(false);
+  const [isUploadingCover, setIsUploadingCover] = useState(false);
+  
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const pdfInputRef = useRef<HTMLInputElement>(null);
+  const coverInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
   // Populate form when editing
@@ -84,6 +103,12 @@ export function ArticleForm({ onSuccess, editingArticle, onCancelEdit }: Article
         setScheduledAt(undefined);
         setIsScheduled(false);
       }
+      // eBook fields
+      setHasEbook(editingArticle.has_ebook || false);
+      setEbookTitle(editingArticle.ebook_title || '');
+      setEbookSubtitle(editingArticle.ebook_subtitle || '');
+      setEbookPdfUrl(editingArticle.ebook_pdf_url || '');
+      setEbookCoverUrl(editingArticle.ebook_cover_url || '');
     } else {
       resetForm();
     }
@@ -99,6 +124,12 @@ export function ArticleForm({ onSuccess, editingArticle, onCancelEdit }: Article
     setPublished(false);
     setScheduledAt(undefined);
     setIsScheduled(false);
+    // Reset eBook fields
+    setHasEbook(false);
+    setEbookTitle('');
+    setEbookSubtitle('');
+    setEbookPdfUrl('');
+    setEbookCoverUrl('');
   };
 
   const generateSlug = (text: string) => {
@@ -186,6 +217,127 @@ export function ArticleForm({ onSuccess, editingArticle, onCancelEdit }: Article
     setImageUrl('');
   };
 
+  // Handle PDF upload for eBook
+  const handlePdfUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    if (file.type !== 'application/pdf') {
+      toast({
+        title: 'Formato inválido',
+        description: 'Use apenas arquivos PDF.',
+        variant: 'destructive'
+      });
+      return;
+    }
+
+    // Max 20MB for PDF
+    const maxSize = 20 * 1024 * 1024;
+    if (file.size > maxSize) {
+      toast({
+        title: 'Arquivo muito grande',
+        description: 'O tamanho máximo para PDF é 20MB.',
+        variant: 'destructive'
+      });
+      return;
+    }
+
+    setIsUploadingPdf(true);
+
+    try {
+      const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.pdf`;
+      const filePath = `pdfs/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('ebooks')
+        .upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('ebooks')
+        .getPublicUrl(filePath);
+
+      setEbookPdfUrl(publicUrl);
+
+      toast({
+        title: 'PDF enviado!',
+        description: 'O arquivo PDF foi carregado com sucesso.',
+      });
+    } catch (error) {
+      console.error('Error uploading PDF:', error);
+      toast({
+        title: 'Erro no upload',
+        description: error instanceof Error ? error.message : 'Não foi possível enviar o PDF.',
+        variant: 'destructive'
+      });
+    } finally {
+      setIsUploadingPdf(false);
+      if (pdfInputRef.current) pdfInputRef.current.value = '';
+    }
+  };
+
+  // Handle cover image upload for eBook
+  const handleCoverUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+    if (!allowedTypes.includes(file.type)) {
+      toast({
+        title: 'Formato inválido',
+        description: 'Use imagens JPG, PNG ou WebP.',
+        variant: 'destructive'
+      });
+      return;
+    }
+
+    const maxSize = 5 * 1024 * 1024;
+    if (file.size > maxSize) {
+      toast({
+        title: 'Arquivo muito grande',
+        description: 'O tamanho máximo é 5MB.',
+        variant: 'destructive'
+      });
+      return;
+    }
+
+    setIsUploadingCover(true);
+
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
+      const filePath = `covers/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('ebooks')
+        .upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('ebooks')
+        .getPublicUrl(filePath);
+
+      setEbookCoverUrl(publicUrl);
+
+      toast({
+        title: 'Capa enviada!',
+        description: 'A imagem da capa foi carregada com sucesso.',
+      });
+    } catch (error) {
+      console.error('Error uploading cover:', error);
+      toast({
+        title: 'Erro no upload',
+        description: error instanceof Error ? error.message : 'Não foi possível enviar a capa.',
+        variant: 'destructive'
+      });
+    } finally {
+      setIsUploadingCover(false);
+      if (coverInputRef.current) coverInputRef.current.value = '';
+    }
+  };
+
   const handleGenerateWithAI = async () => {
     if (!title || title.trim().length < 5) {
       toast({
@@ -199,6 +351,8 @@ export function ArticleForm({ onSuccess, editingArticle, onCancelEdit }: Article
     setIsGenerating(true);
 
     try {
+      const { data: { session } } = await supabase.auth.getSession();
+      
       const response = await fetch(
         `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/generate-article`,
         {
@@ -206,7 +360,7 @@ export function ArticleForm({ onSuccess, editingArticle, onCancelEdit }: Article
           headers: {
             'Content-Type': 'application/json',
             'apikey': import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
-            'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+            'Authorization': `Bearer ${session?.access_token || import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
           },
           body: JSON.stringify({ title: title.trim() }),
         }
@@ -255,6 +409,22 @@ export function ArticleForm({ onSuccess, editingArticle, onCancelEdit }: Article
       return;
     }
 
+    // Validate eBook fields if enabled
+    if (hasEbook) {
+      if (!ebookTitle.trim()) {
+        toast({ title: 'Título do eBook obrigatório', variant: 'destructive' });
+        return;
+      }
+      if (!ebookPdfUrl.trim()) {
+        toast({ title: 'PDF do eBook obrigatório', variant: 'destructive' });
+        return;
+      }
+      if (!ebookCoverUrl.trim()) {
+        toast({ title: 'Capa do eBook obrigatória', variant: 'destructive' });
+        return;
+      }
+    }
+
     setIsSaving(true);
 
     try {
@@ -269,6 +439,11 @@ export function ArticleForm({ onSuccess, editingArticle, onCancelEdit }: Article
         read_time: readTime.trim(),
         published: isScheduled ? true : published,
         scheduled_at: isScheduled && scheduledAt ? scheduledAt.toISOString() : null,
+        has_ebook: hasEbook,
+        ebook_title: hasEbook ? ebookTitle.trim() : null,
+        ebook_subtitle: hasEbook ? ebookSubtitle.trim() : null,
+        ebook_pdf_url: hasEbook ? ebookPdfUrl.trim() : null,
+        ebook_cover_url: hasEbook ? ebookCoverUrl.trim() : null,
       };
 
       if (editingArticle) {
@@ -541,6 +716,188 @@ export function ArticleForm({ onSuccess, editingArticle, onCancelEdit }: Article
               className="bg-background text-sm flex-1"
             />
           </div>
+        </div>
+
+        {/* eBook Section */}
+        <div className="space-y-4 p-4 rounded-lg bg-muted/50 border border-border">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <BookOpen className={cn("h-5 w-5", hasEbook ? "text-accent" : "text-muted-foreground")} />
+              <div>
+                <p className="font-medium">Oferecer eBook neste artigo?</p>
+                <p className="text-sm text-muted-foreground">
+                  Capture leads oferecendo um eBook gratuito
+                </p>
+              </div>
+            </div>
+            <Switch
+              checked={hasEbook}
+              onCheckedChange={setHasEbook}
+            />
+          </div>
+
+          {hasEbook && (
+            <div className="space-y-4 pt-4 border-t border-border">
+              {/* eBook Title */}
+              <div className="space-y-2">
+                <Label htmlFor="ebookTitle" className="text-sm font-medium">
+                  Título do eBook
+                </Label>
+                <Input
+                  id="ebookTitle"
+                  value={ebookTitle}
+                  onChange={(e) => setEbookTitle(e.target.value)}
+                  placeholder="Ex: Guia Completo de Isenção de IR"
+                  className="bg-background"
+                />
+              </div>
+
+              {/* eBook Subtitle */}
+              <div className="space-y-2">
+                <Label htmlFor="ebookSubtitle" className="text-sm font-medium">
+                  Subtítulo (Chamada para ação)
+                </Label>
+                <Textarea
+                  id="ebookSubtitle"
+                  value={ebookSubtitle}
+                  onChange={(e) => setEbookSubtitle(e.target.value)}
+                  placeholder="Baixe nosso guia completo e descubra como garantir seus direitos..."
+                  className="bg-background min-h-[60px]"
+                  maxLength={200}
+                />
+              </div>
+
+              {/* PDF Upload */}
+              <div className="space-y-2">
+                <Label className="text-sm font-medium flex items-center gap-2">
+                  <FileDown className="h-4 w-4 text-muted-foreground" />
+                  Arquivo PDF do eBook
+                </Label>
+                {ebookPdfUrl ? (
+                  <div className="flex items-center gap-3 p-3 bg-background rounded-lg border border-border">
+                    <FileDown className="h-8 w-8 text-accent" />
+                    <div className="flex-1 truncate">
+                      <p className="text-sm font-medium truncate">PDF carregado</p>
+                      <p className="text-xs text-muted-foreground truncate">{ebookPdfUrl}</p>
+                    </div>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => pdfInputRef.current?.click()}
+                      disabled={isUploadingPdf}
+                    >
+                      {isUploadingPdf ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Trocar'}
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      size="sm"
+                      onClick={() => setEbookPdfUrl('')}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                ) : (
+                  <div 
+                    className="border-2 border-dashed border-border rounded-lg p-6 text-center cursor-pointer hover:border-accent/50 transition-colors"
+                    onClick={() => pdfInputRef.current?.click()}
+                  >
+                    {isUploadingPdf ? (
+                      <div className="flex flex-col items-center gap-2">
+                        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+                        <p className="text-sm text-muted-foreground">Enviando PDF...</p>
+                      </div>
+                    ) : (
+                      <div className="flex flex-col items-center gap-2">
+                        <FileDown className="h-6 w-6 text-muted-foreground" />
+                        <p className="text-sm text-muted-foreground">
+                          Clique para enviar o PDF
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          Apenas PDF (máx. 20MB)
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                )}
+                <input
+                  ref={pdfInputRef}
+                  type="file"
+                  accept="application/pdf"
+                  onChange={handlePdfUpload}
+                  className="hidden"
+                />
+              </div>
+
+              {/* Cover Image Upload */}
+              <div className="space-y-2">
+                <Label className="text-sm font-medium flex items-center gap-2">
+                  <ImageIcon className="h-4 w-4 text-muted-foreground" />
+                  Imagem da Capa (3D ou plana)
+                </Label>
+                {ebookCoverUrl ? (
+                  <div className="relative rounded-lg overflow-hidden border border-border w-fit">
+                    <img 
+                      src={ebookCoverUrl} 
+                      alt="Capa do eBook" 
+                      className="h-48 w-auto object-contain bg-muted"
+                    />
+                    <div className="absolute inset-0 bg-black/50 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                      <Button
+                        type="button"
+                        variant="secondary"
+                        size="sm"
+                        onClick={() => coverInputRef.current?.click()}
+                        disabled={isUploadingCover}
+                      >
+                        <Upload className="h-4 w-4 mr-2" />
+                        Trocar
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="destructive"
+                        size="sm"
+                        onClick={() => setEbookCoverUrl('')}
+                      >
+                        <Trash2 className="h-4 w-4 mr-2" />
+                        Remover
+                      </Button>
+                    </div>
+                  </div>
+                ) : (
+                  <div 
+                    className="border-2 border-dashed border-border rounded-lg p-6 text-center cursor-pointer hover:border-accent/50 transition-colors w-fit min-w-[200px]"
+                    onClick={() => coverInputRef.current?.click()}
+                  >
+                    {isUploadingCover ? (
+                      <div className="flex flex-col items-center gap-2">
+                        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+                        <p className="text-sm text-muted-foreground">Enviando capa...</p>
+                      </div>
+                    ) : (
+                      <div className="flex flex-col items-center gap-2">
+                        <ImageIcon className="h-6 w-6 text-muted-foreground" />
+                        <p className="text-sm text-muted-foreground">
+                          Clique para enviar a capa
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          JPG, PNG ou WebP (máx. 5MB)
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                )}
+                <input
+                  ref={coverInputRef}
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                  onChange={handleCoverUpload}
+                  className="hidden"
+                />
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Publish Toggle */}

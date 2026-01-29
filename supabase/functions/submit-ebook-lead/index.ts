@@ -52,8 +52,8 @@ const getCorsHeaders = (origin: string | null) => ({
 const RATE_LIMIT_MAX = 5; // Max leads per window
 const RATE_LIMIT_WINDOW_MINUTES = 60; // 1 hour window
 
-// Allowed ebook IDs (whitelist)
-const ALLOWED_EBOOK_IDS = [
+// Legacy allowed ebook IDs (for backwards compatibility with old static eBooks)
+const LEGACY_EBOOK_IDS = [
   "isencao-ir-hiv",
   "estabilidade-gestante",
   "ponto-britanico",
@@ -65,6 +65,11 @@ const RequestSchema = z.object({
     .trim()
     .min(2, "Nome deve ter pelo menos 2 caracteres")
     .max(100, "Nome muito longo"),
+  email: z.string()
+    .trim()
+    .email("Email inválido")
+    .max(255, "Email muito longo")
+    .optional(),
   phone: z.string()
     .trim()
     .min(10, "Telefone inválido")
@@ -154,19 +159,31 @@ serve(async (req) => {
       );
     }
 
-    const { name, phone, ebook_id, ebook_title } = validationResult.data;
-
-    // Validate ebook_id against whitelist
-    if (!ALLOWED_EBOOK_IDS.includes(ebook_id)) {
-      console.error("Unauthorized ebook ID attempted:", ebook_id, "from IP:", clientIP);
-      return new Response(
-        JSON.stringify({ error: CLIENT_ERRORS.INVALID_EBOOK }),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
+    const { name, email, phone, ebook_id, ebook_title } = validationResult.data;
 
     // Use service role for rate limit check and insert (bypasses RLS)
     const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey);
+
+    // Check if ebook_id is valid (either legacy or dynamic from database)
+    const isLegacyEbook = LEGACY_EBOOK_IDS.includes(ebook_id);
+    
+    if (!isLegacyEbook) {
+      // For dynamic eBooks, verify the ID exists in blog_posts with has_ebook = true
+      const { data: blogPost, error: blogError } = await supabaseAdmin
+        .from("blog_posts")
+        .select("id, has_ebook")
+        .eq("id", ebook_id)
+        .eq("has_ebook", true)
+        .maybeSingle();
+      
+      if (blogError || !blogPost) {
+        console.error("Invalid dynamic ebook ID:", ebook_id, blogError?.message);
+        return new Response(
+          JSON.stringify({ error: CLIENT_ERRORS.INVALID_EBOOK }),
+          { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+    }
 
     // Check rate limit
     const { data: isAllowed, error: rateLimitError } = await supabaseAdmin.rpc(
@@ -194,6 +211,7 @@ serve(async (req) => {
       .from("ebook_leads")
       .insert({
         name: name.trim(),
+        email: email?.trim() || null,
         phone: phone.replace(/\D/g, ""), // Store only digits
         ebook_id,
         ebook_title,
@@ -207,7 +225,7 @@ serve(async (req) => {
       );
     }
 
-    console.log(`Lead submitted: ${ebook_id} from IP ${clientIP}`);
+    console.log(`Lead submitted: ${ebook_id} from IP ${clientIP}${email ? ` (${email})` : ""}`);
 
     return new Response(
       JSON.stringify({ success: true }),
