@@ -8,10 +8,9 @@ import FAQSection from "@/components/FAQSection";
 interface HomePageProps {
   onNavigate: (view: ViewType) => void;
   onContact: () => void;
-  onArticleClick: (articleId: string) => void;
 }
 
-export const HomePage = ({ onNavigate, onContact, onArticleClick }: HomePageProps) => (
+export const HomePage = ({ onNavigate, onContact }: HomePageProps) => (
   <>
     {/* Hero Section */}
     <section className="relative pt-24 pb-32 lg:pt-40 lg:pb-48 overflow-hidden bg-primary">
@@ -172,7 +171,7 @@ export const HomePage = ({ onNavigate, onContact, onArticleClick }: HomePageProp
     </section>
 
     {/* Blog Section */}
-    <BlogSection onContact={onContact} onArticleClick={onArticleClick} />
+    <BlogSection onContact={onContact} />
 
     {/* FAQ Section */}
     <FAQSection />

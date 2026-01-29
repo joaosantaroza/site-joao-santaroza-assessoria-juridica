@@ -9,6 +9,8 @@ import Auth from "./pages/Auth";
 import Admin from "./pages/Admin";
 import AdminArticles from "./pages/AdminArticles";
 import AdminArticleEdit from "./pages/AdminArticleEdit";
+import Blog from "./pages/Blog";
+import BlogArticle from "./pages/BlogArticle";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -22,6 +24,8 @@ const App = () => (
         <AuthProvider>
           <Routes>
             <Route path="/" element={<Index />} />
+            <Route path="/blog" element={<Blog />} />
+            <Route path="/blog/:slug" element={<BlogArticle />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/admin" element={<Admin />} />
             <Route path="/admin/artigos" element={<AdminArticles />} />
