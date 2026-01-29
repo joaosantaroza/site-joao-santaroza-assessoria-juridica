@@ -87,11 +87,11 @@ export default function BlogArticle() {
   const handleNavigate = () => {};
 
   const fadeInUp = {
-    hidden: { opacity: 0, y: 30 },
+    hidden: { opacity: 0, y: 20 },
     visible: { 
       opacity: 1, 
       y: 0,
-      transition: { duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] as const }
+      transition: { duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] as const }
     }
   };
 
@@ -100,8 +100,8 @@ export default function BlogArticle() {
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.15,
-        delayChildren: 0.1
+        staggerChildren: 0.08,
+        delayChildren: 0.05
       }
     }
   };
@@ -147,9 +147,9 @@ export default function BlogArticle() {
         {/* Breadcrumbs Header */}
         <motion.div 
           className="bg-primary py-6"
-          initial={{ opacity: 0, y: -20 }}
+          initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
+          transition={{ duration: 0.25 }}
         >
           <div className="container mx-auto px-4">
             <Breadcrumb>
@@ -184,9 +184,9 @@ export default function BlogArticle() {
         {/* Hero Image */}
         <motion.div 
           className="relative h-64 md:h-96 -mt-4"
-          initial={{ opacity: 0, scale: 1.05 }}
+          initial={{ opacity: 0, scale: 1.02 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
+          transition={{ duration: 0.4, ease: "easeOut" }}
         >
           <img 
             src={article.image} 
@@ -253,10 +253,10 @@ export default function BlogArticle() {
             {/* Article Body - Supports Markdown and HTML */}
             <motion.div 
               className="article-content prose prose-lg max-w-none prose-headings:text-primary prose-headings:font-heading prose-p:text-foreground prose-strong:text-foreground prose-a:text-accent prose-a:no-underline hover:prose-a:underline"
-              initial={{ opacity: 0, y: 40 }}
+              initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-50px" }}
-              transition={{ duration: 0.7, ease: "easeOut" }}
+              transition={{ duration: 0.35, ease: "easeOut" }}
             >
               {isHtml ? (
                 <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(processedContent) }} />
@@ -282,10 +282,10 @@ export default function BlogArticle() {
             {article.id === 'isencao-ir-hiv' && (
               <motion.div 
                 className="mt-12 p-8 bg-gradient-to-br from-accent/10 to-accent/5 border-2 border-accent/30 rounded-2xl"
-                initial={{ opacity: 0, y: 30 }}
+                initial={{ opacity: 0, y: 15 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-50px" }}
-                transition={{ duration: 0.6, ease: "easeOut" }}
+                transition={{ duration: 0.3, ease: "easeOut" }}
               >
                 <div className="text-center">
                   <h3 className="text-xl md:text-2xl font-extrabold text-primary font-heading mb-3">
@@ -325,10 +325,10 @@ export default function BlogArticle() {
             {article.id === 'direitos-gestante-demitida' && (
               <motion.div 
                 className="mt-12 p-8 bg-gradient-to-br from-primary/10 to-primary/5 border-2 border-primary/30 rounded-2xl"
-                initial={{ opacity: 0, y: 30 }}
+                initial={{ opacity: 0, y: 15 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-50px" }}
-                transition={{ duration: 0.6, ease: "easeOut" }}
+                transition={{ duration: 0.3, ease: "easeOut" }}
               >
                 <div className="flex flex-col lg:flex-row items-center gap-8">
                   <div className="w-full lg:w-1/3 flex-shrink-0">
@@ -371,10 +371,10 @@ export default function BlogArticle() {
             {article.id === 'horario-britanico-ponto' && (
               <motion.div 
                 className="mt-12 p-8 bg-gradient-to-br from-primary/10 to-primary/5 border-2 border-primary/30 rounded-2xl"
-                initial={{ opacity: 0, y: 30 }}
+                initial={{ opacity: 0, y: 15 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-50px" }}
-                transition={{ duration: 0.6, ease: "easeOut" }}
+                transition={{ duration: 0.3, ease: "easeOut" }}
               >
                 <div className="flex flex-col lg:flex-row items-center gap-8">
                   <div className="w-full lg:w-1/3 flex-shrink-0">
@@ -416,10 +416,10 @@ export default function BlogArticle() {
             {/* CTA Box */}
             <motion.div 
               className="mt-16 p-8 md:p-12 bg-primary rounded-2xl text-center"
-              initial={{ opacity: 0, y: 40, scale: 0.98 }}
+              initial={{ opacity: 0, y: 20, scale: 0.99 }}
               whileInView={{ opacity: 1, y: 0, scale: 1 }}
               viewport={{ once: true, margin: "-80px" }}
-              transition={{ duration: 0.6, ease: "easeOut" }}
+              transition={{ duration: 0.3, ease: "easeOut" }}
             >
               <h3 className="text-2xl md:text-3xl font-extrabold text-primary-foreground font-heading mb-4">
                 Este artigo se aplica ao seu caso?
