@@ -111,7 +111,7 @@ export interface BlogArticle {
   title: string;
   excerpt: string;
   content: string;
-  category: string;
+  category: string; // For display purposes, categories are joined as comma-separated string
   date: string;
   readTime: string;
   image: string;

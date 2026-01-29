@@ -38,7 +38,7 @@ interface BlogPost {
   slug: string;
   excerpt: string;
   content: string;
-  category: string;
+  category: string[];
   image_url: string | null;
   read_time: string;
   published: boolean;
@@ -211,7 +211,14 @@ export function ArticlesList({ refreshTrigger, onEditArticle }: ArticlesListProp
                       </div>
                     </TableCell>
                     <TableCell>
-                      <Badge variant="secondary">{post.category}</Badge>
+                      <div className="flex flex-wrap gap-1">
+                        {(post.category || []).slice(0, 2).map((cat) => (
+                          <Badge key={cat} variant="secondary" className="text-xs">{cat}</Badge>
+                        ))}
+                        {(post.category || []).length > 2 && (
+                          <Badge variant="outline" className="text-xs">+{post.category.length - 2}</Badge>
+                        )}
+                      </div>
                     </TableCell>
                     <TableCell className="hidden md:table-cell">
                       {(() => {

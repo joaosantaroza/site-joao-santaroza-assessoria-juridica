@@ -32,6 +32,7 @@ import {
   BookOpen,
   FileDown
 } from 'lucide-react';
+import { TagInput } from '@/components/ui/tag-input';
 
 export interface BlogPostEdit {
   id: string;
@@ -39,7 +40,7 @@ export interface BlogPostEdit {
   slug: string;
   excerpt: string;
   content: string;
-  category: string;
+  category: string[];
   image_url: string | null;
   read_time: string;
   published: boolean;
@@ -61,7 +62,7 @@ export function ArticleForm({ onSuccess, editingArticle, onCancelEdit }: Article
   const [title, setTitle] = useState('');
   const [excerpt, setExcerpt] = useState('');
   const [content, setContent] = useState('');
-  const [category, setCategory] = useState('Isenção Fiscal');
+  const [category, setCategory] = useState<string[]>(['Isenção Fiscal']);
   const [imageUrl, setImageUrl] = useState('');
   const [readTime, setReadTime] = useState('5 min');
   const [published, setPublished] = useState(false);
@@ -92,7 +93,7 @@ export function ArticleForm({ onSuccess, editingArticle, onCancelEdit }: Article
       setTitle(editingArticle.title);
       setExcerpt(editingArticle.excerpt);
       setContent(editingArticle.content);
-      setCategory(editingArticle.category);
+      setCategory(editingArticle.category || ['Geral']);
       setImageUrl(editingArticle.image_url || '');
       setReadTime(editingArticle.read_time);
       setPublished(editingArticle.published);
@@ -118,7 +119,7 @@ export function ArticleForm({ onSuccess, editingArticle, onCancelEdit }: Article
     setTitle('');
     setExcerpt('');
     setContent('');
-    setCategory('Isenção Fiscal');
+    setCategory(['Isenção Fiscal']);
     setImageUrl('');
     setReadTime('5 min');
     setPublished(false);
@@ -376,7 +377,7 @@ export function ArticleForm({ onSuccess, editingArticle, onCancelEdit }: Article
       if (data.success && data.data) {
         setContent(data.data.content);
         setExcerpt(data.data.excerpt);
-        setCategory(data.data.category || category);
+        setCategory(data.data.category ? [data.data.category] : category);
         setReadTime(data.data.readTime || readTime);
 
         toast({
@@ -435,7 +436,7 @@ export function ArticleForm({ onSuccess, editingArticle, onCancelEdit }: Article
         slug,
         excerpt: excerpt.trim(),
         content: content.trim(),
-        category: category.trim(),
+        category: category.length > 0 ? category : ['Geral'],
         image_url: imageUrl.trim() || null,
         read_time: readTime.trim(),
         published: isScheduled ? true : published,
@@ -606,37 +607,33 @@ export function ArticleForm({ onSuccess, editingArticle, onCancelEdit }: Article
           />
         </div>
 
-        {/* Metadata Row */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {/* Category */}
-          <div className="space-y-2">
-            <Label htmlFor="category" className="text-sm font-medium flex items-center gap-2">
-              <Tag className="h-4 w-4 text-muted-foreground" />
-              Categoria
-            </Label>
-            <Input
-              id="category"
-              value={category}
-              onChange={(e) => setCategory(e.target.value)}
-              placeholder="Isenção Fiscal"
-              className="bg-background"
-            />
-          </div>
+        {/* Categories */}
+        <div className="space-y-2">
+          <Label className="text-sm font-medium flex items-center gap-2">
+            <Tag className="h-4 w-4 text-muted-foreground" />
+            Categorias
+          </Label>
+          <TagInput
+            value={category}
+            onChange={setCategory}
+            placeholder="Adicionar categoria..."
+            maxTags={5}
+          />
+        </div>
 
-          {/* Read Time */}
-          <div className="space-y-2">
-            <Label htmlFor="readTime" className="text-sm font-medium flex items-center gap-2">
-              <Clock className="h-4 w-4 text-muted-foreground" />
-              Tempo de Leitura
-            </Label>
-            <Input
-              id="readTime"
-              value={readTime}
-              onChange={(e) => setReadTime(e.target.value)}
-              placeholder="5 min"
-              className="bg-background"
-            />
-          </div>
+        {/* Read Time */}
+        <div className="space-y-2 max-w-xs">
+          <Label htmlFor="readTime" className="text-sm font-medium flex items-center gap-2">
+            <Clock className="h-4 w-4 text-muted-foreground" />
+            Tempo de Leitura
+          </Label>
+          <Input
+            id="readTime"
+            value={readTime}
+            onChange={(e) => setReadTime(e.target.value)}
+            placeholder="5 min"
+            className="bg-background"
+          />
         </div>
 
         {/* Image Upload */}
@@ -1081,7 +1078,7 @@ export function ArticleForm({ onSuccess, editingArticle, onCancelEdit }: Article
           title={title}
           excerpt={excerpt}
           content={content}
-          category={category}
+          category={category.join(', ')}
           imageUrl={imageUrl}
           readTime={readTime}
         />
