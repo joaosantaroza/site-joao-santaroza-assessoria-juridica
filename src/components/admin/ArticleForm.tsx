@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/hooks/use-toast';
+import { ArticlePreviewModal } from './ArticlePreviewModal';
 import { 
   Loader2, 
   Sparkles, 
@@ -20,7 +21,8 @@ import {
   X,
   Pencil,
   Upload,
-  Trash2
+  Trash2,
+  MonitorPlay
 } from 'lucide-react';
 
 export interface BlogPostEdit {
@@ -52,6 +54,7 @@ export function ArticleForm({ onSuccess, editingArticle, onCancelEdit }: Article
   const [isGenerating, setIsGenerating] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
@@ -559,9 +562,19 @@ export function ArticleForm({ onSuccess, editingArticle, onCancelEdit }: Article
             </Button>
           )}
           <Button
+            onClick={() => setIsPreviewOpen(true)}
+            disabled={!title.trim() && !content.trim()}
+            variant="outline"
+            className="gap-2"
+            size="lg"
+          >
+            <MonitorPlay className="h-4 w-4" />
+            Pré-visualizar
+          </Button>
+          <Button
             onClick={handleSave}
             disabled={isSaving || !title.trim() || !excerpt.trim() || !content.trim()}
-            className={`bg-primary hover:bg-primary/90 text-primary-foreground font-bold gap-2 ${editingArticle ? 'flex-1' : 'w-full'}`}
+            className={`bg-primary hover:bg-primary/90 text-primary-foreground font-bold gap-2 ${editingArticle ? 'flex-1' : 'flex-1'}`}
             size="lg"
           >
             {isSaving ? (
@@ -579,6 +592,18 @@ export function ArticleForm({ onSuccess, editingArticle, onCancelEdit }: Article
             )}
           </Button>
         </div>
+
+        {/* Preview Modal */}
+        <ArticlePreviewModal
+          isOpen={isPreviewOpen}
+          onClose={() => setIsPreviewOpen(false)}
+          title={title}
+          excerpt={excerpt}
+          content={content}
+          category={category}
+          imageUrl={imageUrl}
+          readTime={readTime}
+        />
       </CardContent>
     </Card>
   );
