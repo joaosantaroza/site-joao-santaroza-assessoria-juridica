@@ -12,7 +12,8 @@ import {
   Eye, 
   EyeOff, 
   FileText,
-  Calendar
+  Calendar,
+  Pencil
 } from 'lucide-react';
 import {
   AlertDialog,
@@ -25,13 +26,16 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import type { BlogPostEdit } from './ArticleForm';
 
 interface BlogPost {
   id: string;
   title: string;
   slug: string;
   excerpt: string;
+  content: string;
   category: string;
+  image_url: string | null;
   read_time: string;
   published: boolean;
   created_at: string;
@@ -40,9 +44,10 @@ interface BlogPost {
 
 interface ArticlesListProps {
   refreshTrigger?: number;
+  onEditArticle?: (article: BlogPostEdit) => void;
 }
 
-export function ArticlesList({ refreshTrigger }: ArticlesListProps) {
+export function ArticlesList({ refreshTrigger, onEditArticle }: ArticlesListProps) {
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [deletingId, setDeletingId] = useState<string | null>(null);
@@ -53,7 +58,7 @@ export function ArticlesList({ refreshTrigger }: ArticlesListProps) {
     setIsLoading(true);
     const { data, error } = await supabase
       .from('blog_posts')
-      .select('id, title, slug, excerpt, category, read_time, published, created_at, updated_at')
+      .select('*')
       .order('created_at', { ascending: false });
 
     if (error) {
@@ -171,8 +176,8 @@ export function ArticlesList({ refreshTrigger }: ArticlesListProps) {
                 <TableRow>
                   <TableHead>Título</TableHead>
                   <TableHead>Categoria</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Data</TableHead>
+                  <TableHead className="hidden md:table-cell">Status</TableHead>
+                  <TableHead className="hidden lg:table-cell">Data</TableHead>
                   <TableHead className="w-[100px]">Ações</TableHead>
                 </TableRow>
               </TableHeader>
@@ -188,7 +193,7 @@ export function ArticlesList({ refreshTrigger }: ArticlesListProps) {
                     <TableCell>
                       <Badge variant="secondary">{post.category}</Badge>
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="hidden md:table-cell">
                       <Badge 
                         variant={post.published ? "default" : "outline"}
                         className={post.published ? "bg-accent text-accent-foreground" : ""}
@@ -196,7 +201,7 @@ export function ArticlesList({ refreshTrigger }: ArticlesListProps) {
                         {post.published ? 'Publicado' : 'Rascunho'}
                       </Badge>
                     </TableCell>
-                    <TableCell className="text-muted-foreground">
+                    <TableCell className="hidden lg:table-cell text-muted-foreground">
                       <span className="flex items-center gap-1.5 text-sm">
                         <Calendar className="h-3.5 w-3.5" />
                         {formatDate(post.created_at)}
@@ -204,6 +209,14 @@ export function ArticlesList({ refreshTrigger }: ArticlesListProps) {
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-1">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => onEditArticle?.(post)}
+                          title="Editar artigo"
+                        >
+                          <Pencil className="h-4 w-4 text-muted-foreground hover:text-foreground" />
+                        </Button>
                         <Button
                           variant="ghost"
                           size="icon"
