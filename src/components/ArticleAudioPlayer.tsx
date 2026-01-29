@@ -40,8 +40,19 @@ export const ArticleAudioPlayer = ({ articleContent, articleTitle }: ArticleAudi
   const [showDiagnostics, setShowDiagnostics] = useState(false);
   const [diagnosticInfo, setDiagnosticInfo] = useState<DiagnosticInfo | null>(null);
   const [playbackSpeed, setPlaybackSpeed] = useState(1);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const audioUrlRef = useRef<string | null>(null);
+  const progressBarRef = useRef<HTMLDivElement | null>(null);
+
+  // Format time in MM:SS
+  const formatTime = (seconds: number): string => {
+    if (!isFinite(seconds) || isNaN(seconds)) return "0:00";
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
 
   // Update playback rate when speed changes
   useEffect(() => {
@@ -49,6 +60,41 @@ export const ArticleAudioPlayer = ({ articleContent, articleTitle }: ArticleAudi
       audioRef.current.playbackRate = playbackSpeed;
     }
   }, [playbackSpeed]);
+
+  // Setup audio event listeners for progress tracking
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    const handleTimeUpdate = () => setCurrentTime(audio.currentTime);
+    const handleDurationChange = () => setDuration(audio.duration);
+    const handleLoadedMetadata = () => setDuration(audio.duration);
+
+    audio.addEventListener('timeupdate', handleTimeUpdate);
+    audio.addEventListener('durationchange', handleDurationChange);
+    audio.addEventListener('loadedmetadata', handleLoadedMetadata);
+
+    return () => {
+      audio.removeEventListener('timeupdate', handleTimeUpdate);
+      audio.removeEventListener('durationchange', handleDurationChange);
+      audio.removeEventListener('loadedmetadata', handleLoadedMetadata);
+    };
+  }, [audioRef.current]);
+
+  // Handle seeking via progress bar click
+  const handleProgressClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!audioRef.current || !duration) return;
+    
+    const rect = e.currentTarget.getBoundingClientRect();
+    const clickX = e.clientX - rect.left;
+    const percentage = clickX / rect.width;
+    const newTime = percentage * duration;
+    
+    audioRef.current.currentTime = newTime;
+    setCurrentTime(newTime);
+  };
+
+  const progressPercentage = duration > 0 ? (currentTime / duration) * 100 : 0;
 
   const cleanTextForTTS = (html: string): string => {
     // Remove HTML tags
@@ -163,11 +209,17 @@ export const ArticleAudioPlayer = ({ articleContent, articleTitle }: ArticleAudi
 
       audio.onended = () => {
         setIsPlaying(false);
+        setCurrentTime(0);
       };
 
       audio.onerror = () => {
         setError("Erro ao reproduzir o áudio");
         setIsPlaying(false);
+      };
+
+      // Setup duration when audio loads
+      audio.onloadedmetadata = () => {
+        setDuration(audio.duration);
       };
 
       // Apply current playback speed
@@ -189,17 +241,42 @@ export const ArticleAudioPlayer = ({ articleContent, articleTitle }: ArticleAudi
       audioRef.current.pause();
       audioRef.current.currentTime = 0;
       setIsPlaying(false);
+      setCurrentTime(0);
     }
   };
 
   return (
     <div className="space-y-3">
       <motion.div 
-        className="flex flex-wrap items-center gap-3 p-4 bg-secondary/50 rounded-xl border border-border"
+        className="flex flex-col gap-3 p-4 bg-secondary/50 rounded-xl border border-border"
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4 }}
       >
+        {/* Progress bar - shown when audio is loaded */}
+        {audioUrlRef.current && (
+          <div className="w-full space-y-1">
+            <div 
+              ref={progressBarRef}
+              onClick={handleProgressClick}
+              className="w-full h-2 bg-muted rounded-full cursor-pointer overflow-hidden group"
+            >
+              <motion.div 
+                className="h-full bg-primary rounded-full relative"
+                style={{ width: `${progressPercentage}%` }}
+                transition={{ duration: 0.1 }}
+              >
+                <div className="absolute right-0 top-1/2 -translate-y-1/2 w-3 h-3 bg-primary rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-md" />
+              </motion.div>
+            </div>
+            <div className="flex justify-between text-xs text-muted-foreground">
+              <span>{formatTime(currentTime)}</span>
+              <span>{formatTime(duration)}</span>
+            </div>
+          </div>
+        )}
+
+        <div className="flex flex-wrap items-center gap-3">
         <div className="flex items-center gap-2">
           <Button
             onClick={handlePlayPause}
@@ -318,6 +395,7 @@ export const ArticleAudioPlayer = ({ articleContent, articleTitle }: ArticleAudi
             ))}
           </motion.div>
         )}
+        </div>
       </motion.div>
 
       {/* Diagnostic Panel (dev-only) */}
