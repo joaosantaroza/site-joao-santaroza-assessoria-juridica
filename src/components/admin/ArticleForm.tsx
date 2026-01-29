@@ -1,4 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
+import { format } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -6,8 +8,11 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
+import { Calendar } from '@/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { useToast } from '@/hooks/use-toast';
 import { ArticlePreviewModal } from './ArticlePreviewModal';
+import { cn } from '@/lib/utils';
 import { 
   Loader2, 
   Sparkles, 
@@ -22,7 +27,8 @@ import {
   Pencil,
   Upload,
   Trash2,
-  MonitorPlay
+  MonitorPlay,
+  CalendarIcon
 } from 'lucide-react';
 
 export interface BlogPostEdit {
@@ -35,6 +41,7 @@ export interface BlogPostEdit {
   image_url: string | null;
   read_time: string;
   published: boolean;
+  scheduled_at?: string | null;
 }
 
 interface ArticleFormProps {
@@ -51,6 +58,8 @@ export function ArticleForm({ onSuccess, editingArticle, onCancelEdit }: Article
   const [imageUrl, setImageUrl] = useState('');
   const [readTime, setReadTime] = useState('5 min');
   const [published, setPublished] = useState(false);
+  const [scheduledAt, setScheduledAt] = useState<Date | undefined>(undefined);
+  const [isScheduled, setIsScheduled] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
@@ -68,6 +77,13 @@ export function ArticleForm({ onSuccess, editingArticle, onCancelEdit }: Article
       setImageUrl(editingArticle.image_url || '');
       setReadTime(editingArticle.read_time);
       setPublished(editingArticle.published);
+      if (editingArticle.scheduled_at) {
+        setScheduledAt(new Date(editingArticle.scheduled_at));
+        setIsScheduled(true);
+      } else {
+        setScheduledAt(undefined);
+        setIsScheduled(false);
+      }
     } else {
       resetForm();
     }
@@ -81,6 +97,8 @@ export function ArticleForm({ onSuccess, editingArticle, onCancelEdit }: Article
     setImageUrl('');
     setReadTime('5 min');
     setPublished(false);
+    setScheduledAt(undefined);
+    setIsScheduled(false);
   };
 
   const generateSlug = (text: string) => {
@@ -249,7 +267,8 @@ export function ArticleForm({ onSuccess, editingArticle, onCancelEdit }: Article
         category: category.trim(),
         image_url: imageUrl.trim() || null,
         read_time: readTime.trim(),
-        published,
+        published: isScheduled ? true : published,
+        scheduled_at: isScheduled && scheduledAt ? scheduledAt.toISOString() : null,
       };
 
       if (editingArticle) {
@@ -527,26 +546,130 @@ export function ArticleForm({ onSuccess, editingArticle, onCancelEdit }: Article
         {/* Publish Toggle */}
         <div className="flex items-center justify-between p-4 rounded-lg bg-muted/50 border border-border">
           <div className="flex items-center gap-3">
-            {published ? (
+            {published && !isScheduled ? (
               <Eye className="h-5 w-5 text-accent" />
             ) : (
               <EyeOff className="h-5 w-5 text-muted-foreground" />
             )}
             <div>
               <p className="font-medium">
-                {published ? 'Publicar imediatamente' : 'Salvar como rascunho'}
+                {published && !isScheduled ? 'Publicar imediatamente' : 'Salvar como rascunho'}
               </p>
               <p className="text-sm text-muted-foreground">
-                {published 
+                {published && !isScheduled
                   ? 'O artigo ficará visível no site' 
                   : 'O artigo não será exibido no site'}
               </p>
             </div>
           </div>
           <Switch
-            checked={published}
-            onCheckedChange={setPublished}
+            checked={published && !isScheduled}
+            onCheckedChange={(checked) => {
+              setPublished(checked);
+              if (checked) {
+                setIsScheduled(false);
+                setScheduledAt(undefined);
+              }
+            }}
+            disabled={isScheduled}
           />
+        </div>
+
+        {/* Schedule Toggle */}
+        <div className="space-y-4 p-4 rounded-lg bg-muted/50 border border-border">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <CalendarIcon className={cn("h-5 w-5", isScheduled ? "text-accent" : "text-muted-foreground")} />
+              <div>
+                <p className="font-medium">Agendar publicação</p>
+                <p className="text-sm text-muted-foreground">
+                  Defina uma data e hora para publicar automaticamente
+                </p>
+              </div>
+            </div>
+            <Switch
+              checked={isScheduled}
+              onCheckedChange={(checked) => {
+                setIsScheduled(checked);
+                if (checked) {
+                  setPublished(false);
+                  if (!scheduledAt) {
+                    // Default to tomorrow at 9 AM
+                    const tomorrow = new Date();
+                    tomorrow.setDate(tomorrow.getDate() + 1);
+                    tomorrow.setHours(9, 0, 0, 0);
+                    setScheduledAt(tomorrow);
+                  }
+                }
+              }}
+            />
+          </div>
+
+          {isScheduled && (
+            <div className="flex flex-col sm:flex-row gap-4 pt-2">
+              <div className="flex-1 space-y-2">
+                <Label className="text-sm font-medium">Data de publicação</Label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        "w-full justify-start text-left font-normal",
+                        !scheduledAt && "text-muted-foreground"
+                      )}
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {scheduledAt ? format(scheduledAt, "PPP", { locale: ptBR }) : <span>Selecione uma data</span>}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={scheduledAt}
+                      onSelect={(date) => {
+                        if (date) {
+                          // Preserve the time from existing scheduledAt or use 9 AM
+                          const newDate = new Date(date);
+                          if (scheduledAt) {
+                            newDate.setHours(scheduledAt.getHours(), scheduledAt.getMinutes(), 0, 0);
+                          } else {
+                            newDate.setHours(9, 0, 0, 0);
+                          }
+                          setScheduledAt(newDate);
+                        }
+                      }}
+                      disabled={(date) => date < new Date()}
+                      initialFocus
+                      className={cn("p-3 pointer-events-auto")}
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
+              
+              <div className="w-full sm:w-32 space-y-2">
+                <Label className="text-sm font-medium">Hora</Label>
+                <Input
+                  type="time"
+                  value={scheduledAt ? format(scheduledAt, 'HH:mm') : '09:00'}
+                  onChange={(e) => {
+                    if (scheduledAt && e.target.value) {
+                      const [hours, minutes] = e.target.value.split(':').map(Number);
+                      const newDate = new Date(scheduledAt);
+                      newDate.setHours(hours, minutes, 0, 0);
+                      setScheduledAt(newDate);
+                    }
+                  }}
+                  className="bg-background"
+                />
+              </div>
+            </div>
+          )}
+
+          {isScheduled && scheduledAt && (
+            <p className="text-sm text-accent font-medium">
+              📅 O artigo será publicado em {format(scheduledAt, "dd 'de' MMMM 'de' yyyy 'às' HH:mm", { locale: ptBR })}
+            </p>
+          )}
         </div>
 
         {/* Action Buttons */}
