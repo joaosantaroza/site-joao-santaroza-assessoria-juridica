@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Calendar, Clock, Tag, ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { SectionTitle } from "@/components/ui/SectionTitle";
 import { useBlogArticles } from "@/hooks/useBlogArticles";
 import { BlogArticle } from "@/lib/constants";
@@ -33,9 +34,18 @@ const ArticleCard = ({
           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent" />
-        <span className="absolute bottom-4 left-4 bg-primary text-primary-foreground text-xs font-bold px-3 py-1.5 rounded-full">
-          {article.category}
-        </span>
+        <div className="absolute bottom-4 left-4 flex flex-wrap gap-1.5">
+          {article.categories.slice(0, 2).map((cat) => (
+            <Badge key={cat} className="bg-primary text-primary-foreground text-xs font-bold">
+              {cat}
+            </Badge>
+          ))}
+          {article.categories.length > 2 && (
+            <Badge variant="secondary" className="text-xs">
+              +{article.categories.length - 2}
+            </Badge>
+          )}
+        </div>
       </div>
       
       <div className="p-6">
@@ -143,7 +153,7 @@ export default function Blog() {
 
   const filteredArticles = useMemo(() => {
     return selectedCategory 
-      ? articles.filter(a => a.category === selectedCategory)
+      ? articles.filter(a => a.categories.includes(selectedCategory))
       : articles;
   }, [selectedCategory, articles]);
 
@@ -234,7 +244,7 @@ export default function Blog() {
                   <span className={`px-2 py-0.5 rounded-full text-xs ${
                     selectedCategory === category ? 'bg-primary-foreground/20 text-primary-foreground' : 'bg-primary/20 text-primary'
                   }`}>
-                    {articles.filter(a => a.category === category).length}
+                    {articles.filter(a => a.categories.includes(category)).length}
                   </span>
                 </button>
               ))}

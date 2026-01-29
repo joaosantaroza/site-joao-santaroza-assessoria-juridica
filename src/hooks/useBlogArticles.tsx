@@ -28,7 +28,7 @@ const transformArticle = (dbArticle: DatabaseArticle): BlogArticle => ({
   title: dbArticle.title,
   excerpt: dbArticle.excerpt,
   content: dbArticle.content,
-  category: Array.isArray(dbArticle.category) ? dbArticle.category.join(', ') : dbArticle.category,
+  categories: Array.isArray(dbArticle.category) ? dbArticle.category : [dbArticle.category || 'Geral'],
   date: new Date(dbArticle.created_at).toLocaleDateString('pt-BR', {
     day: '2-digit',
     month: 'short',
@@ -87,9 +87,10 @@ export const useBlogArticles = () => {
     return [...dbArticles, ...staticArticlesFiltered];
   }, [dbArticles]);
 
-  // Get all unique categories
+  // Get all unique categories (flattened from all articles)
   const categories = useMemo(() => {
-    return [...new Set(allArticles.map(a => a.category))];
+    const allCategories = allArticles.flatMap(a => a.categories);
+    return [...new Set(allCategories)];
   }, [allArticles]);
 
   // Find article by ID (checks both DB and static)
