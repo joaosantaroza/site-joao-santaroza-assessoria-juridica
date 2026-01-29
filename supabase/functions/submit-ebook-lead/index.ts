@@ -166,12 +166,13 @@ serve(async (req) => {
 
     // Check if ebook_id is valid (either legacy or dynamic from database)
     const isLegacyEbook = LEGACY_EBOOK_IDS.includes(ebook_id);
+    let ebookPdfPath: string | null = null;
     
     if (!isLegacyEbook) {
       // For dynamic eBooks, verify the ID exists in blog_posts with has_ebook = true
       const { data: blogPost, error: blogError } = await supabaseAdmin
         .from("blog_posts")
-        .select("id, has_ebook")
+        .select("id, has_ebook, ebook_pdf_url")
         .eq("id", ebook_id)
         .eq("has_ebook", true)
         .maybeSingle();
@@ -182,6 +183,15 @@ serve(async (req) => {
           JSON.stringify({ error: CLIENT_ERRORS.INVALID_EBOOK }),
           { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
+      }
+      
+      // Extract the file path from the full URL for dynamic eBooks
+      if (blogPost.ebook_pdf_url) {
+        // URL format: https://xxx.supabase.co/storage/v1/object/public/ebooks/path/to/file.pdf
+        const urlMatch = blogPost.ebook_pdf_url.match(/\/storage\/v1\/object\/public\/ebooks\/(.+)$/);
+        if (urlMatch) {
+          ebookPdfPath = urlMatch[1];
+        }
       }
     }
 
@@ -227,8 +237,30 @@ serve(async (req) => {
 
     console.log(`Lead submitted: ${ebook_id} from IP ${clientIP}${email ? ` (${email})` : ""}`);
 
+    // Generate signed URL for the ebook download (valid for 1 hour)
+    let signedUrl: string | null = null;
+    const SIGNED_URL_EXPIRY_SECONDS = 3600; // 1 hour
+
+    if (ebookPdfPath) {
+      // Dynamic eBook from storage
+      const { data: signedData, error: signedError } = await supabaseAdmin.storage
+        .from("ebooks")
+        .createSignedUrl(ebookPdfPath, SIGNED_URL_EXPIRY_SECONDS);
+
+      if (signedError) {
+        console.error("Failed to generate signed URL:", signedError.message);
+        // Return success anyway - client can fall back to direct URL
+      } else {
+        signedUrl = signedData.signedUrl;
+      }
+    }
+
     return new Response(
-      JSON.stringify({ success: true }),
+      JSON.stringify({ 
+        success: true,
+        signed_url: signedUrl, // Will be null for legacy ebooks or if generation fails
+        expires_in: signedUrl ? SIGNED_URL_EXPIRY_SECONDS : null,
+      }),
       { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
 
