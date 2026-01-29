@@ -9,7 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
 import { LeadsChart } from '@/components/admin/LeadsChart';
-import { ArticleForm } from '@/components/admin/ArticleForm';
+import { ArticleForm, BlogPostEdit } from '@/components/admin/ArticleForm';
 import { ArticlesList } from '@/components/admin/ArticlesList';
 import { 
   Loader2, 
@@ -52,6 +52,7 @@ export default function Admin() {
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState('articles');
   const [articleRefreshTrigger, setArticleRefreshTrigger] = useState(0);
+  const [editingArticle, setEditingArticle] = useState<BlogPostEdit | null>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -198,6 +199,17 @@ export default function Admin() {
 
   const handleArticleSaved = () => {
     setArticleRefreshTrigger(prev => prev + 1);
+    setEditingArticle(null);
+  };
+
+  const handleEditArticle = (article: BlogPostEdit) => {
+    setEditingArticle(article);
+    // Scroll to top to show the form
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleCancelEdit = () => {
+    setEditingArticle(null);
   };
 
   return (
@@ -241,8 +253,15 @@ export default function Admin() {
 
           {/* Articles Tab */}
           <TabsContent value="articles" className="space-y-6">
-            <ArticleForm onSuccess={handleArticleSaved} />
-            <ArticlesList refreshTrigger={articleRefreshTrigger} />
+            <ArticleForm 
+              onSuccess={handleArticleSaved} 
+              editingArticle={editingArticle}
+              onCancelEdit={handleCancelEdit}
+            />
+            <ArticlesList 
+              refreshTrigger={articleRefreshTrigger} 
+              onEditArticle={handleEditArticle}
+            />
           </TabsContent>
 
           {/* Leads Tab */}

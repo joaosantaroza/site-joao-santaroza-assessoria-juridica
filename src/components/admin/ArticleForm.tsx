@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -16,14 +16,30 @@ import {
   Tag,
   Clock,
   Eye,
-  EyeOff
+  EyeOff,
+  X,
+  Pencil
 } from 'lucide-react';
+
+export interface BlogPostEdit {
+  id: string;
+  title: string;
+  slug: string;
+  excerpt: string;
+  content: string;
+  category: string;
+  image_url: string | null;
+  read_time: string;
+  published: boolean;
+}
 
 interface ArticleFormProps {
   onSuccess?: () => void;
+  editingArticle?: BlogPostEdit | null;
+  onCancelEdit?: () => void;
 }
 
-export function ArticleForm({ onSuccess }: ArticleFormProps) {
+export function ArticleForm({ onSuccess, editingArticle, onCancelEdit }: ArticleFormProps) {
   const [title, setTitle] = useState('');
   const [excerpt, setExcerpt] = useState('');
   const [content, setContent] = useState('');
@@ -34,6 +50,31 @@ export function ArticleForm({ onSuccess }: ArticleFormProps) {
   const [isGenerating, setIsGenerating] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const { toast } = useToast();
+
+  // Populate form when editing
+  useEffect(() => {
+    if (editingArticle) {
+      setTitle(editingArticle.title);
+      setExcerpt(editingArticle.excerpt);
+      setContent(editingArticle.content);
+      setCategory(editingArticle.category);
+      setImageUrl(editingArticle.image_url || '');
+      setReadTime(editingArticle.read_time);
+      setPublished(editingArticle.published);
+    } else {
+      resetForm();
+    }
+  }, [editingArticle]);
+
+  const resetForm = () => {
+    setTitle('');
+    setExcerpt('');
+    setContent('');
+    setCategory('Isenção Fiscal');
+    setImageUrl('');
+    setReadTime('5 min');
+    setPublished(false);
+  };
 
   const generateSlug = (text: string) => {
     return text
@@ -119,43 +160,58 @@ export function ArticleForm({ onSuccess }: ArticleFormProps) {
 
     try {
       const slug = generateSlug(title);
+      const postData = {
+        title: title.trim(),
+        slug,
+        excerpt: excerpt.trim(),
+        content: content.trim(),
+        category: category.trim(),
+        image_url: imageUrl.trim() || null,
+        read_time: readTime.trim(),
+        published,
+      };
 
-      const { error } = await supabase
-        .from('blog_posts')
-        .insert({
-          title: title.trim(),
-          slug,
-          excerpt: excerpt.trim(),
-          content: content.trim(),
-          category: category.trim(),
-          image_url: imageUrl.trim() || null,
-          read_time: readTime.trim(),
-          published,
-        });
+      if (editingArticle) {
+        // Update existing article
+        const { error } = await supabase
+          .from('blog_posts')
+          .update(postData)
+          .eq('id', editingArticle.id);
 
-      if (error) {
-        if (error.code === '23505') {
-          throw new Error('Já existe um artigo com este título. Escolha outro.');
+        if (error) {
+          if (error.code === '23505') {
+            throw new Error('Já existe um artigo com este título. Escolha outro.');
+          }
+          throw error;
         }
-        throw error;
+
+        toast({
+          title: 'Artigo atualizado!',
+          description: 'As alterações foram salvas com sucesso.',
+        });
+      } else {
+        // Create new article
+        const { error } = await supabase
+          .from('blog_posts')
+          .insert(postData);
+
+        if (error) {
+          if (error.code === '23505') {
+            throw new Error('Já existe um artigo com este título. Escolha outro.');
+          }
+          throw error;
+        }
+
+        toast({
+          title: published ? 'Artigo publicado!' : 'Rascunho salvo!',
+          description: published 
+            ? 'O artigo está disponível no site.' 
+            : 'O rascunho foi salvo com sucesso.',
+        });
       }
 
-      toast({
-        title: published ? 'Artigo publicado!' : 'Rascunho salvo!',
-        description: published 
-          ? 'O artigo está disponível no site.' 
-          : 'O rascunho foi salvo com sucesso.',
-      });
-
-      // Reset form
-      setTitle('');
-      setExcerpt('');
-      setContent('');
-      setCategory('Isenção Fiscal');
-      setImageUrl('');
-      setReadTime('5 min');
-      setPublished(false);
-
+      resetForm();
+      onCancelEdit?.();
       onSuccess?.();
     } catch (error) {
       console.error('Error saving article:', error);
@@ -169,17 +225,39 @@ export function ArticleForm({ onSuccess }: ArticleFormProps) {
     }
   };
 
+  const handleCancel = () => {
+    resetForm();
+    onCancelEdit?.();
+  };
+
   return (
-    <Card className="border-border bg-card">
+    <Card className={`border-border bg-card ${editingArticle ? 'ring-2 ring-accent' : ''}`}>
       <CardHeader>
-        <div className="flex items-center gap-3">
-          <div className="h-10 w-10 rounded-lg bg-accent/10 flex items-center justify-center">
-            <FileText className="h-5 w-5 text-accent" />
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className={`h-10 w-10 rounded-lg flex items-center justify-center ${editingArticle ? 'bg-accent/20' : 'bg-accent/10'}`}>
+              {editingArticle ? (
+                <Pencil className="h-5 w-5 text-accent" />
+              ) : (
+                <FileText className="h-5 w-5 text-accent" />
+              )}
+            </div>
+            <div>
+              <CardTitle className="font-heading">
+                {editingArticle ? 'Editar Artigo' : 'Novo Artigo'}
+              </CardTitle>
+              <CardDescription>
+                {editingArticle 
+                  ? 'Modifique os campos e salve as alterações' 
+                  : 'Crie um novo artigo para o blog jurídico'}
+              </CardDescription>
+            </div>
           </div>
-          <div>
-            <CardTitle className="font-heading">Novo Artigo</CardTitle>
-            <CardDescription>Crie um novo artigo para o blog jurídico</CardDescription>
-          </div>
+          {editingArticle && (
+            <Button variant="ghost" size="icon" onClick={handleCancel} title="Cancelar edição">
+              <X className="h-5 w-5" />
+            </Button>
+          )}
         </div>
       </CardHeader>
       <CardContent className="space-y-6">
@@ -325,25 +403,39 @@ export function ArticleForm({ onSuccess }: ArticleFormProps) {
           />
         </div>
 
-        {/* Save Button */}
-        <Button
-          onClick={handleSave}
-          disabled={isSaving || !title.trim() || !excerpt.trim() || !content.trim()}
-          className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold gap-2"
-          size="lg"
-        >
-          {isSaving ? (
-            <>
-              <Loader2 className="h-4 w-4 animate-spin" />
-              Salvando...
-            </>
-          ) : (
-            <>
-              <Save className="h-4 w-4" />
-              {published ? 'Publicar Artigo' : 'Salvar Rascunho'}
-            </>
+        {/* Action Buttons */}
+        <div className="flex gap-3">
+          {editingArticle && (
+            <Button
+              onClick={handleCancel}
+              variant="outline"
+              className="flex-1"
+              size="lg"
+            >
+              Cancelar
+            </Button>
           )}
-        </Button>
+          <Button
+            onClick={handleSave}
+            disabled={isSaving || !title.trim() || !excerpt.trim() || !content.trim()}
+            className={`bg-primary hover:bg-primary/90 text-primary-foreground font-bold gap-2 ${editingArticle ? 'flex-1' : 'w-full'}`}
+            size="lg"
+          >
+            {isSaving ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" />
+                Salvando...
+              </>
+            ) : (
+              <>
+                <Save className="h-4 w-4" />
+                {editingArticle 
+                  ? 'Salvar Alterações' 
+                  : (published ? 'Publicar Artigo' : 'Salvar Rascunho')}
+              </>
+            )}
+          </Button>
+        </div>
       </CardContent>
     </Card>
   );
