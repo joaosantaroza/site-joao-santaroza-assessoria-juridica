@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
-import { ArrowRight, Calendar, Clock, User, MessageCircle, Download, Loader2 } from "lucide-react";
+import { Calendar, Clock, User, MessageCircle, Download, Loader2, Home } from "lucide-react";
 import { motion } from "framer-motion";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -13,6 +13,14 @@ import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { ContactModal } from "@/components/ContactModal";
 import { useBlogArticles } from "@/hooks/useBlogArticles";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
 import ebookGestanteCapa from '@/assets/ebook-gestante-capa.png';
 import ebookPontoBritanicoCapa from '@/assets/ebook-ponto-britanico-capa.png';
 
@@ -122,20 +130,40 @@ export default function BlogArticle() {
       <Navbar onNavigate={handleNavigate} onContact={() => setShowContactModal(true)} />
       
       <main className="animate-fade-in min-h-screen bg-background pb-20">
-        {/* Header */}
+        {/* Breadcrumbs Header */}
         <motion.div 
-          className="bg-primary py-8"
+          className="bg-primary py-6"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
           <div className="container mx-auto px-4">
-            <Link 
-              to="/blog"
-              className="flex items-center text-sm font-bold uppercase tracking-wider text-primary-foreground/70 hover:text-primary-foreground transition-colors"
-            >
-              <ArrowRight className="w-4 h-4 mr-2 rotate-180" /> Voltar ao Blog
-            </Link>
+            <Breadcrumb>
+              <BreadcrumbList className="text-primary-foreground/70">
+                <BreadcrumbItem>
+                  <BreadcrumbLink asChild>
+                    <Link to="/" className="flex items-center gap-1.5 hover:text-primary-foreground transition-colors">
+                      <Home className="w-4 h-4" />
+                      <span>Home</span>
+                    </Link>
+                  </BreadcrumbLink>
+                </BreadcrumbItem>
+                <BreadcrumbSeparator className="text-primary-foreground/50" />
+                <BreadcrumbItem>
+                  <BreadcrumbLink asChild>
+                    <Link to="/blog" className="hover:text-primary-foreground transition-colors">
+                      Blog
+                    </Link>
+                  </BreadcrumbLink>
+                </BreadcrumbItem>
+                <BreadcrumbSeparator className="text-primary-foreground/50" />
+                <BreadcrumbItem>
+                  <BreadcrumbPage className="text-primary-foreground font-medium truncate max-w-[200px] md:max-w-[400px]">
+                    {article.title}
+                  </BreadcrumbPage>
+                </BreadcrumbItem>
+              </BreadcrumbList>
+            </Breadcrumb>
           </div>
         </motion.div>
 
