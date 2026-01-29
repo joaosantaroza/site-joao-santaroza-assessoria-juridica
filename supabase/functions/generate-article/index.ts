@@ -1,17 +1,141 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
+// Allowed origins for CORS
+const ALLOWED_ORIGINS = [
+  "https://lovable.dev",
+  "https://lovableproject.com",
+  "https://joaosantarozaadvocacia.com.br",
+  "https://www.joaosantarozaadvocacia.com.br",
+];
+
+// Helper to check if origin is allowed (including Lovable preview domains)
+const isAllowedOrigin = (origin: string | null): boolean => {
+  const o = origin?.trim();
+  if (!o) return false;
+
+  // In some sandboxed preview iframes the browser sends Origin: null.
+  if (o === "null") return true;
+
+  // Allow Lovable preview domains (various formats)
+  if (
+    o.includes(".lovableproject.com") ||
+    o.includes(".lovable.app") ||
+    o.includes(".lovable.dev") ||
+    o.includes("lovableproject.com") ||
+    o.includes("id.lovable.app") ||
+    o.match(/https:\/\/[a-z0-9-]+\.lovableproject\.com/) ||
+    o.match(/https:\/\/[a-z0-9-]+--[a-z0-9-]+\.lovable\.app/) ||
+    o.match(/https:\/\/[a-z0-9-]+\.lovable\.dev/)
+  ) {
+    return true;
+  }
+
+  // Allow localhost for development
+  if (o.startsWith("http://localhost:") || o.startsWith("http://127.0.0.1:")) {
+    return true;
+  }
+
+  return ALLOWED_ORIGINS.includes(o);
 };
 
+const getCorsHeaders = (origin: string | null) => ({
+  "Access-Control-Allow-Origin": origin ?? "null",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
+  Vary: "Origin",
+});
+
 serve(async (req) => {
+  const origin = req.headers.get("origin");
+  const corsHeaders = getCorsHeaders(origin);
+
   // Handle CORS preflight
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
   }
 
+  // Only allow POST
+  if (req.method !== "POST") {
+    return new Response(
+      JSON.stringify({ error: "Method not allowed" }),
+      { status: 405, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+    );
+  }
+
   try {
+    // Verify origin BEFORE processing to prevent credit abuse
+    if (!isAllowedOrigin(origin)) {
+      console.error("Blocked request from unauthorized origin:", origin);
+      return new Response(
+        JSON.stringify({ error: "Acesso não autorizado." }),
+        { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // Verify authorization header exists
+    const authHeader = req.headers.get("Authorization");
+    const apiKeyHeader = req.headers.get("apikey");
+
+    if (!authHeader && !apiKeyHeader) {
+      console.error("No authorization credentials provided");
+      return new Response(
+        JSON.stringify({ error: "Acesso não autorizado." }),
+        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // Verify user is admin using Supabase
+    const supabaseUrl = Deno.env.get("SUPABASE_URL")?.trim();
+    const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")?.trim();
+
+    if (!supabaseUrl || !supabaseServiceKey) {
+      console.error("Backend configuration missing");
+      return new Response(
+        JSON.stringify({ error: "Configuração do servidor incompleta." }),
+        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // Create Supabase client with user's auth token to verify permissions
+    const supabase = createClient(supabaseUrl, Deno.env.get("SUPABASE_ANON_KEY") || "", {
+      global: { headers: { Authorization: authHeader || `Bearer ${apiKeyHeader}` } }
+    });
+
+    // Get current user
+    const { data: userData, error: userError } = await supabase.auth.getUser();
+    
+    if (userError || !userData?.user) {
+      console.error("User authentication failed:", userError?.message);
+      return new Response(
+        JSON.stringify({ error: "Usuário não autenticado." }),
+        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // Check if user has admin role using service role client
+    const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey);
+    const { data: hasRole, error: roleError } = await supabaseAdmin.rpc(
+      "has_role",
+      { _user_id: userData.user.id, _role: "admin" }
+    );
+
+    if (roleError) {
+      console.error("Role check error:", roleError.message);
+      return new Response(
+        JSON.stringify({ error: "Erro ao verificar permissões." }),
+        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    if (!hasRole) {
+      console.error("User is not admin:", userData.user.id);
+      return new Response(
+        JSON.stringify({ error: "Permissão negada. Apenas administradores podem gerar artigos." }),
+        { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
     const { title } = await req.json();
     
     if (!title || typeof title !== "string" || title.trim().length < 5) {
@@ -30,7 +154,7 @@ serve(async (req) => {
       );
     }
 
-    console.log(`Generating article for title: ${title}`);
+    console.log(`Admin ${userData.user.email} generating article for title: ${title}`);
 
     const systemPrompt = `Você é um redator jurídico especializado em Direito Tributário, Trabalhista e Previdenciário brasileiro. 
 Seu estilo é profissional, acessível e educativo. Você escreve para um público leigo que busca entender seus direitos.
@@ -150,7 +274,7 @@ Formato de resposta JSON:
       };
     }
 
-    console.log("Article generated successfully");
+    console.log("Article generated successfully for admin:", userData.user.email);
 
     return new Response(
       JSON.stringify({
