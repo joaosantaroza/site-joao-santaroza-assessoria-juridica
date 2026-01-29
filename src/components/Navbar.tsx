@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CONTACT_INFO } from "@/lib/constants";
@@ -13,6 +14,12 @@ interface NavbarProps {
 
 export const Navbar = ({ onNavigate, onContact }: NavbarProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const navigate = useNavigate();
+
+  const handleHomeClick = () => {
+    navigate('/');
+    onNavigate('home');
+  };
 
   return (
     <header className="sticky top-0 z-50 bg-card/95 backdrop-blur-md border-b border-border shadow-sm">
@@ -20,7 +27,7 @@ export const Navbar = ({ onNavigate, onContact }: NavbarProps) => {
         
         {/* Logo */}
         <div 
-          onClick={() => onNavigate('home')} 
+          onClick={handleHomeClick}
           className="flex items-center gap-3 cursor-pointer group"
         >
           <img 
@@ -41,7 +48,7 @@ export const Navbar = ({ onNavigate, onContact }: NavbarProps) => {
         {/* Desktop Nav */}
         <nav className="hidden lg:flex items-center gap-10">
           <button 
-            onClick={() => onNavigate('home')} 
+            onClick={handleHomeClick}
             className="text-sm font-bold uppercase tracking-wider text-muted-foreground hover:text-primary transition-colors"
           >
             Início
@@ -52,6 +59,12 @@ export const Navbar = ({ onNavigate, onContact }: NavbarProps) => {
           >
             Especialidades
           </button>
+          <Link 
+            to="/blog"
+            className="text-sm font-bold uppercase tracking-wider text-muted-foreground hover:text-primary transition-colors"
+          >
+            Artigos
+          </Link>
           <Button onClick={onContact} size="sm">
             Agendar Consulta
           </Button>
@@ -76,7 +89,7 @@ export const Navbar = ({ onNavigate, onContact }: NavbarProps) => {
             className="absolute top-24 left-0 w-full bg-card border-b border-border p-6 flex flex-col gap-6 shadow-xl lg:hidden"
           >
             <button 
-              onClick={() => { onNavigate('home'); setIsMenuOpen(false); }} 
+              onClick={() => { handleHomeClick(); setIsMenuOpen(false); }} 
               className="text-left font-bold text-primary"
             >
               INÍCIO
@@ -87,6 +100,13 @@ export const Navbar = ({ onNavigate, onContact }: NavbarProps) => {
             >
               ESPECIALIDADES
             </button>
+            <Link 
+              to="/blog"
+              onClick={() => setIsMenuOpen(false)}
+              className="text-left font-bold text-primary"
+            >
+              ARTIGOS
+            </Link>
             <Button 
               onClick={() => { onContact(); setIsMenuOpen(false); }} 
               className="w-full"

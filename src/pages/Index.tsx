@@ -5,16 +5,12 @@ import { HomePage } from '@/components/HomePage';
 import { PracticeAreasHub } from '@/components/PracticeAreasHub';
 import { TaxExemptionHub } from '@/components/TaxExemptionHub';
 import { ServicePage } from '@/components/ServicePage';
-import { ArticlePage } from '@/components/ArticlePage';
-import { BlogPage } from '@/components/BlogPage';
 import { ContactModal } from '@/components/ContactModal';
 import { SERVICES, ViewType } from '@/lib/constants';
-import { useBlogArticles } from '@/hooks/useBlogArticles';
 
 const Index = () => {
   const [currentView, setCurrentView] = useState<ViewType | string>('home');
   const [showModal, setShowModal] = useState(false);
-  const { findArticleById } = useBlogArticles();
 
   useEffect(() => { 
     window.scrollTo(0, 0); 
@@ -24,50 +20,16 @@ const Index = () => {
     if (currentView !== 'home' && SERVICES[currentView as keyof typeof SERVICES]) {
       return SERVICES[currentView as keyof typeof SERVICES].title;
     }
-    if (currentView.startsWith('article_')) {
-      const articleId = currentView.replace('article_', '');
-      const article = findArticleById(articleId);
-      if (article) {
-        return article.title;
-      }
-    }
     return '';
   };
 
-  const handleArticleClick = (articleId: string) => {
-    setCurrentView(`article_${articleId}`);
-  };
-
   const renderContent = () => {
-    // Check if it's an article view
-    if (currentView.startsWith('article_')) {
-      const articleId = currentView.replace('article_', '');
-      const article = findArticleById(articleId);
-      if (article) {
-        return (
-          <ArticlePage 
-            article={article}
-            onBack={() => setCurrentView('home')}
-            onContact={() => setShowModal(true)}
-          />
-        );
-      }
-    }
-
     switch (currentView) {
       case 'home':
         return (
           <HomePage 
             onNavigate={setCurrentView as (view: ViewType) => void} 
             onContact={() => setShowModal(true)}
-            onArticleClick={handleArticleClick}
-          />
-        );
-      case 'blog':
-        return (
-          <BlogPage 
-            onBack={() => setCurrentView('home')} 
-            onArticleClick={handleArticleClick}
           />
         );
       case 'practice_areas':
@@ -88,7 +50,6 @@ const Index = () => {
           <HomePage 
             onNavigate={setCurrentView as (view: ViewType) => void} 
             onContact={() => setShowModal(true)}
-            onArticleClick={handleArticleClick}
           />
         );
     }
