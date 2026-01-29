@@ -1,4 +1,6 @@
 import { useState, useEffect } from 'react';
+import { format } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -13,7 +15,8 @@ import {
   EyeOff, 
   FileText,
   Calendar,
-  Pencil
+  Pencil,
+  Clock
 } from 'lucide-react';
 import {
   AlertDialog,
@@ -38,6 +41,7 @@ interface BlogPost {
   image_url: string | null;
   read_time: string;
   published: boolean;
+  scheduled_at: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -82,7 +86,10 @@ export function ArticlesList({ refreshTrigger, onEditArticle }: ArticlesListProp
     
     const { error } = await supabase
       .from('blog_posts')
-      .update({ published: !post.published })
+      .update({ 
+        published: !post.published,
+        scheduled_at: null // Clear schedule when toggling
+      })
       .eq('id', post.id);
 
     if (error) {
@@ -93,7 +100,7 @@ export function ArticlesList({ refreshTrigger, onEditArticle }: ArticlesListProp
       });
     } else {
       setPosts(posts.map(p => 
-        p.id === post.id ? { ...p, published: !p.published } : p
+        p.id === post.id ? { ...p, published: !p.published, scheduled_at: null } : p
       ));
       toast({
         title: post.published ? 'Artigo despublicado' : 'Artigo publicado',
@@ -103,6 +110,17 @@ export function ArticlesList({ refreshTrigger, onEditArticle }: ArticlesListProp
       });
     }
     setTogglingId(null);
+  };
+
+  const getPostStatus = (post: BlogPost) => {
+    if (post.scheduled_at) {
+      const scheduledDate = new Date(post.scheduled_at);
+      const now = new Date();
+      if (scheduledDate > now) {
+        return 'scheduled';
+      }
+    }
+    return post.published ? 'published' : 'draft';
   };
 
   const handleDelete = async (id: string) => {
@@ -194,12 +212,34 @@ export function ArticlesList({ refreshTrigger, onEditArticle }: ArticlesListProp
                       <Badge variant="secondary">{post.category}</Badge>
                     </TableCell>
                     <TableCell className="hidden md:table-cell">
-                      <Badge 
-                        variant={post.published ? "default" : "outline"}
-                        className={post.published ? "bg-accent text-accent-foreground" : ""}
-                      >
-                        {post.published ? 'Publicado' : 'Rascunho'}
-                      </Badge>
+                      {(() => {
+                        const status = getPostStatus(post);
+                        if (status === 'scheduled') {
+                          return (
+                            <div className="flex flex-col gap-1">
+                              <Badge variant="outline" className="border-accent text-accent">
+                                <Clock className="h-3 w-3 mr-1" />
+                                Agendado
+                              </Badge>
+                              <span className="text-xs text-muted-foreground">
+                                {format(new Date(post.scheduled_at!), "dd/MM 'às' HH:mm", { locale: ptBR })}
+                              </span>
+                            </div>
+                          );
+                        } else if (status === 'published') {
+                          return (
+                            <Badge className="bg-accent text-accent-foreground">
+                              Publicado
+                            </Badge>
+                          );
+                        } else {
+                          return (
+                            <Badge variant="outline">
+                              Rascunho
+                            </Badge>
+                          );
+                        }
+                      })()}
                     </TableCell>
                     <TableCell className="hidden lg:table-cell text-muted-foreground">
                       <span className="flex items-center gap-1.5 text-sm">
