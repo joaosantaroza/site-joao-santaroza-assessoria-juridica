@@ -8,7 +8,7 @@ interface DatabaseArticle {
   slug: string;
   excerpt: string;
   content: string;
-  category: string;
+  category: string[];
   image_url: string | null;
   read_time: string;
   published: boolean;
@@ -28,7 +28,7 @@ const transformArticle = (dbArticle: DatabaseArticle): BlogArticle => ({
   title: dbArticle.title,
   excerpt: dbArticle.excerpt,
   content: dbArticle.content,
-  category: dbArticle.category,
+  category: Array.isArray(dbArticle.category) ? dbArticle.category.join(', ') : dbArticle.category,
   date: new Date(dbArticle.created_at).toLocaleDateString('pt-BR', {
     day: '2-digit',
     month: 'short',
