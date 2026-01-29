@@ -9,8 +9,6 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
 import { LeadsChart } from '@/components/admin/LeadsChart';
-import { ArticleForm, BlogPostEdit } from '@/components/admin/ArticleForm';
-import { ArticlesList } from '@/components/admin/ArticlesList';
 import { 
   Loader2, 
   LogOut, 
@@ -22,7 +20,8 @@ import {
   Phone,
   Calendar,
   ShieldAlert,
-  FileText
+  FileText,
+  ArrowRight
 } from 'lucide-react';
 import {
   AlertDialog,
@@ -51,8 +50,6 @@ export default function Admin() {
   const [isLoadingLeads, setIsLoadingLeads] = useState(true);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState('articles');
-  const [articleRefreshTrigger, setArticleRefreshTrigger] = useState(0);
-  const [editingArticle, setEditingArticle] = useState<BlogPostEdit | null>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -197,21 +194,6 @@ export default function Admin() {
     );
   }
 
-  const handleArticleSaved = () => {
-    setArticleRefreshTrigger(prev => prev + 1);
-    setEditingArticle(null);
-  };
-
-  const handleEditArticle = (article: BlogPostEdit) => {
-    setEditingArticle(article);
-    // Scroll to top to show the form
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
-  const handleCancelEdit = () => {
-    setEditingArticle(null);
-  };
-
   return (
     <div className="min-h-screen dark bg-background text-foreground">
       {/* Header */}
@@ -253,15 +235,25 @@ export default function Admin() {
 
           {/* Articles Tab */}
           <TabsContent value="articles" className="space-y-6">
-            <ArticleForm 
-              onSuccess={handleArticleSaved} 
-              editingArticle={editingArticle}
-              onCancelEdit={handleCancelEdit}
-            />
-            <ArticlesList 
-              refreshTrigger={articleRefreshTrigger} 
-              onEditArticle={handleEditArticle}
-            />
+            <Card 
+              className="border-border bg-card cursor-pointer hover:border-primary/50 transition-colors group"
+              onClick={() => navigate('/admin/artigos')}
+            >
+              <CardContent className="pt-6">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center">
+                      <FileText className="h-6 w-6 text-primary" />
+                    </div>
+                    <div>
+                      <p className="text-xl font-bold text-foreground font-heading">Gerenciar Artigos</p>
+                      <p className="text-sm text-muted-foreground">Criar, editar e publicar artigos do blog</p>
+                    </div>
+                  </div>
+                  <ArrowRight className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors" />
+                </div>
+              </CardContent>
+            </Card>
           </TabsContent>
 
           {/* Leads Tab */}

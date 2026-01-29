@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { supabase } from '@/integrations/supabase/client';
@@ -57,6 +58,7 @@ export function ArticlesList({ refreshTrigger, onEditArticle }: ArticlesListProp
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [togglingId, setTogglingId] = useState<string | null>(null);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const fetchPosts = async () => {
     setIsLoading(true);
@@ -252,7 +254,13 @@ export function ArticlesList({ refreshTrigger, onEditArticle }: ArticlesListProp
                         <Button
                           variant="ghost"
                           size="icon"
-                          onClick={() => onEditArticle?.(post)}
+                          onClick={() => {
+                            if (onEditArticle) {
+                              onEditArticle(post);
+                            } else {
+                              navigate(`/admin/artigos/${post.slug}`);
+                            }
+                          }}
                           title="Editar artigo"
                         >
                           <Pencil className="h-4 w-4 text-muted-foreground hover:text-foreground" />
