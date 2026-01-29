@@ -7,6 +7,7 @@ import remarkGfm from "remark-gfm";
 import DOMPurify from "dompurify";
 import { BlogArticle as BlogArticleType, CONTACT_INFO } from "@/lib/constants";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { ArticleAudioPlayer } from "@/components/ArticleAudioPlayer";
 import { EbookLeadModal } from "@/components/EbookLeadModal";
 import { ArticleEbookBanner } from "@/components/ArticleEbookBanner";
@@ -58,7 +59,7 @@ export default function BlogArticle() {
     type: 'article',
     author: CONTACT_INFO.lawyerName,
     publishedTime: article?.date,
-    section: article?.category,
+    section: article?.categories?.[0],
   });
 
   // Process content: convert literal \n to actual newlines and check if it's HTML or Markdown
@@ -204,13 +205,17 @@ export default function BlogArticle() {
             initial="hidden"
             animate="visible"
           >
-            {/* Category Badge */}
-            <motion.span 
-              className="inline-block px-4 py-2 bg-accent text-accent-foreground text-xs font-bold uppercase tracking-wider rounded-full mb-6"
+            {/* Category Badges */}
+            <motion.div 
+              className="flex flex-wrap gap-2 mb-6"
               variants={fadeInUp}
             >
-              {article.category}
-            </motion.span>
+              {article.categories.map((cat) => (
+                <Badge key={cat} className="bg-accent text-accent-foreground text-xs font-bold uppercase tracking-wider">
+                  {cat}
+                </Badge>
+              ))}
+            </motion.div>
 
             {/* Title */}
             <motion.h1 

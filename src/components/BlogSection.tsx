@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { ArrowRight, Calendar, Clock, BookOpen, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
 import { SectionTitle } from "@/components/ui/SectionTitle";
+import { Badge } from "@/components/ui/badge";
 import { BlogArticle } from "@/lib/constants";
 import { useBlogArticles } from "@/hooks/useBlogArticles";
 
@@ -39,12 +40,14 @@ const ArticleCard = ({
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
         <motion.div 
-          className="absolute top-4 left-4"
+          className="absolute top-4 left-4 flex flex-wrap gap-1.5"
           whileHover={{ scale: 1.05 }}
         >
-          <span className="px-3 py-1 bg-accent text-accent-foreground text-xs font-bold uppercase tracking-wider rounded-full shadow-lg">
-            {article.category}
-          </span>
+          {article.categories.slice(0, 2).map((cat) => (
+            <Badge key={cat} className="bg-accent text-accent-foreground text-xs font-bold uppercase tracking-wider shadow-lg">
+              {cat}
+            </Badge>
+          ))}
         </motion.div>
       </div>
 
