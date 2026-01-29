@@ -9,6 +9,7 @@ import { BlogArticle as BlogArticleType, CONTACT_INFO } from "@/lib/constants";
 import { Button } from "@/components/ui/button";
 import { ArticleAudioPlayer } from "@/components/ArticleAudioPlayer";
 import { EbookLeadModal } from "@/components/EbookLeadModal";
+import { ArticleEbookBanner } from "@/components/ArticleEbookBanner";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { ContactModal } from "@/components/ContactModal";
@@ -265,6 +266,17 @@ export default function BlogArticle() {
                 </ReactMarkdown>
               )}
             </motion.div>
+
+            {/* Dynamic eBook Banner from Database */}
+            {article.hasEbook && article.ebookTitle && article.ebookPdfUrl && article.ebookCoverUrl && article.dbId && (
+              <ArticleEbookBanner
+                ebookId={article.dbId}
+                ebookTitle={article.ebookTitle}
+                ebookSubtitle={article.ebookSubtitle || "Baixe nosso guia completo e descubra como garantir seus direitos."}
+                ebookCoverUrl={article.ebookCoverUrl}
+                ebookPdfUrl={article.ebookPdfUrl}
+              />
+            )}
 
             {/* Download PDF Section - Only for HIV article */}
             {article.id === 'isencao-ir-hiv' && (

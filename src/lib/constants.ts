@@ -107,6 +107,7 @@ export type ViewType = 'home' | 'practice_areas' | 'tax_hub' | keyof typeof SERV
 // Blog Articles
 export interface BlogArticle {
   id: string;
+  dbId?: string;
   title: string;
   excerpt: string;
   content: string;
@@ -114,6 +115,11 @@ export interface BlogArticle {
   date: string;
   readTime: string;
   image: string;
+  hasEbook?: boolean;
+  ebookTitle?: string;
+  ebookSubtitle?: string;
+  ebookPdfUrl?: string;
+  ebookCoverUrl?: string;
 }
 
 export const BLOG_ARTICLES: BlogArticle[] = [

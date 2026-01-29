@@ -20,7 +20,12 @@ export type Database = {
           category: string
           content: string
           created_at: string
+          ebook_cover_url: string | null
+          ebook_pdf_url: string | null
+          ebook_subtitle: string | null
+          ebook_title: string | null
           excerpt: string
+          has_ebook: boolean
           id: string
           image_url: string | null
           published: boolean
@@ -35,7 +40,12 @@ export type Database = {
           category?: string
           content: string
           created_at?: string
+          ebook_cover_url?: string | null
+          ebook_pdf_url?: string | null
+          ebook_subtitle?: string | null
+          ebook_title?: string | null
           excerpt: string
+          has_ebook?: boolean
           id?: string
           image_url?: string | null
           published?: boolean
@@ -50,7 +60,12 @@ export type Database = {
           category?: string
           content?: string
           created_at?: string
+          ebook_cover_url?: string | null
+          ebook_pdf_url?: string | null
+          ebook_subtitle?: string | null
+          ebook_title?: string | null
           excerpt?: string
+          has_ebook?: boolean
           id?: string
           image_url?: string | null
           published?: boolean
@@ -94,6 +109,7 @@ export type Database = {
           created_at: string
           ebook_id: string
           ebook_title: string
+          email: string | null
           id: string
           name: string
           phone: string
@@ -102,6 +118,7 @@ export type Database = {
           created_at?: string
           ebook_id: string
           ebook_title: string
+          email?: string | null
           id?: string
           name: string
           phone: string
@@ -110,6 +127,7 @@ export type Database = {
           created_at?: string
           ebook_id?: string
           ebook_title?: string
+          email?: string | null
           id?: string
           name?: string
           phone?: string

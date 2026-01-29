@@ -14,11 +14,17 @@ interface DatabaseArticle {
   published: boolean;
   created_at: string;
   updated_at: string;
+  has_ebook?: boolean;
+  ebook_title?: string | null;
+  ebook_subtitle?: string | null;
+  ebook_pdf_url?: string | null;
+  ebook_cover_url?: string | null;
 }
 
 // Transform database article to BlogArticle format
 const transformArticle = (dbArticle: DatabaseArticle): BlogArticle => ({
   id: dbArticle.slug,
+  dbId: dbArticle.id,
   title: dbArticle.title,
   excerpt: dbArticle.excerpt,
   content: dbArticle.content,
@@ -29,7 +35,12 @@ const transformArticle = (dbArticle: DatabaseArticle): BlogArticle => ({
     year: 'numeric'
   }),
   readTime: dbArticle.read_time,
-  image: dbArticle.image_url || 'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+  image: dbArticle.image_url || 'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+  hasEbook: dbArticle.has_ebook || false,
+  ebookTitle: dbArticle.ebook_title || undefined,
+  ebookSubtitle: dbArticle.ebook_subtitle || undefined,
+  ebookPdfUrl: dbArticle.ebook_pdf_url || undefined,
+  ebookCoverUrl: dbArticle.ebook_cover_url || undefined,
 });
 
 export const useBlogArticles = () => {
