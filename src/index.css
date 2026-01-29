@@ -142,6 +142,11 @@
     font-family: 'Montserrat', sans-serif;
   }
 
+  .article-content h4 {
+    @apply text-lg md:text-xl font-semibold text-primary mt-8 mb-3;
+    font-family: 'Montserrat', sans-serif;
+  }
+
   .article-content p {
     @apply text-lg leading-relaxed mb-6 text-muted-foreground;
   }
@@ -150,36 +155,152 @@
     @apply text-foreground font-semibold;
   }
 
+  .article-content em {
+    @apply italic text-foreground/90;
+  }
+
+  /* Enhanced List Styles */
   .article-content ul,
   .article-content ol {
-    @apply my-6 pl-6 space-y-3;
+    @apply my-8 space-y-4;
   }
 
   .article-content ul {
-    @apply list-disc;
+    @apply pl-0 list-none;
   }
 
   .article-content ol {
-    @apply list-decimal;
+    @apply pl-0 list-none;
+    counter-reset: list-counter;
   }
 
-  .article-content li {
-    @apply text-lg text-muted-foreground leading-relaxed pl-2;
+  .article-content ul > li {
+    @apply relative pl-8 text-lg text-muted-foreground leading-relaxed;
+  }
+
+  .article-content ul > li::before {
+    content: '';
+    @apply absolute left-0 top-2.5 w-2.5 h-2.5 bg-accent rounded-full;
+  }
+
+  .article-content ol > li {
+    @apply relative pl-10 text-lg text-muted-foreground leading-relaxed;
+    counter-increment: list-counter;
+  }
+
+  .article-content ol > li::before {
+    content: counter(list-counter);
+    @apply absolute left-0 top-0.5 w-7 h-7 bg-primary text-primary-foreground text-sm font-bold rounded-full flex items-center justify-center;
+    font-family: 'Montserrat', sans-serif;
   }
 
   .article-content li strong {
     @apply text-foreground;
   }
 
+  .article-content li p {
+    @apply mb-2;
+  }
+
+  /* Nested Lists */
+  .article-content ul ul,
+  .article-content ol ol,
+  .article-content ul ol,
+  .article-content ol ul {
+    @apply mt-3 mb-0 ml-4;
+  }
+
+  .article-content ul ul > li::before {
+    @apply w-2 h-2 bg-accent/60 rounded-sm;
+  }
+
+  /* Enhanced Blockquote Styles */
   .article-content blockquote {
-    @apply my-8 py-6 px-8 bg-secondary/50 border-l-4 border-accent rounded-r-xl italic;
+    @apply relative my-10 py-8 px-8 md:px-10 bg-gradient-to-br from-secondary via-secondary/80 to-secondary/60 border-l-4 border-accent rounded-r-2xl;
+    box-shadow: 0 4px 20px -4px hsl(var(--accent) / 0.15);
+  }
+
+  .article-content blockquote::before {
+    content: '"';
+    @apply absolute -top-4 left-4 text-6xl text-accent/30 font-serif leading-none;
   }
 
   .article-content blockquote p {
-    @apply mb-2 last:mb-0 text-foreground;
+    @apply mb-3 last:mb-0 text-foreground/90 text-lg md:text-xl italic leading-relaxed;
   }
 
+  .article-content blockquote strong {
+    @apply text-primary font-bold not-italic;
+  }
+
+  .article-content blockquote cite,
+  .article-content blockquote footer {
+    @apply block mt-4 text-sm text-muted-foreground not-italic font-medium;
+  }
+
+  .article-content blockquote cite::before {
+    content: '— ';
+  }
+
+  /* Links */
   .article-content a {
-    @apply text-accent underline underline-offset-4 hover:text-accent/80 transition-colors;
+    @apply text-accent font-medium underline underline-offset-4 decoration-accent/40 hover:decoration-accent hover:text-accent/80 transition-all duration-200;
+  }
+
+  /* Horizontal Rule */
+  .article-content hr {
+    @apply my-12 border-none h-px bg-gradient-to-r from-transparent via-border to-transparent;
+  }
+
+  /* Code Blocks */
+  .article-content code {
+    @apply px-2 py-1 bg-muted text-primary text-sm font-mono rounded;
+  }
+
+  .article-content pre {
+    @apply my-8 p-6 bg-primary text-primary-foreground rounded-xl overflow-x-auto;
+  }
+
+  .article-content pre code {
+    @apply p-0 bg-transparent text-primary-foreground text-sm;
+  }
+
+  /* Tables */
+  .article-content table {
+    @apply w-full my-8 border-collapse overflow-hidden rounded-xl;
+  }
+
+  .article-content thead {
+    @apply bg-primary text-primary-foreground;
+  }
+
+  .article-content th {
+    @apply px-4 py-3 text-left font-bold text-sm uppercase tracking-wider;
+    font-family: 'Montserrat', sans-serif;
+  }
+
+  .article-content tbody tr {
+    @apply border-b border-border transition-colors;
+  }
+
+  .article-content tbody tr:hover {
+    @apply bg-secondary/50;
+  }
+
+  .article-content td {
+    @apply px-4 py-4 text-muted-foreground;
+  }
+
+  /* Images */
+  .article-content img {
+    @apply my-8 rounded-xl shadow-lg w-full;
+  }
+
+  .article-content figure {
+    @apply my-10;
+  }
+
+  .article-content figcaption {
+    @apply mt-3 text-center text-sm text-muted-foreground italic;
   }
 }
