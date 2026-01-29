@@ -88,9 +88,12 @@ export const ArticleEbookLeadModal = ({
         throw new Error(data.error);
       }
 
-      // Trigger download from Supabase Storage
+      // Use signed URL if available, otherwise fallback to direct URL
+      const downloadUrl = data?.signed_url || ebookPdfUrl;
+
+      // Trigger download from Supabase Storage using signed URL
       const link = document.createElement("a");
-      link.href = ebookPdfUrl;
+      link.href = downloadUrl;
       link.download = `${ebookTitle.replace(/[^a-zA-Z0-9]/g, "-")}.pdf`;
       link.target = "_blank";
       document.body.appendChild(link);
