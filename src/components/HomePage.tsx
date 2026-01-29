@@ -4,13 +4,17 @@ import { CONTACT_INFO, ViewType } from "@/lib/constants";
 import { motion } from "framer-motion";
 import { BlogSection } from "@/components/BlogSection";
 import FAQSection from "@/components/FAQSection";
+import { useNavigate } from "react-router-dom";
 
 interface HomePageProps {
   onNavigate: (view: ViewType) => void;
   onContact: () => void;
 }
 
-export const HomePage = ({ onNavigate, onContact }: HomePageProps) => (
+export const HomePage = ({ onNavigate, onContact }: HomePageProps) => {
+  const navigate = useNavigate();
+  
+  return (
   <>
     {/* Hero Section */}
     <section className="relative pt-24 pb-32 lg:pt-40 lg:pb-48 overflow-hidden bg-primary">
@@ -99,7 +103,7 @@ export const HomePage = ({ onNavigate, onContact }: HomePageProps) => (
         </div>
         {/* Articles Gateway Card */}
         <div 
-          onClick={() => onNavigate('blog')} 
+          onClick={() => navigate('/blog')}
           className="flex flex-col md:flex-row items-center justify-between p-8 md:p-12 rounded-2xl cursor-pointer shadow-2xl transition-all transform hover:-translate-y-1 bg-card border-l-8 border-primary"
         >
           <div className="flex items-center gap-8 mb-6 md:mb-0">
@@ -256,5 +260,6 @@ export const HomePage = ({ onNavigate, onContact }: HomePageProps) => (
         </motion.div>
       </div>
     </section>
-  </>
-);
+    </>
+  );
+};
