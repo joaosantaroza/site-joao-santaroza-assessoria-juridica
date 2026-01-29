@@ -1,7 +1,13 @@
-import { useState, useRef } from "react";
-import { Volume2, Pause, Play, Loader2, VolumeX, Bug } from "lucide-react";
+import { useState, useRef, useEffect } from "react";
+import { Volume2, Pause, Play, Loader2, VolumeX, Bug, Gauge } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface ArticleAudioPlayerProps {
   articleContent: string;
@@ -13,6 +19,9 @@ const CUSTOM_VOICE_ID = "yfy5M61ODLwWnWbM7u5R";
 
 // Dev mode detection
 const IS_DEV = import.meta.env.DEV || window.location.hostname.includes("lovable");
+
+// Available playback speeds
+const PLAYBACK_SPEEDS = [0.75, 1, 1.25, 1.5, 1.75, 2] as const;
 
 interface DiagnosticInfo {
   requestUrl: string;
@@ -30,8 +39,16 @@ export const ArticleAudioPlayer = ({ articleContent, articleTitle }: ArticleAudi
   const [error, setError] = useState<string | null>(null);
   const [showDiagnostics, setShowDiagnostics] = useState(false);
   const [diagnosticInfo, setDiagnosticInfo] = useState<DiagnosticInfo | null>(null);
+  const [playbackSpeed, setPlaybackSpeed] = useState(1);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const audioUrlRef = useRef<string | null>(null);
+
+  // Update playback rate when speed changes
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.playbackRate = playbackSpeed;
+    }
+  }, [playbackSpeed]);
 
   const cleanTextForTTS = (html: string): string => {
     // Remove HTML tags
@@ -153,6 +170,9 @@ export const ArticleAudioPlayer = ({ articleContent, articleTitle }: ArticleAudi
         setIsPlaying(false);
       };
 
+      // Apply current playback speed
+      audio.playbackRate = playbackSpeed;
+      
       await audio.play();
       setIsPlaying(true);
     } catch (err) {
@@ -217,6 +237,32 @@ export const ArticleAudioPlayer = ({ articleContent, articleTitle }: ArticleAudi
               Parar
             </Button>
           )}
+
+          {/* Playback speed control */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="outline"
+                size="sm"
+                className="gap-2 min-w-[70px]"
+                disabled={isLoading}
+              >
+                <Gauge className="w-4 h-4" />
+                {playbackSpeed}x
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start">
+              {PLAYBACK_SPEEDS.map((speed) => (
+                <DropdownMenuItem
+                  key={speed}
+                  onClick={() => setPlaybackSpeed(speed)}
+                  className={playbackSpeed === speed ? "bg-accent" : ""}
+                >
+                  {speed}x {speed === 1 && "(Normal)"}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
 
           {/* Dev-only diagnostic toggle */}
           {IS_DEV && (
