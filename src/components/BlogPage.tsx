@@ -1,9 +1,10 @@
 import { useState, useMemo } from "react";
 import { motion } from "framer-motion";
-import { ArrowLeft, Calendar, Clock, Tag, ChevronLeft, ChevronRight } from "lucide-react";
+import { ArrowLeft, Calendar, Clock, Tag, ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { BLOG_ARTICLES } from "@/lib/constants";
 import { SectionTitle } from "@/components/ui/SectionTitle";
+import { useBlogArticles } from "@/hooks/useBlogArticles";
+import { BlogArticle } from "@/lib/constants";
 
 const ARTICLES_PER_PAGE = 6;
 
@@ -17,7 +18,7 @@ const ArticleCard = ({
   onClick,
   index
 }: { 
-  article: typeof BLOG_ARTICLES[0]; 
+  article: BlogArticle; 
   onClick: () => void;
   index: number;
 }) => (
@@ -139,14 +140,13 @@ const Pagination = ({
 export const BlogPage = ({ onBack, onArticleClick }: BlogPageProps) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-
-  const categories = [...new Set(BLOG_ARTICLES.map(a => a.category))];
+  const { articles, categories, loading } = useBlogArticles();
 
   const filteredArticles = useMemo(() => {
     return selectedCategory 
-      ? BLOG_ARTICLES.filter(a => a.category === selectedCategory)
-      : BLOG_ARTICLES;
-  }, [selectedCategory]);
+      ? articles.filter(a => a.category === selectedCategory)
+      : articles;
+  }, [selectedCategory, articles]);
 
   const totalPages = Math.ceil(filteredArticles.length / ARTICLES_PER_PAGE);
   
@@ -212,7 +212,7 @@ export const BlogPage = ({ onBack, onArticleClick }: BlogPageProps) => {
               <span className={`px-2 py-0.5 rounded-full text-xs ${
                 !selectedCategory ? 'bg-primary-foreground/20 text-primary-foreground' : 'bg-primary/20 text-primary'
               }`}>
-                {BLOG_ARTICLES.length}
+                {articles.length}
               </span>
             </button>
             {categories.map((category) => (
@@ -230,7 +230,7 @@ export const BlogPage = ({ onBack, onArticleClick }: BlogPageProps) => {
                 <span className={`px-2 py-0.5 rounded-full text-xs ${
                   selectedCategory === category ? 'bg-primary-foreground/20 text-primary-foreground' : 'bg-primary/20 text-primary'
                 }`}>
-                  {BLOG_ARTICLES.filter(a => a.category === category).length}
+                  {articles.filter(a => a.category === category).length}
                 </span>
               </button>
             ))}
@@ -246,21 +246,42 @@ export const BlogPage = ({ onBack, onArticleClick }: BlogPageProps) => {
               {selectedCategory ? `Artigos sobre ${selectedCategory}` : 'Todos os Artigos'}
             </SectionTitle>
             <p className="text-muted-foreground">
-              {filteredArticles.length} artigo{filteredArticles.length !== 1 ? 's' : ''} disponíve{filteredArticles.length !== 1 ? 'is' : 'l'}
-              {totalPages > 1 && ` • Página ${currentPage} de ${totalPages}`}
+              {loading ? 'Carregando...' : (
+                <>
+                  {filteredArticles.length} artigo{filteredArticles.length !== 1 ? 's' : ''} disponíve{filteredArticles.length !== 1 ? 'is' : 'l'}
+                  {totalPages > 1 && ` • Página ${currentPage} de ${totalPages}`}
+                </>
+              )}
             </p>
           </div>
           
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {paginatedArticles.map((article, index) => (
-              <ArticleCard
-                key={article.id}
-                article={article}
-                onClick={() => onArticleClick(article.id)}
-                index={index}
-              />
-            ))}
-          </div>
+          {/* Loading State */}
+          {loading && (
+            <div className="flex justify-center items-center py-16">
+              <Loader2 className="w-8 h-8 animate-spin text-accent" />
+            </div>
+          )}
+
+          {/* Articles */}
+          {!loading && (
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {paginatedArticles.map((article, index) => (
+                <ArticleCard
+                  key={article.id}
+                  article={article}
+                  onClick={() => onArticleClick(article.id)}
+                  index={index}
+                />
+              ))}
+            </div>
+          )}
+
+          {/* Empty State */}
+          {!loading && paginatedArticles.length === 0 && (
+            <div className="text-center py-16">
+              <p className="text-muted-foreground">Nenhum artigo encontrado.</p>
+            </div>
+          )}
 
           <Pagination 
             currentPage={currentPage} 

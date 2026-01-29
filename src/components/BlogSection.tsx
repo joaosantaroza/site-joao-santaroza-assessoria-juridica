@@ -1,7 +1,8 @@
-import { ArrowRight, Calendar, Clock, BookOpen } from "lucide-react";
+import { ArrowRight, Calendar, Clock, BookOpen, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
 import { SectionTitle } from "@/components/ui/SectionTitle";
-import { BLOG_ARTICLES, BlogArticle } from "@/lib/constants";
+import { BlogArticle } from "@/lib/constants";
+import { useBlogArticles } from "@/hooks/useBlogArticles";
 
 interface BlogSectionProps {
   onContact: () => void;
@@ -88,59 +89,82 @@ const ArticleCard = ({
   </motion.article>
 );
 
-export const BlogSection = ({ onContact, onArticleClick }: BlogSectionProps) => (
-  <section className="py-24 bg-secondary">
-    <div className="container mx-auto px-4">
-      <motion.div
-        className="text-center mb-16"
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.6 }}
-      >
-        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-accent/10 text-accent text-xs font-bold uppercase tracking-wider mb-6">
-          <BookOpen className="w-4 h-4" />
-          Conhecimento Jurídico
-        </div>
-        <SectionTitle className="text-center">
-          Artigos e Orientações
-        </SectionTitle>
-        <p className="text-muted-foreground max-w-2xl mx-auto text-lg">
-          Informação clara sobre seus direitos. Nosso compromisso é democratizar o conhecimento jurídico.
-        </p>
-      </motion.div>
+export const BlogSection = ({ onContact, onArticleClick }: BlogSectionProps) => {
+  const { articles, loading } = useBlogArticles();
+  
+  // Show only first 6 articles on homepage
+  const displayedArticles = articles.slice(0, 6);
 
-      {/* Articles Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto mb-12">
-        {BLOG_ARTICLES.map((article, index) => (
-          <ArticleCard 
-            key={article.id} 
-            article={article} 
-            index={index}
-            onClick={() => onArticleClick(article.id)}
-          />
-        ))}
-      </div>
-
-      {/* CTA */}
-      <motion.div
-        className="text-center"
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.6, delay: 0.3 }}
-      >
-        <p className="text-muted-foreground mb-4">
-          Tem dúvidas sobre seu caso específico?
-        </p>
-        <button
-          onClick={onContact}
-          className="inline-flex items-center gap-2 px-8 py-4 bg-primary text-primary-foreground font-bold uppercase tracking-wide rounded-lg hover:bg-accent transition-colors shadow-lg"
+  return (
+    <section className="py-24 bg-secondary">
+      <div className="container mx-auto px-4">
+        <motion.div
+          className="text-center mb-16"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
         >
-          Agende um Atendimento
-          <ArrowRight className="w-4 h-4" />
-        </button>
-      </motion.div>
-    </div>
-  </section>
-);
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-accent/10 text-accent text-xs font-bold uppercase tracking-wider mb-6">
+            <BookOpen className="w-4 h-4" />
+            Conhecimento Jurídico
+          </div>
+          <SectionTitle className="text-center">
+            Artigos e Orientações
+          </SectionTitle>
+          <p className="text-muted-foreground max-w-2xl mx-auto text-lg">
+            Informação clara sobre seus direitos. Nosso compromisso é democratizar o conhecimento jurídico.
+          </p>
+        </motion.div>
+
+        {/* Loading State */}
+        {loading && (
+          <div className="flex justify-center items-center py-16">
+            <Loader2 className="w-8 h-8 animate-spin text-accent" />
+          </div>
+        )}
+
+        {/* Articles Grid */}
+        {!loading && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto mb-12">
+            {displayedArticles.map((article, index) => (
+              <ArticleCard 
+                key={article.id} 
+                article={article} 
+                index={index}
+                onClick={() => onArticleClick(article.id)}
+              />
+            ))}
+          </div>
+        )}
+
+        {/* Empty State */}
+        {!loading && displayedArticles.length === 0 && (
+          <div className="text-center py-16">
+            <p className="text-muted-foreground">Nenhum artigo disponível no momento.</p>
+          </div>
+        )}
+
+        {/* CTA */}
+        <motion.div
+          className="text-center"
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: 0.3 }}
+        >
+          <p className="text-muted-foreground mb-4">
+            Tem dúvidas sobre seu caso específico?
+          </p>
+          <button
+            onClick={onContact}
+            className="inline-flex items-center gap-2 px-8 py-4 bg-primary text-primary-foreground font-bold uppercase tracking-wide rounded-lg hover:bg-accent transition-colors shadow-lg"
+          >
+            Agende um Atendimento
+            <ArrowRight className="w-4 h-4" />
+          </button>
+        </motion.div>
+      </div>
+    </section>
+  );
+};
