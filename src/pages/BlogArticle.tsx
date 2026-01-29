@@ -13,6 +13,7 @@ import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { ContactModal } from "@/components/ContactModal";
 import { useBlogArticles } from "@/hooks/useBlogArticles";
+import { useSEO } from "@/hooks/useSEO";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -46,6 +47,18 @@ export default function BlogArticle() {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [slug]);
+
+  // Dynamic SEO meta tags
+  useSEO({
+    title: article?.title || 'Artigo não encontrado',
+    description: article?.excerpt || 'Artigo jurídico do escritório João Santaroza Assessoria Jurídica.',
+    image: article?.image,
+    url: `/blog/${slug}`,
+    type: 'article',
+    author: CONTACT_INFO.lawyerName,
+    publishedTime: article?.date,
+    section: article?.category,
+  });
 
   // Process content: convert literal \n to actual newlines and check if it's HTML or Markdown
   const { isHtml, processedContent } = useMemo(() => {
