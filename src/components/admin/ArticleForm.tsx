@@ -91,6 +91,7 @@ export function ArticleForm({ onSuccess, editingArticle, onCancelEdit }: Article
   // PDF import state
   const [pdfSourceText, setPdfSourceText] = useState('');
   const [isPdfMode, setIsPdfMode] = useState(false);
+  const [isPdfPreviewOpen, setIsPdfPreviewOpen] = useState(false);
   
   // eBook fields
   const [hasEbook, setHasEbook] = useState(false);
@@ -148,6 +149,7 @@ export function ArticleForm({ onSuccess, editingArticle, onCancelEdit }: Article
     // Reset PDF import state
     setPdfSourceText('');
     setIsPdfMode(false);
+    setIsPdfPreviewOpen(false);
     // Reset eBook fields
     setHasEbook(false);
     setEbookTitle('');
@@ -569,6 +571,7 @@ export function ArticleForm({ onSuccess, editingArticle, onCancelEdit }: Article
   const handleClearPdfMode = () => {
     setPdfSourceText('');
     setIsPdfMode(false);
+    setIsPdfPreviewOpen(false);
   };
 
   const handleSave = async () => {
@@ -846,6 +849,17 @@ export function ArticleForm({ onSuccess, editingArticle, onCancelEdit }: Article
                     type="button"
                     variant="ghost"
                     size="sm"
+                    onClick={() => setIsPdfPreviewOpen(!isPdfPreviewOpen)}
+                    className="h-6 px-2 text-xs"
+                    title="Visualizar texto extraído"
+                  >
+                    <Eye className="h-3 w-3 mr-1" />
+                    {isPdfPreviewOpen ? 'Ocultar' : 'Ver texto'}
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
                     onClick={handleClearPdfMode}
                     className="h-6 px-2 text-xs"
                   >
@@ -888,6 +902,30 @@ export function ArticleForm({ onSuccess, editingArticle, onCancelEdit }: Article
               />
             </div>
           </div>
+          
+          {/* PDF Text Preview */}
+          {isPdfMode && isPdfPreviewOpen && (
+            <div className="mt-3 p-4 bg-muted/30 rounded-lg border border-border/50">
+              <div className="flex items-center justify-between mb-2">
+                <Label className="text-sm font-medium flex items-center gap-2">
+                  <FileText className="h-4 w-4 text-muted-foreground" />
+                  Texto Extraído do PDF
+                </Label>
+                <span className="text-xs text-muted-foreground">
+                  {pdfSourceText.split(/\s+/).filter(Boolean).length.toLocaleString('pt-BR')} palavras
+                </span>
+              </div>
+              <div className="relative">
+                <pre className="bg-background p-3 rounded-md text-xs text-muted-foreground overflow-y-auto max-h-[300px] whitespace-pre-wrap font-mono border border-border/50">
+                  {pdfSourceText}
+                </pre>
+                <div className="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-background to-transparent pointer-events-none rounded-b-md" />
+              </div>
+              <p className="text-xs text-muted-foreground mt-2">
+                Revise o texto acima. Se estiver correto, digite o título e clique em "Formatar com IA".
+              </p>
+            </div>
+          )}
         </div>
 
         {/* Excerpt */}
