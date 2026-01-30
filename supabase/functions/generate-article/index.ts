@@ -148,11 +148,21 @@ serve(async (req) => {
       );
     }
 
-    const { title, tone = 'acessivel', includeLegalBasis = true } = await req.json();
+    const { title, tone = 'acessivel', includeLegalBasis = true, customInstructions } = await req.json();
     
-    if (!title || typeof title !== "string" || title.trim().length < 5) {
+    // If using custom instructions, we need those instead of title
+    const isCustomMode = !!customInstructions && customInstructions.trim().length >= 10;
+    
+    if (!isCustomMode && (!title || typeof title !== "string" || title.trim().length < 5)) {
       return new Response(
         JSON.stringify({ error: "Título inválido. Mínimo de 5 caracteres." }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+    
+    if (isCustomMode && customInstructions.trim().length < 10) {
+      return new Response(
+        JSON.stringify({ error: "Instruções muito curtas. Mínimo de 10 caracteres." }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
@@ -170,7 +180,7 @@ serve(async (req) => {
       );
     }
 
-    console.log(`Admin ${userData.user.email} generating article with Perplexity (tone: ${selectedTone}, legalBasis: ${includeLegalBasis}) for title: ${title}`);
+    console.log(`Admin ${userData.user.email} generating article with Perplexity (tone: ${selectedTone}, legalBasis: ${includeLegalBasis}, customMode: ${isCustomMode}) for ${isCustomMode ? 'custom instructions' : 'title: ' + title}`);
 
     // Tone-specific instructions for blog-style articles
     const toneInstructions = {
@@ -237,7 +247,31 @@ CONTEXTO DO ESCRITÓRIO:
       ? `3. Pode citar leis e artigos quando necessário, mas integre naturalmente ao texto (ex: "De acordo com a Lei X..." ou "A legislação prevê que...")`
       : `3. NÃO mencione leis, artigos ou números de legislação - explique tudo de forma prática sem referências legais específicas`;
 
-    const userPrompt = `Escreva um artigo de BLOG informativo sobre o seguinte tema:
+    // Different prompts for custom mode vs title mode
+    const userPrompt = isCustomMode
+      ? `Baseado nas seguintes instruções do usuário, crie um artigo de BLOG informativo completo:
+
+INSTRUÇÕES DO USUÁRIO:
+"${customInstructions}"
+
+SUAS TAREFAS:
+1. Crie um TÍTULO atrativo e otimizado para SEO (máximo 70 caracteres)
+2. Escreva uma introdução que conecte com o leitor e apresente o tema de forma envolvente
+3. Desenvolva o conteúdo de forma clara, explicando o tema como se conversasse com o leitor
+${legalBasisUserInstruction}
+4. NÃO inclua citações de jurisprudência, decisões de tribunais ou número de processos
+5. Foque em orientações práticas e informações úteis
+6. Conclua incentivando o leitor a buscar ajuda profissional se precisar
+
+Retorne a resposta em formato JSON válido:
+{
+  "title": "Título atrativo para o artigo",
+  "content": "<HTML do artigo completo>",
+  "excerpt": "Resumo curto do artigo (máximo 200 caracteres)",
+  "category": "Categoria sugerida (Isenção Fiscal, Trabalho, Previdenciário, etc.)",
+  "readTime": "X min"
+}`
+      : `Escreva um artigo de BLOG informativo sobre o seguinte tema:
 
 "${title}"
 
@@ -359,13 +393,15 @@ Retorne a resposta em formato JSON válido:
           .replace(/\\/g, '');
       }
       
-      // Extract excerpt if present
+      // Extract fields if present
+      const titleMatch = rawContent.match(/"title"\s*:\s*"([^"]+)"/);
       const excerptMatch = rawContent.match(/"excerpt"\s*:\s*"([^"]+)"/);
       const categoryMatch = rawContent.match(/"category"\s*:\s*"([^"]+)"/);
       
       parsed = {
+        title: titleMatch ? titleMatch[1] : null,
         content: extractedContent,
-        excerpt: excerptMatch ? excerptMatch[1] : title.slice(0, 150) + "...",
+        excerpt: excerptMatch ? excerptMatch[1] : (isCustomMode ? "" : title.slice(0, 150) + "..."),
         category: categoryMatch ? categoryMatch[1] : "Geral",
         readTime: "5 min",
       };
@@ -373,6 +409,9 @@ Retorne a resposta em formato JSON válido:
 
     // Content without sources section - sources are still returned in the response for reference
     const finalContent = parsed.content || rawContent;
+    
+    // Extract generated title for custom mode
+    const generatedTitle = isCustomMode ? (parsed.title || null) : null;
 
     console.log("Article generated successfully for admin:", userData.user.email);
 
@@ -380,8 +419,9 @@ Retorne a resposta em formato JSON válido:
       JSON.stringify({
         success: true,
         data: {
+          title: generatedTitle,
           content: finalContent,
-          excerpt: parsed.excerpt || title.slice(0, 150),
+          excerpt: parsed.excerpt || (isCustomMode ? "" : title.slice(0, 150)),
           category: parsed.category || "Geral",
           readTime: parsed.readTime || "5 min",
           sources: citations,
