@@ -19,6 +19,7 @@ interface DatabaseArticle {
   ebook_subtitle?: string | null;
   ebook_pdf_url?: string | null;
   ebook_cover_url?: string | null;
+  view_count?: number;
 }
 
 // Transform database article to BlogArticle format
@@ -41,7 +42,17 @@ const transformArticle = (dbArticle: DatabaseArticle): BlogArticle => ({
   ebookSubtitle: dbArticle.ebook_subtitle || undefined,
   ebookPdfUrl: dbArticle.ebook_pdf_url || undefined,
   ebookCoverUrl: dbArticle.ebook_cover_url || undefined,
+  viewCount: dbArticle.view_count || 0,
 });
+
+// Increment view count for an article
+export const incrementArticleView = async (slug: string): Promise<void> => {
+  try {
+    await supabase.rpc('increment_article_view', { p_slug: slug });
+  } catch (error) {
+    console.error('Error incrementing view count:', error);
+  }
+};
 
 export const useBlogArticles = () => {
   const [dbArticles, setDbArticles] = useState<BlogArticle[]>([]);

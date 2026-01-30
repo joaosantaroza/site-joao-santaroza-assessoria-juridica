@@ -120,6 +120,7 @@ export interface BlogArticle {
   ebookSubtitle?: string;
   ebookPdfUrl?: string;
   ebookCoverUrl?: string;
+  viewCount?: number;
 }
 
 export const BLOG_ARTICLES: BlogArticle[] = [

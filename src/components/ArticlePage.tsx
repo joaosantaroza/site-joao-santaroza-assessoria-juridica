@@ -1,5 +1,5 @@
-import { useState, useMemo } from "react";
-import { ArrowRight, Calendar, Clock, User, MessageCircle, Download } from "lucide-react";
+import { useState, useMemo, useEffect } from "react";
+import { ArrowRight, Calendar, Clock, User, MessageCircle, Download, Eye } from "lucide-react";
 import { motion } from "framer-motion";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -11,6 +11,7 @@ import { ArticleAudioPlayer } from "@/components/ArticleAudioPlayer";
 import { EbookLeadModal } from "@/components/EbookLeadModal";
 import { RelatedArticles } from "@/components/RelatedArticles";
 import { SocialShareButtons } from "@/components/SocialShareButtons";
+import { incrementArticleView } from "@/hooks/useBlogArticles";
 import ebookGestanteCapa from '@/assets/ebook-gestante-capa.png';
 import ebookPontoBritanicoCapa from '@/assets/ebook-ponto-britanico-capa.png';
 
@@ -31,6 +32,16 @@ interface EbookConfig {
 
 export const ArticlePage = ({ article, allArticles, onBack, onContact, onArticleClick }: ArticlePageProps) => {
   const [ebookModal, setEbookModal] = useState<EbookConfig | null>(null);
+  const [viewCount, setViewCount] = useState(article.viewCount || 0);
+
+  // Increment view count when article is loaded
+  useEffect(() => {
+    const trackView = async () => {
+      await incrementArticleView(article.id);
+      setViewCount((prev) => prev + 1);
+    };
+    trackView();
+  }, [article.id]);
 
   // Process content: convert literal \n to actual newlines and check if it's HTML or Markdown
   const { isHtml, processedContent } = useMemo(() => {
@@ -151,6 +162,10 @@ export const ArticlePage = ({ article, allArticles, onBack, onContact, onArticle
             <span className="flex items-center gap-2">
               <Clock className="w-4 h-4" />
               {article.readTime} de leitura
+            </span>
+            <span className="flex items-center gap-2">
+              <Eye className="w-4 h-4" />
+              {viewCount.toLocaleString('pt-BR')} {viewCount === 1 ? 'visualização' : 'visualizações'}
             </span>
           </motion.div>
 
