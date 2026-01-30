@@ -9,13 +9,16 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ArticleAudioPlayer } from "@/components/ArticleAudioPlayer";
 import { EbookLeadModal } from "@/components/EbookLeadModal";
+import { RelatedArticles } from "@/components/RelatedArticles";
 import ebookGestanteCapa from '@/assets/ebook-gestante-capa.png';
 import ebookPontoBritanicoCapa from '@/assets/ebook-ponto-britanico-capa.png';
 
 interface ArticlePageProps {
   article: BlogArticle;
+  allArticles: BlogArticle[];
   onBack: () => void;
   onContact: () => void;
+  onArticleClick: (articleId: string) => void;
 }
 
 interface EbookConfig {
@@ -25,7 +28,7 @@ interface EbookConfig {
   downloadName: string;
 }
 
-export const ArticlePage = ({ article, onBack, onContact }: ArticlePageProps) => {
+export const ArticlePage = ({ article, allArticles, onBack, onContact, onArticleClick }: ArticlePageProps) => {
   const [ebookModal, setEbookModal] = useState<EbookConfig | null>(null);
 
   // Process content: convert literal \n to actual newlines and check if it's HTML or Markdown
@@ -380,6 +383,13 @@ export const ArticlePage = ({ article, onBack, onContact }: ArticlePageProps) =>
               <p className="text-sm text-muted-foreground">{CONTACT_INFO.oab} • Especialista em Direito Tributário e Trabalhista</p>
             </div>
           </motion.div>
+
+          {/* Related Articles */}
+          <RelatedArticles
+            currentArticle={article}
+            allArticles={allArticles}
+            onArticleClick={onArticleClick}
+          />
         </motion.div>
       </article>
 
