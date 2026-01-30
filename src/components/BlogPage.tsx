@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { motion } from "framer-motion";
-import { ArrowLeft, Calendar, Clock, Tag, ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
+import { ArrowLeft, Calendar, Clock, Tag, ChevronLeft, ChevronRight, Loader2, Search, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { SectionTitle } from "@/components/ui/SectionTitle";
@@ -150,13 +150,29 @@ const Pagination = ({
 export const BlogPage = ({ onBack, onArticleClick }: BlogPageProps) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
   const { articles, categories, loading } = useBlogArticles();
 
   const filteredArticles = useMemo(() => {
-    return selectedCategory 
-      ? articles.filter(a => a.categories.includes(selectedCategory))
-      : articles;
-  }, [selectedCategory, articles]);
+    let result = articles;
+    
+    // Filter by search query
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      result = result.filter(a => 
+        a.title.toLowerCase().includes(query) || 
+        a.excerpt.toLowerCase().includes(query) ||
+        a.content?.toLowerCase().includes(query)
+      );
+    }
+    
+    // Filter by category
+    if (selectedCategory) {
+      result = result.filter(a => a.categories.includes(selectedCategory));
+    }
+    
+    return result;
+  }, [selectedCategory, searchQuery, articles]);
 
   const totalPages = Math.ceil(filteredArticles.length / ARTICLES_PER_PAGE);
   
@@ -167,6 +183,11 @@ export const BlogPage = ({ onBack, onArticleClick }: BlogPageProps) => {
 
   const handleCategoryClick = (category: string) => {
     setSelectedCategory(prev => prev === category ? null : category);
+    setCurrentPage(1);
+  };
+
+  const handleSearchChange = (value: string) => {
+    setSearchQuery(value);
     setCurrentPage(1);
   };
 
@@ -206,9 +227,30 @@ export const BlogPage = ({ onBack, onArticleClick }: BlogPageProps) => {
         </div>
       </section>
 
-      {/* Categories Filter */}
+      {/* Search and Categories Filter */}
       <section className="py-8 border-b border-border bg-card/50">
-        <div className="container mx-auto px-6">
+        <div className="container mx-auto px-6 space-y-6">
+          {/* Search Input */}
+          <div className="relative max-w-md">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => handleSearchChange(e.target.value)}
+              placeholder="Buscar artigos por título ou conteúdo..."
+              className="w-full pl-12 pr-10 py-3 rounded-full border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-colors"
+            />
+            {searchQuery && (
+              <button
+                onClick={() => handleSearchChange("")}
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            )}
+          </div>
+
+          {/* Category Filters */}
           <div className="flex flex-wrap gap-3">
             <button
               onClick={() => { setSelectedCategory(null); setCurrentPage(1); }}
@@ -253,12 +295,16 @@ export const BlogPage = ({ onBack, onArticleClick }: BlogPageProps) => {
         <div className="container mx-auto px-6">
           <div className="mb-8">
             <SectionTitle>
-              {selectedCategory ? `Artigos sobre ${selectedCategory}` : 'Todos os Artigos'}
+              {searchQuery 
+                ? `Resultados para "${searchQuery}"` 
+                : selectedCategory 
+                  ? `Artigos sobre ${selectedCategory}` 
+                  : 'Todos os Artigos'}
             </SectionTitle>
             <p className="text-muted-foreground">
               {loading ? 'Carregando...' : (
                 <>
-                  {filteredArticles.length} artigo{filteredArticles.length !== 1 ? 's' : ''} disponíve{filteredArticles.length !== 1 ? 'is' : 'l'}
+                  {filteredArticles.length} artigo{filteredArticles.length !== 1 ? 's' : ''} encontrado{filteredArticles.length !== 1 ? 's' : ''}
                   {totalPages > 1 && ` • Página ${currentPage} de ${totalPages}`}
                 </>
               )}
