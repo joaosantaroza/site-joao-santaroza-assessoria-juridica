@@ -15,6 +15,7 @@ import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { ContactModal } from "@/components/ContactModal";
 import { useBlogArticles } from "@/hooks/useBlogArticles";
+import { RelatedArticles } from "@/components/RelatedArticles";
 import { useSEO } from "@/hooks/useSEO";
 import {
   Breadcrumb,
@@ -37,7 +38,7 @@ interface EbookConfig {
 export default function BlogArticle() {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
-  const { findArticleById, loading } = useBlogArticles();
+  const { findArticleById, articles, loading } = useBlogArticles();
   const [showContactModal, setShowContactModal] = useState(false);
   const [ebookModal, setEbookModal] = useState<EbookConfig | null>(null);
 
@@ -481,6 +482,12 @@ export default function BlogArticle() {
                 <p className="text-sm text-muted-foreground">{CONTACT_INFO.oab} • Especialista em Direito Tributário e Trabalhista</p>
               </div>
             </motion.div>
+
+            {/* Related Articles */}
+            <RelatedArticles
+              currentArticle={article}
+              allArticles={articles}
+            />
           </motion.div>
         </article>
       </main>
