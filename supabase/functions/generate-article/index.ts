@@ -172,62 +172,65 @@ serve(async (req) => {
 
     console.log(`Admin ${userData.user.email} generating article with Perplexity (tone: ${selectedTone}) for title: ${title}`);
 
-    // Tone-specific instructions
+    // Tone-specific instructions for blog-style articles
     const toneInstructions = {
       formal: `ESTILO DE ESCRITA:
-- Use linguagem jurídica formal e técnica
-- Mantenha um tom sóbrio e institucional
-- Use termos latinos quando apropriado (ex: "in casu", "ab initio")
-- Estruture com rigor acadêmico
-- Cite doutrinas e autores renomados`,
+- Use linguagem clara mas com tom profissional
+- Mantenha formalidade sem ser rebuscado
+- Evite jargões excessivos, prefira explicar conceitos
+- Estruture de forma organizada e elegante`,
       acessivel: `ESTILO DE ESCRITA:
-- Use linguagem clara e acessível para leigos
-- Explique termos técnicos quando usá-los
-- Use exemplos práticos do dia a dia
-- Mantenha parágrafos curtos e diretos
-- Priorize a compreensão do cidadão comum`,
+- Use linguagem simples e direta, como uma conversa
+- Explique tudo como se falasse com um amigo leigo
+- Use exemplos práticos do cotidiano
+- Parágrafos curtos e fáceis de ler
+- Priorize clareza acima de tudo`,
       tecnico: `ESTILO DE ESCRITA:
-- Seja extremamente detalhado nas citações legais
-- Inclua números de artigos, incisos e alíneas
-- Cite jurisprudência com número do processo
-- Use referências a súmulas e orientações jurisprudenciais
-- Inclua fundamentação doutrinária robusta`,
+- Seja detalhado mas sem exagerar em citações
+- Mencione artigos de lei quando essencial, de forma natural
+- Foque em explicar o "porquê" das regras
+- Equilibre profundidade com legibilidade`,
     };
 
-    const systemPrompt = `Você é um redator jurídico especializado em Direito Tributário, Trabalhista e Previdenciário brasileiro. 
-Você escreve para um público que busca entender seus direitos.
+    const systemPrompt = `Você é um redator de conteúdo especializado em criar artigos de BLOG informativos sobre temas jurídicos no Brasil.
+
+IMPORTANTE - ESTILO BLOG INFORMATIVO:
+- Escreva como um artigo de blog para INFORMAR e EDUCAR o leitor
+- NÃO use linguagem rebuscada ou excessivamente jurídica
+- NÃO inclua jurisprudência, número de processos ou citações de tribunais
+- Pode mencionar bases legais (leis, artigos) mas de forma NATURAL e FLUIDA, integrada ao texto
+- O foco é o leitor entender o assunto, não impressionar com termos técnicos
+- Use uma linguagem que qualquer pessoa consiga entender facilmente
 
 ${toneInstructions[selectedTone as keyof typeof toneInstructions]}
 
 REGRAS DE FORMATAÇÃO:
 - Use HTML semântico para estruturar o conteúdo
 - Use <h2> para títulos de seção (nunca <h1>)
-- Use <h3> para subtítulos
+- Use <h3> para subtítulos quando necessário
 - Use <p> para parágrafos com class="text-justify"
-- Use <ul> e <li> para listas
-- Use <blockquote> para citações ou destaques importantes
+- Use <ul> e <li> para listas quando apropriado
+- Use <blockquote> para destaques importantes ou dicas
 - Use <strong> para termos importantes
-- Inclua referências a leis, súmulas e jurisprudência quando relevante
 - O texto deve ter entre 800 e 1500 palavras
-- Termine com um parágrafo de chamada para ação profissional
+- Termine com um parágrafo convidando o leitor a buscar orientação profissional
 
 CONTEXTO DO ESCRITÓRIO:
 - O escritório é do Dr. João Victor Santaroza, OAB/PR 81.381
 - Atua principalmente com isenção de IR por moléstia grave, direitos trabalhistas e previdenciários
-- Localizado no Paraná, com atuação digital em todo Brasil
+- Localizado no Paraná, com atuação digital em todo Brasil`;
 
-IMPORTANTE: Baseie suas informações em fontes jurídicas oficiais e atualizadas. Cite leis, artigos e jurisprudência de forma precisa.`;
-
-    const userPrompt = `Escreva um artigo jurídico completo e bem fundamentado sobre o seguinte tema:
+    const userPrompt = `Escreva um artigo de BLOG informativo sobre o seguinte tema:
 
 "${title}"
 
-O artigo deve:
-1. Começar com uma introdução impactante que contextualize o problema
-2. Apresentar a fundamentação legal detalhada com base em legislação atual
-3. Incluir jurisprudência relevante e atualizada quando aplicável
-4. Fornecer orientações práticas ao leitor
-5. Concluir com uma chamada para buscar orientação profissional
+INSTRUÇÕES:
+1. Comece com uma introdução que conecte com o leitor e apresente o tema de forma envolvente
+2. Desenvolva o conteúdo de forma clara, explicando o tema como se conversasse com o leitor
+3. Pode citar leis e artigos quando necessário, mas integre naturalmente ao texto (ex: "De acordo com a Lei X..." ou "A legislação prevê que...")
+4. NÃO inclua citações de jurisprudência, decisões de tribunais ou número de processos
+5. Foque em orientações práticas e informações úteis
+6. Conclua incentivando o leitor a buscar ajuda profissional se precisar
 
 Retorne a resposta em formato JSON válido:
 {
