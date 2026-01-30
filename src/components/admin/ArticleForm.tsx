@@ -64,10 +64,10 @@ interface ArticleFormProps {
 
 type ArticleTone = 'formal' | 'acessivel' | 'tecnico';
 
-const TONE_OPTIONS: { value: ArticleTone; label: string; description: string }[] = [
-  { value: 'formal', label: 'Formal', description: 'Tom profissional e elegante' },
-  { value: 'acessivel', label: 'Acessível', description: 'Fácil compreensão para leigos' },
-  { value: 'tecnico', label: 'Técnico', description: 'Mais detalhado e explicativo' },
+const TONE_OPTIONS: { value: ArticleTone; label: string; description: string; tooltip: string }[] = [
+  { value: 'formal', label: 'Formal', description: 'Tom profissional e elegante', tooltip: 'Linguagem clara e profissional, sem ser rebuscada. Ideal para conteúdo institucional.' },
+  { value: 'acessivel', label: 'Acessível', description: 'Fácil compreensão para leigos', tooltip: 'Linguagem simples e direta, como uma conversa. Perfeito para o público geral.' },
+  { value: 'tecnico', label: 'Técnico', description: 'Mais detalhado e explicativo', tooltip: 'Conteúdo mais aprofundado, explicando os "porquês" das regras. Para leitores que querem entender melhor.' },
 ];
 
 export function ArticleForm({ onSuccess, editingArticle, onCancelEdit }: ArticleFormProps) {
@@ -594,22 +594,29 @@ export function ArticleForm({ onSuccess, editingArticle, onCancelEdit }: Article
             {/* Tone Selector */}
             <div className="flex flex-wrap gap-2 items-center">
               <span className="text-xs text-muted-foreground mr-1">Tom:</span>
-              {TONE_OPTIONS.map((option) => (
-                <button
-                  key={option.value}
-                  type="button"
-                  onClick={() => setArticleTone(option.value)}
-                  className={cn(
-                    "px-3 py-1.5 text-xs rounded-full border transition-all",
-                    articleTone === option.value
-                      ? "bg-primary text-primary-foreground border-primary"
-                      : "bg-muted/50 text-muted-foreground border-border hover:border-primary/50"
-                  )}
-                  title={option.description}
-                >
-                  {option.label}
-                </button>
-              ))}
+              <TooltipProvider>
+                {TONE_OPTIONS.map((option) => (
+                  <Tooltip key={option.value}>
+                    <TooltipTrigger asChild>
+                      <button
+                        type="button"
+                        onClick={() => setArticleTone(option.value)}
+                        className={cn(
+                          "px-3 py-1.5 text-xs rounded-full border transition-all",
+                          articleTone === option.value
+                            ? "bg-primary text-primary-foreground border-primary"
+                            : "bg-muted/50 text-muted-foreground border-border hover:border-primary/50"
+                        )}
+                      >
+                        {option.label}
+                      </button>
+                    </TooltipTrigger>
+                    <TooltipContent side="top" className="max-w-[220px]">
+                      <p className="text-xs">{option.tooltip}</p>
+                    </TooltipContent>
+                  </Tooltip>
+                ))}
+              </TooltipProvider>
             </div>
             
             {/* Legal Basis Toggle */}
