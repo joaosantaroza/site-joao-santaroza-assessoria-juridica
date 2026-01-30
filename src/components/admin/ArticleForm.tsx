@@ -13,6 +13,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { useToast } from '@/hooks/use-toast';
 import { ArticlePreviewModal } from './ArticlePreviewModal';
 import { cn } from '@/lib/utils';
+import { calculateReadingTime, getWordCount } from '@/lib/readingTime';
 import { 
   Loader2, 
   Sparkles, 
@@ -30,7 +31,8 @@ import {
   MonitorPlay,
   CalendarIcon,
   BookOpen,
-  FileDown
+  FileDown,
+  RefreshCw
 } from 'lucide-react';
 import { TagInput } from '@/components/ui/tag-input';
 
@@ -378,7 +380,8 @@ export function ArticleForm({ onSuccess, editingArticle, onCancelEdit }: Article
         setContent(data.data.content);
         setExcerpt(data.data.excerpt);
         setCategory(data.data.category ? [data.data.category] : category);
-        setReadTime(data.data.readTime || readTime);
+        // Auto-calculate reading time from generated content
+        setReadTime(calculateReadingTime(data.data.content));
 
         toast({
           title: 'Conteúdo gerado!',
@@ -622,18 +625,42 @@ export function ArticleForm({ onSuccess, editingArticle, onCancelEdit }: Article
         </div>
 
         {/* Read Time */}
-        <div className="space-y-2 max-w-xs">
+        <div className="space-y-2 max-w-md">
           <Label htmlFor="readTime" className="text-sm font-medium flex items-center gap-2">
             <Clock className="h-4 w-4 text-muted-foreground" />
             Tempo de Leitura
           </Label>
-          <Input
-            id="readTime"
-            value={readTime}
-            onChange={(e) => setReadTime(e.target.value)}
-            placeholder="5 min"
-            className="bg-background"
-          />
+          <div className="flex gap-2 items-center">
+            <Input
+              id="readTime"
+              value={readTime}
+              onChange={(e) => setReadTime(e.target.value)}
+              placeholder="5 min"
+              className="bg-background flex-1"
+            />
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => setReadTime(calculateReadingTime(content))}
+              disabled={!content.trim()}
+              title="Calcular automaticamente"
+              className="gap-1.5"
+            >
+              <RefreshCw className="h-4 w-4" />
+              Calcular
+            </Button>
+          </div>
+          <p className="text-xs text-muted-foreground">
+            {content.trim() ? (
+              <>
+                {getWordCount(content).toLocaleString('pt-BR')} palavras • 
+                Tempo estimado: {calculateReadingTime(content)}
+              </>
+            ) : (
+              'Digite o conteúdo para calcular automaticamente'
+            )}
+          </p>
         </div>
 
         {/* Image Upload */}
