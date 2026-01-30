@@ -88,6 +88,10 @@ export function ArticleForm({ onSuccess, editingArticle, onCancelEdit }: Article
   const [articleTone, setArticleTone] = useState<ArticleTone>('acessivel');
   const [includeLegalBasis, setIncludeLegalBasis] = useState(true);
   
+  // Custom instructions state
+  const [useCustomInstructions, setUseCustomInstructions] = useState(false);
+  const [customInstructions, setCustomInstructions] = useState('');
+  
   // PDF import state
   const [pdfSourceText, setPdfSourceText] = useState('');
   const [isPdfMode, setIsPdfMode] = useState(false);
@@ -146,6 +150,9 @@ export function ArticleForm({ onSuccess, editingArticle, onCancelEdit }: Article
     setPublished(false);
     setScheduledAt(undefined);
     setIsScheduled(false);
+    // Reset custom instructions state
+    setUseCustomInstructions(false);
+    setCustomInstructions('');
     // Reset PDF import state
     setPdfSourceText('');
     setIsPdfMode(false);
@@ -366,13 +373,25 @@ export function ArticleForm({ onSuccess, editingArticle, onCancelEdit }: Article
   };
 
   const handleGenerateWithAI = async () => {
-    if (!title || title.trim().length < 5) {
-      toast({
-        title: 'Título necessário',
-        description: 'Digite um título com pelo menos 5 caracteres para gerar o conteúdo.',
-        variant: 'destructive'
-      });
-      return;
+    // If using custom instructions, validate instructions instead of title
+    if (useCustomInstructions) {
+      if (!customInstructions || customInstructions.trim().length < 10) {
+        toast({
+          title: 'Instruções necessárias',
+          description: 'Descreva o que você quer gerar com pelo menos 10 caracteres.',
+          variant: 'destructive'
+        });
+        return;
+      }
+    } else {
+      if (!title || title.trim().length < 5) {
+        toast({
+          title: 'Título necessário',
+          description: 'Digite um título com pelo menos 5 caracteres para gerar o conteúdo.',
+          variant: 'destructive'
+        });
+        return;
+      }
     }
 
     setIsGenerating(true);
@@ -389,7 +408,12 @@ export function ArticleForm({ onSuccess, editingArticle, onCancelEdit }: Article
             'apikey': import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
             'Authorization': `Bearer ${session?.access_token || import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
           },
-          body: JSON.stringify({ title: title.trim(), tone: articleTone, includeLegalBasis }),
+          body: JSON.stringify({ 
+            title: useCustomInstructions ? '' : title.trim(), 
+            tone: articleTone, 
+            includeLegalBasis,
+            customInstructions: useCustomInstructions ? customInstructions.trim() : undefined,
+          }),
         }
       );
 
@@ -405,10 +429,17 @@ export function ArticleForm({ onSuccess, editingArticle, onCancelEdit }: Article
         setCategory(data.data.category ? [data.data.category] : category);
         // Auto-calculate reading time from generated content
         setReadTime(calculateReadingTime(data.data.content));
+        
+        // If using custom instructions, also set the generated title
+        if (useCustomInstructions && data.data.title) {
+          setTitle(data.data.title);
+        }
 
         toast({
           title: 'Conteúdo gerado!',
-          description: 'O artigo foi gerado com sucesso. Revise antes de publicar.',
+          description: useCustomInstructions 
+            ? 'Título e artigo gerados com sucesso. Revise antes de publicar.'
+            : 'O artigo foi gerado com sucesso. Revise antes de publicar.',
         });
       }
     } catch (error) {
@@ -715,20 +746,68 @@ export function ArticleForm({ onSuccess, editingArticle, onCancelEdit }: Article
         </div>
       </CardHeader>
       <CardContent className="space-y-6">
-        {/* Title */}
+        {/* Custom Instructions Field - shown when toggle is on and not in PDF mode */}
+        {useCustomInstructions && !isPdfMode && (
+          <div className="space-y-2">
+            <Label htmlFor="custom-instructions" className="text-sm font-medium flex items-center gap-2">
+              <Sparkles className="h-4 w-4 text-accent" />
+              Descreva o que você quer gerar
+            </Label>
+            <Textarea
+              id="custom-instructions"
+              value={customInstructions}
+              onChange={(e) => setCustomInstructions(e.target.value)}
+              placeholder="Ex: Escreva um artigo sobre isenção de imposto de renda para aposentados com câncer, explicando os requisitos, documentos necessários e como solicitar a isenção..."
+              className="bg-background min-h-[100px]"
+              maxLength={1000}
+            />
+            <div className="flex items-center justify-between">
+              <p className="text-xs text-muted-foreground">
+                Descreva o tema, pontos que quer abordar e o objetivo do artigo. A IA irá gerar o título e o conteúdo completo.
+              </p>
+              <span className="text-xs text-muted-foreground">
+                {customInstructions.length}/1000
+              </span>
+            </div>
+            <Button
+              type="button"
+              onClick={handleGenerateWithAI}
+              disabled={isGenerating || customInstructions.trim().length < 10}
+              className="w-full bg-accent hover:bg-accent/90 text-accent-foreground font-bold gap-2"
+            >
+              {isGenerating ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Gerando título e artigo...
+                </>
+              ) : (
+                <>
+                  <Sparkles className="h-4 w-4" />
+                  Gerar Título + Artigo com IA
+                </>
+              )}
+            </Button>
+          </div>
+        )}
+        
+        {/* Title Field */}
         <div className="space-y-2">
           <Label htmlFor="title" className="text-sm font-medium">
             Título do Artigo
+            {useCustomInstructions && !isPdfMode && (
+              <span className="text-xs text-muted-foreground ml-2">(será gerado automaticamente)</span>
+            )}
           </Label>
           <div className="flex gap-2">
             <Input
               id="title"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="Ex: Isenção de IR para Portadores de HIV"
+              placeholder={useCustomInstructions && !isPdfMode ? "Será preenchido pela IA..." : "Ex: Isenção de IR para Portadores de HIV"}
               className="flex-1 bg-background"
+              disabled={useCustomInstructions && !isPdfMode && isGenerating}
             />
-            {!isPdfMode ? (
+            {!isPdfMode && !useCustomInstructions ? (
               <Button
                 type="button"
                 onClick={handleGenerateWithAI}
@@ -747,7 +826,7 @@ export function ArticleForm({ onSuccess, editingArticle, onCancelEdit }: Article
                   </>
                 )}
               </Button>
-            ) : (
+            ) : isPdfMode ? (
               <Button
                 type="button"
                 onClick={handleFormatPdfWithAI}
@@ -766,11 +845,13 @@ export function ArticleForm({ onSuccess, editingArticle, onCancelEdit }: Article
                   </>
                 )}
               </Button>
-            )}
+            ) : null}
           </div>
           <p className="text-xs text-muted-foreground">
             {isPdfMode 
               ? 'PDF carregado! Digite o título e clique em "Formatar com IA" para adaptar o conteúdo'
+              : useCustomInstructions
+              ? 'O título será gerado automaticamente pela IA com base nas suas instruções'
               : 'Digite o título e clique em "Gerar com IA" para criar o conteúdo automaticamente'
             }
           </p>
@@ -830,6 +911,38 @@ export function ArticleForm({ onSuccess, editingArticle, onCancelEdit }: Article
                       </p>
                       <p className="text-xs mt-1">
                         <strong>Desativado:</strong> O artigo será 100% prático, sem citar números de leis ou artigos.
+                      </p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </div>
+            )}
+            
+            {/* Custom Instructions Toggle - only show when not in PDF mode */}
+            {!isPdfMode && (
+              <div className="flex items-center gap-2 pl-4 border-l border-border/50">
+                <Switch
+                  id="use-custom-instructions"
+                  checked={useCustomInstructions}
+                  onCheckedChange={setUseCustomInstructions}
+                />
+                <Label 
+                  htmlFor="use-custom-instructions" 
+                  className="text-xs text-muted-foreground cursor-pointer"
+                >
+                  Gerar título + artigo
+                </Label>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <HelpCircle className="h-3.5 w-3.5 text-muted-foreground/60 cursor-help" />
+                    </TooltipTrigger>
+                    <TooltipContent side="top" className="max-w-[280px] text-center">
+                      <p className="text-xs">
+                        <strong>Ativado:</strong> Descreva o que você quer e a IA irá gerar tanto o título quanto o artigo completo.
+                      </p>
+                      <p className="text-xs mt-1">
+                        <strong>Desativado:</strong> Você define o título e a IA gera apenas o conteúdo do artigo.
                       </p>
                     </TooltipContent>
                   </Tooltip>
