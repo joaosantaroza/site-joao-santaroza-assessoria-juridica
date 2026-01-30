@@ -63,9 +63,9 @@ interface ArticleFormProps {
 type ArticleTone = 'formal' | 'acessivel' | 'tecnico';
 
 const TONE_OPTIONS: { value: ArticleTone; label: string; description: string }[] = [
-  { value: 'formal', label: 'Formal', description: 'Linguagem jurídica tradicional' },
+  { value: 'formal', label: 'Formal', description: 'Tom profissional e elegante' },
   { value: 'acessivel', label: 'Acessível', description: 'Fácil compreensão para leigos' },
-  { value: 'tecnico', label: 'Técnico', description: 'Detalhado com citações legais' },
+  { value: 'tecnico', label: 'Técnico', description: 'Mais detalhado e explicativo' },
 ];
 
 export function ArticleForm({ onSuccess, editingArticle, onCancelEdit }: ArticleFormProps) {
@@ -83,6 +83,7 @@ export function ArticleForm({ onSuccess, editingArticle, onCancelEdit }: Article
   const [isUploading, setIsUploading] = useState(false);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [articleTone, setArticleTone] = useState<ArticleTone>('acessivel');
+  const [includeLegalBasis, setIncludeLegalBasis] = useState(true);
   
   // eBook fields
   const [hasEbook, setHasEbook] = useState(false);
@@ -375,7 +376,7 @@ export function ArticleForm({ onSuccess, editingArticle, onCancelEdit }: Article
             'apikey': import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
             'Authorization': `Bearer ${session?.access_token || import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
           },
-          body: JSON.stringify({ title: title.trim(), tone: articleTone }),
+          body: JSON.stringify({ title: title.trim(), tone: articleTone, includeLegalBasis }),
         }
       );
 
@@ -586,25 +587,43 @@ export function ArticleForm({ onSuccess, editingArticle, onCancelEdit }: Article
             Digite o título e clique em "Gerar com IA" para criar o conteúdo automaticamente
           </p>
           
-          {/* Tone Selector */}
-          <div className="flex flex-wrap gap-2 pt-2">
-            <span className="text-xs text-muted-foreground self-center mr-1">Tom:</span>
-            {TONE_OPTIONS.map((option) => (
-              <button
-                key={option.value}
-                type="button"
-                onClick={() => setArticleTone(option.value)}
-                className={cn(
-                  "px-3 py-1.5 text-xs rounded-full border transition-all",
-                  articleTone === option.value
-                    ? "bg-primary text-primary-foreground border-primary"
-                    : "bg-muted/50 text-muted-foreground border-border hover:border-primary/50"
-                )}
-                title={option.description}
+          {/* AI Generation Options */}
+          <div className="flex flex-wrap items-center gap-4 pt-2 border-t border-border/50 mt-3">
+            {/* Tone Selector */}
+            <div className="flex flex-wrap gap-2 items-center">
+              <span className="text-xs text-muted-foreground mr-1">Tom:</span>
+              {TONE_OPTIONS.map((option) => (
+                <button
+                  key={option.value}
+                  type="button"
+                  onClick={() => setArticleTone(option.value)}
+                  className={cn(
+                    "px-3 py-1.5 text-xs rounded-full border transition-all",
+                    articleTone === option.value
+                      ? "bg-primary text-primary-foreground border-primary"
+                      : "bg-muted/50 text-muted-foreground border-border hover:border-primary/50"
+                  )}
+                  title={option.description}
+                >
+                  {option.label}
+                </button>
+              ))}
+            </div>
+            
+            {/* Legal Basis Toggle */}
+            <div className="flex items-center gap-2 pl-4 border-l border-border/50">
+              <Switch
+                id="include-legal-basis"
+                checked={includeLegalBasis}
+                onCheckedChange={setIncludeLegalBasis}
+              />
+              <Label 
+                htmlFor="include-legal-basis" 
+                className="text-xs text-muted-foreground cursor-pointer"
               >
-                {option.label}
-              </button>
-            ))}
+                Incluir bases legais
+              </Label>
+            </div>
           </div>
         </div>
 
