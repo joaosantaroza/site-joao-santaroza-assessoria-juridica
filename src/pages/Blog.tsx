@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Calendar, Clock, Tag, ChevronLeft, ChevronRight, Loader2, Search, X } from "lucide-react";
+import { Calendar, Clock, Tag, ChevronLeft, ChevronRight, Loader2, Search, X, ArrowUpDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { SectionTitle } from "@/components/ui/SectionTitle";
@@ -10,8 +10,39 @@ import { BlogArticle } from "@/lib/constants";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { ContactModal } from "@/components/ContactModal";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const ARTICLES_PER_PAGE = 6;
+
+type SortOption = "newest" | "oldest" | "title-asc" | "title-desc";
+
+const SORT_OPTIONS: { value: SortOption; label: string }[] = [
+  { value: "newest", label: "Mais recentes" },
+  { value: "oldest", label: "Mais antigos" },
+  { value: "title-asc", label: "Título (A-Z)" },
+  { value: "title-desc", label: "Título (Z-A)" },
+];
+
+const parseDate = (dateStr: string): Date => {
+  const months: Record<string, number> = {
+    'jan': 0, 'fev': 1, 'mar': 2, 'abr': 3, 'mai': 4, 'jun': 5,
+    'jul': 6, 'ago': 7, 'set': 8, 'out': 9, 'nov': 10, 'dez': 11
+  };
+  const parts = dateStr.toLowerCase().replace('.', '').split(' ');
+  if (parts.length >= 3) {
+    const day = parseInt(parts[0]);
+    const month = months[parts[1].substring(0, 3)] ?? 0;
+    const year = parseInt(parts[2]);
+    return new Date(year, month, day);
+  }
+  return new Date(dateStr);
+};
 
 const ArticleCard = ({ 
   article, 
@@ -149,6 +180,7 @@ export default function Blog() {
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [sortBy, setSortBy] = useState<SortOption>("newest");
   const [showModal, setShowModal] = useState(false);
   const { articles, categories, loading } = useBlogArticles();
 
@@ -170,8 +202,24 @@ export default function Blog() {
       result = result.filter(a => a.categories.includes(selectedCategory));
     }
     
+    // Sort articles
+    result = [...result].sort((a, b) => {
+      switch (sortBy) {
+        case "newest":
+          return parseDate(b.date).getTime() - parseDate(a.date).getTime();
+        case "oldest":
+          return parseDate(a.date).getTime() - parseDate(b.date).getTime();
+        case "title-asc":
+          return a.title.localeCompare(b.title, 'pt-BR');
+        case "title-desc":
+          return b.title.localeCompare(a.title, 'pt-BR');
+        default:
+          return 0;
+      }
+    });
+    
     return result;
-  }, [selectedCategory, searchQuery, articles]);
+  }, [selectedCategory, searchQuery, articles, sortBy]);
 
   const totalPages = Math.ceil(filteredArticles.length / ARTICLES_PER_PAGE);
   
@@ -231,27 +279,45 @@ export default function Blog() {
           </div>
         </section>
 
-        {/* Search and Categories Filter */}
+        {/* Search, Sort and Categories Filter */}
         <section className="py-8 border-b border-border bg-card/50">
           <div className="container mx-auto px-6 space-y-6">
-            {/* Search Input */}
-            <div className="relative max-w-md">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => handleSearchChange(e.target.value)}
-                placeholder="Buscar artigos por título ou conteúdo..."
-                className="w-full pl-12 pr-10 py-3 rounded-full border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-colors"
-              />
-              {searchQuery && (
-                <button
-                  onClick={() => handleSearchChange("")}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              )}
+            {/* Search and Sort Row */}
+            <div className="flex flex-col sm:flex-row gap-4">
+              {/* Search Input */}
+              <div className="relative flex-1 max-w-md">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => handleSearchChange(e.target.value)}
+                  placeholder="Buscar artigos por título ou conteúdo..."
+                  className="w-full pl-12 pr-10 py-3 rounded-full border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-colors"
+                />
+                {searchQuery && (
+                  <button
+                    onClick={() => handleSearchChange("")}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                )}
+              </div>
+
+              {/* Sort Select */}
+              <Select value={sortBy} onValueChange={(value: SortOption) => { setSortBy(value); setCurrentPage(1); }}>
+                <SelectTrigger className="w-full sm:w-[200px] rounded-full">
+                  <ArrowUpDown className="w-4 h-4 mr-2" />
+                  <SelectValue placeholder="Ordenar por" />
+                </SelectTrigger>
+                <SelectContent>
+                  {SORT_OPTIONS.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
             {/* Category Filters */}
