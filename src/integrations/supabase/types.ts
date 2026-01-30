@@ -34,6 +34,7 @@ export type Database = {
           slug: string
           title: string
           updated_at: string
+          view_count: number
         }
         Insert: {
           author_id?: string | null
@@ -54,6 +55,7 @@ export type Database = {
           slug: string
           title: string
           updated_at?: string
+          view_count?: number
         }
         Update: {
           author_id?: string | null
@@ -74,6 +76,7 @@ export type Database = {
           slug?: string
           title?: string
           updated_at?: string
+          view_count?: number
         }
         Relationships: []
       }
@@ -211,6 +214,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      increment_article_view: { Args: { p_slug: string }; Returns: undefined }
     }
     Enums: {
       app_role: "admin" | "user"
