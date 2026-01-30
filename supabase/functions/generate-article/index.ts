@@ -148,7 +148,7 @@ serve(async (req) => {
       );
     }
 
-    const { title, tone = 'acessivel' } = await req.json();
+    const { title, tone = 'acessivel', includeLegalBasis = true } = await req.json();
     
     if (!title || typeof title !== "string" || title.trim().length < 5) {
       return new Response(
@@ -170,7 +170,7 @@ serve(async (req) => {
       );
     }
 
-    console.log(`Admin ${userData.user.email} generating article with Perplexity (tone: ${selectedTone}) for title: ${title}`);
+    console.log(`Admin ${userData.user.email} generating article with Perplexity (tone: ${selectedTone}, legalBasis: ${includeLegalBasis}) for title: ${title}`);
 
     // Tone-specific instructions for blog-style articles
     const toneInstructions = {
@@ -192,15 +192,28 @@ serve(async (req) => {
 - Equilibre profundidade com legibilidade`,
     };
 
+    // Legal basis instructions based on toggle
+    const legalBasisInstructions = includeLegalBasis
+      ? `BASES LEGAIS:
+- Pode mencionar leis, artigos e normas quando relevante
+- Integre as referências legais de forma NATURAL e FLUIDA ao texto
+- Exemplos: "De acordo com a Lei X...", "A legislação prevê que...", "O artigo Y determina..."
+- NÃO cite jurisprudência, número de processos ou decisões de tribunais`
+      : `BASES LEGAIS:
+- NÃO mencione leis, artigos, números de legislação ou qualquer referência legal específica
+- NÃO cite jurisprudência, tribunais ou processos
+- Foque APENAS em explicar o tema de forma prática e acessível
+- Use expressões genéricas como "a lei permite", "você tem direito a", "é garantido que"`;
+
     const systemPrompt = `Você é um redator de conteúdo especializado em criar artigos de BLOG informativos sobre temas jurídicos no Brasil.
 
 IMPORTANTE - ESTILO BLOG INFORMATIVO:
 - Escreva como um artigo de blog para INFORMAR e EDUCAR o leitor
 - NÃO use linguagem rebuscada ou excessivamente jurídica
-- NÃO inclua jurisprudência, número de processos ou citações de tribunais
-- Pode mencionar bases legais (leis, artigos) mas de forma NATURAL e FLUIDA, integrada ao texto
 - O foco é o leitor entender o assunto, não impressionar com termos técnicos
 - Use uma linguagem que qualquer pessoa consiga entender facilmente
+
+${legalBasisInstructions}
 
 ${toneInstructions[selectedTone as keyof typeof toneInstructions]}
 
@@ -220,6 +233,10 @@ CONTEXTO DO ESCRITÓRIO:
 - Atua principalmente com isenção de IR por moléstia grave, direitos trabalhistas e previdenciários
 - Localizado no Paraná, com atuação digital em todo Brasil`;
 
+    const legalBasisUserInstruction = includeLegalBasis
+      ? `3. Pode citar leis e artigos quando necessário, mas integre naturalmente ao texto (ex: "De acordo com a Lei X..." ou "A legislação prevê que...")`
+      : `3. NÃO mencione leis, artigos ou números de legislação - explique tudo de forma prática sem referências legais específicas`;
+
     const userPrompt = `Escreva um artigo de BLOG informativo sobre o seguinte tema:
 
 "${title}"
@@ -227,7 +244,7 @@ CONTEXTO DO ESCRITÓRIO:
 INSTRUÇÕES:
 1. Comece com uma introdução que conecte com o leitor e apresente o tema de forma envolvente
 2. Desenvolva o conteúdo de forma clara, explicando o tema como se conversasse com o leitor
-3. Pode citar leis e artigos quando necessário, mas integre naturalmente ao texto (ex: "De acordo com a Lei X..." ou "A legislação prevê que...")
+${legalBasisUserInstruction}
 4. NÃO inclua citações de jurisprudência, decisões de tribunais ou número de processos
 5. Foque em orientações práticas e informações úteis
 6. Conclua incentivando o leitor a buscar ajuda profissional se precisar
