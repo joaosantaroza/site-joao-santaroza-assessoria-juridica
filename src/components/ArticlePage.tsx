@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { ArticleAudioPlayer } from "@/components/ArticleAudioPlayer";
 import { EbookLeadModal } from "@/components/EbookLeadModal";
 import { RelatedArticles } from "@/components/RelatedArticles";
+import { SocialShareButtons } from "@/components/SocialShareButtons";
 import ebookGestanteCapa from '@/assets/ebook-gestante-capa.png';
 import ebookPontoBritanicoCapa from '@/assets/ebook-ponto-britanico-capa.png';
 
@@ -136,7 +137,7 @@ export const ArticlePage = ({ article, allArticles, onBack, onContact, onArticle
 
           {/* Meta Info */}
           <motion.div 
-            className="flex flex-wrap items-center gap-6 text-sm text-muted-foreground mb-10 pb-10 border-b border-border"
+            className="flex flex-wrap items-center gap-6 text-sm text-muted-foreground mb-6"
             variants={fadeInUp}
           >
             <span className="flex items-center gap-2">
@@ -151,6 +152,17 @@ export const ArticlePage = ({ article, allArticles, onBack, onContact, onArticle
               <Clock className="w-4 h-4" />
               {article.readTime} de leitura
             </span>
+          </motion.div>
+
+          {/* Social Share Buttons */}
+          <motion.div 
+            className="mb-10 pb-10 border-b border-border"
+            variants={fadeInUp}
+          >
+            <SocialShareButtons 
+              url={typeof window !== 'undefined' ? window.location.href : ''}
+              title={article.title}
+            />
           </motion.div>
 
           {/* Audio Player */}
