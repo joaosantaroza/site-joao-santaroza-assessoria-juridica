@@ -81,11 +81,16 @@ export function ArticleForm({ onSuccess, editingArticle, onCancelEdit }: Article
   const [scheduledAt, setScheduledAt] = useState<Date | undefined>(undefined);
   const [isScheduled, setIsScheduled] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isFormattingPdf, setIsFormattingPdf] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [articleTone, setArticleTone] = useState<ArticleTone>('acessivel');
   const [includeLegalBasis, setIncludeLegalBasis] = useState(true);
+  
+  // PDF import state
+  const [pdfSourceText, setPdfSourceText] = useState('');
+  const [isPdfMode, setIsPdfMode] = useState(false);
   
   // eBook fields
   const [hasEbook, setHasEbook] = useState(false);
@@ -99,6 +104,7 @@ export function ArticleForm({ onSuccess, editingArticle, onCancelEdit }: Article
   const fileInputRef = useRef<HTMLInputElement>(null);
   const pdfInputRef = useRef<HTMLInputElement>(null);
   const coverInputRef = useRef<HTMLInputElement>(null);
+  const pdfSourceInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
   // Populate form when editing
@@ -139,6 +145,9 @@ export function ArticleForm({ onSuccess, editingArticle, onCancelEdit }: Article
     setPublished(false);
     setScheduledAt(undefined);
     setIsScheduled(false);
+    // Reset PDF import state
+    setPdfSourceText('');
+    setIsPdfMode(false);
     // Reset eBook fields
     setHasEbook(false);
     setEbookTitle('');
@@ -412,6 +421,156 @@ export function ArticleForm({ onSuccess, editingArticle, onCancelEdit }: Article
     }
   };
 
+  // Handle PDF file upload for text extraction
+  const handlePdfSourceUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    if (file.type !== 'application/pdf') {
+      toast({
+        title: 'Formato inválido',
+        description: 'Use apenas arquivos PDF.',
+        variant: 'destructive'
+      });
+      return;
+    }
+
+    // Max 10MB for PDF processing
+    const maxSize = 10 * 1024 * 1024;
+    if (file.size > maxSize) {
+      toast({
+        title: 'Arquivo muito grande',
+        description: 'O tamanho máximo para processamento é 10MB.',
+        variant: 'destructive'
+      });
+      return;
+    }
+
+    try {
+      // Use pdf.js to extract text from PDF
+      const arrayBuffer = await file.arrayBuffer();
+      
+      // Dynamic import of pdfjs-dist
+      const pdfjsLib = await import('pdfjs-dist');
+      pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
+      
+      const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+      let fullText = '';
+      
+      for (let i = 1; i <= pdf.numPages; i++) {
+        const page = await pdf.getPage(i);
+        const textContent = await page.getTextContent();
+        const pageText = textContent.items
+          .map((item: any) => item.str)
+          .join(' ');
+        fullText += pageText + '\n\n';
+      }
+
+      if (fullText.trim().length < 100) {
+        toast({
+          title: 'PDF com pouco conteúdo',
+          description: 'O PDF parece estar vazio ou com muito pouco texto.',
+          variant: 'destructive'
+        });
+        return;
+      }
+
+      setPdfSourceText(fullText.trim());
+      setIsPdfMode(true);
+      
+      toast({
+        title: 'PDF carregado!',
+        description: `${pdf.numPages} página(s) extraída(s). Agora clique em "Formatar com IA" para adaptar o conteúdo.`,
+      });
+    } catch (error) {
+      console.error('Error extracting PDF text:', error);
+      toast({
+        title: 'Erro ao processar PDF',
+        description: 'Não foi possível extrair o texto do PDF. Verifique se o arquivo não está protegido.',
+        variant: 'destructive'
+      });
+    } finally {
+      if (pdfSourceInputRef.current) pdfSourceInputRef.current.value = '';
+    }
+  };
+
+  // Format PDF content with AI
+  const handleFormatPdfWithAI = async () => {
+    if (!title || title.trim().length < 5) {
+      toast({
+        title: 'Título necessário',
+        description: 'Digite um título com pelo menos 5 caracteres.',
+        variant: 'destructive'
+      });
+      return;
+    }
+
+    if (!pdfSourceText || pdfSourceText.length < 100) {
+      toast({
+        title: 'PDF necessário',
+        description: 'Carregue um PDF primeiro para formatar o conteúdo.',
+        variant: 'destructive'
+      });
+      return;
+    }
+
+    setIsFormattingPdf(true);
+
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      const response = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/format-pdf-article`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'apikey': import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+            'Authorization': `Bearer ${session?.access_token || import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+          },
+          body: JSON.stringify({ 
+            pdfText: pdfSourceText, 
+            title: title.trim(), 
+            tone: articleTone 
+          }),
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Erro ao formatar conteúdo');
+      }
+
+      if (data.success && data.data) {
+        setContent(data.data.content);
+        setExcerpt(data.data.excerpt);
+        setCategory(data.data.category ? [data.data.category] : category);
+        setReadTime(calculateReadingTime(data.data.content));
+
+        toast({
+          title: 'Conteúdo formatado!',
+          description: 'O PDF foi formatado no estilo do blog. Revise antes de publicar.',
+        });
+      }
+    } catch (error) {
+      console.error('Error formatting PDF article:', error);
+      toast({
+        title: 'Erro na formatação',
+        description: error instanceof Error ? error.message : 'Não foi possível formatar o conteúdo.',
+        variant: 'destructive'
+      });
+    } finally {
+      setIsFormattingPdf(false);
+    }
+  };
+
+  // Clear PDF mode
+  const handleClearPdfMode = () => {
+    setPdfSourceText('');
+    setIsPdfMode(false);
+  };
+
   const handleSave = async () => {
     if (!title.trim()) {
       toast({ title: 'Título obrigatório', variant: 'destructive' });
@@ -566,27 +725,51 @@ export function ArticleForm({ onSuccess, editingArticle, onCancelEdit }: Article
               placeholder="Ex: Isenção de IR para Portadores de HIV"
               className="flex-1 bg-background"
             />
-            <Button
-              type="button"
-              onClick={handleGenerateWithAI}
-              disabled={isGenerating || !title.trim()}
-              className="bg-accent hover:bg-accent/90 text-accent-foreground font-bold gap-2"
-            >
-              {isGenerating ? (
-                <>
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                  Gerando...
-                </>
-              ) : (
-                <>
-                  <Sparkles className="h-4 w-4" />
-                  Gerar com IA
-                </>
-              )}
-            </Button>
+            {!isPdfMode ? (
+              <Button
+                type="button"
+                onClick={handleGenerateWithAI}
+                disabled={isGenerating || !title.trim()}
+                className="bg-accent hover:bg-accent/90 text-accent-foreground font-bold gap-2"
+              >
+                {isGenerating ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    Gerando...
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="h-4 w-4" />
+                    Gerar com IA
+                  </>
+                )}
+              </Button>
+            ) : (
+              <Button
+                type="button"
+                onClick={handleFormatPdfWithAI}
+                disabled={isFormattingPdf || !title.trim() || !pdfSourceText}
+                className="bg-accent hover:bg-accent/90 text-accent-foreground font-bold gap-2"
+              >
+                {isFormattingPdf ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    Formatando...
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="h-4 w-4" />
+                    Formatar com IA
+                  </>
+                )}
+              </Button>
+            )}
           </div>
           <p className="text-xs text-muted-foreground">
-            Digite o título e clique em "Gerar com IA" para criar o conteúdo automaticamente
+            {isPdfMode 
+              ? 'PDF carregado! Digite o título e clique em "Formatar com IA" para adaptar o conteúdo'
+              : 'Digite o título e clique em "Gerar com IA" para criar o conteúdo automaticamente'
+            }
           </p>
           
           {/* AI Generation Options */}
@@ -619,34 +802,90 @@ export function ArticleForm({ onSuccess, editingArticle, onCancelEdit }: Article
               </TooltipProvider>
             </div>
             
-            {/* Legal Basis Toggle */}
+            {/* Legal Basis Toggle - only show when not in PDF mode */}
+            {!isPdfMode && (
+              <div className="flex items-center gap-2 pl-4 border-l border-border/50">
+                <Switch
+                  id="include-legal-basis"
+                  checked={includeLegalBasis}
+                  onCheckedChange={setIncludeLegalBasis}
+                />
+                <Label 
+                  htmlFor="include-legal-basis" 
+                  className="text-xs text-muted-foreground cursor-pointer"
+                >
+                  Incluir bases legais
+                </Label>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <HelpCircle className="h-3.5 w-3.5 text-muted-foreground/60 cursor-help" />
+                    </TooltipTrigger>
+                    <TooltipContent side="top" className="max-w-[280px] text-center">
+                      <p className="text-xs">
+                        <strong>Ativado:</strong> O artigo mencionará leis e artigos específicos de forma natural no texto.
+                      </p>
+                      <p className="text-xs mt-1">
+                        <strong>Desativado:</strong> O artigo será 100% prático, sem citar números de leis ou artigos.
+                      </p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </div>
+            )}
+            
+            {/* PDF Import Option */}
             <div className="flex items-center gap-2 pl-4 border-l border-border/50">
-              <Switch
-                id="include-legal-basis"
-                checked={includeLegalBasis}
-                onCheckedChange={setIncludeLegalBasis}
+              {isPdfMode ? (
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-accent font-medium flex items-center gap-1">
+                    <FileDown className="h-3.5 w-3.5" />
+                    PDF carregado ({Math.round(pdfSourceText.length / 1000)}k caracteres)
+                  </span>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleClearPdfMode}
+                    className="h-6 px-2 text-xs"
+                  >
+                    <X className="h-3 w-3 mr-1" />
+                    Limpar
+                  </Button>
+                </div>
+              ) : (
+                <>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => pdfSourceInputRef.current?.click()}
+                    className="h-7 text-xs gap-1.5"
+                  >
+                    <FileDown className="h-3.5 w-3.5" />
+                    Importar PDF
+                  </Button>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <HelpCircle className="h-3.5 w-3.5 text-muted-foreground/60 cursor-help" />
+                      </TooltipTrigger>
+                      <TooltipContent side="top" className="max-w-[280px] text-center">
+                        <p className="text-xs">
+                          Carregue um PDF e a IA irá reformatar o conteúdo para ficar consistente com o estilo dos artigos do blog.
+                        </p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </>
+              )}
+              <input
+                ref={pdfSourceInputRef}
+                type="file"
+                accept="application/pdf"
+                onChange={handlePdfSourceUpload}
+                className="hidden"
               />
-              <Label 
-                htmlFor="include-legal-basis" 
-                className="text-xs text-muted-foreground cursor-pointer"
-              >
-                Incluir bases legais
-              </Label>
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <HelpCircle className="h-3.5 w-3.5 text-muted-foreground/60 cursor-help" />
-                  </TooltipTrigger>
-                  <TooltipContent side="top" className="max-w-[280px] text-center">
-                    <p className="text-xs">
-                      <strong>Ativado:</strong> O artigo mencionará leis e artigos específicos de forma natural no texto.
-                    </p>
-                    <p className="text-xs mt-1">
-                      <strong>Desativado:</strong> O artigo será 100% prático, sem citar números de leis ou artigos.
-                    </p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
             </div>
           </div>
         </div>
