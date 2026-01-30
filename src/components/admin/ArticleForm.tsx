@@ -32,9 +32,11 @@ import {
   CalendarIcon,
   BookOpen,
   FileDown,
-  RefreshCw
+  RefreshCw,
+  HelpCircle
 } from 'lucide-react';
 import { TagInput } from '@/components/ui/tag-input';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 export interface BlogPostEdit {
   id: string;
@@ -623,6 +625,21 @@ export function ArticleForm({ onSuccess, editingArticle, onCancelEdit }: Article
               >
                 Incluir bases legais
               </Label>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <HelpCircle className="h-3.5 w-3.5 text-muted-foreground/60 cursor-help" />
+                  </TooltipTrigger>
+                  <TooltipContent side="top" className="max-w-[280px] text-center">
+                    <p className="text-xs">
+                      <strong>Ativado:</strong> O artigo mencionará leis e artigos específicos de forma natural no texto.
+                    </p>
+                    <p className="text-xs mt-1">
+                      <strong>Desativado:</strong> O artigo será 100% prático, sem citar números de leis ou artigos.
+                    </p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             </div>
           </div>
         </div>
