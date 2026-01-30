@@ -748,11 +748,35 @@ export function ArticleForm({ onSuccess, editingArticle, onCancelEdit }: Article
       <CardContent className="space-y-6">
         {/* Custom Instructions Field - shown when toggle is on and not in PDF mode */}
         {useCustomInstructions && !isPdfMode && (
-          <div className="space-y-2">
+          <div className="space-y-3">
             <Label htmlFor="custom-instructions" className="text-sm font-medium flex items-center gap-2">
               <Sparkles className="h-4 w-4 text-accent" />
               Descreva o que você quer gerar
             </Label>
+            
+            {/* Prompt Examples */}
+            <div className="space-y-2">
+              <p className="text-xs text-muted-foreground">Clique em um exemplo para usar como base:</p>
+              <div className="flex flex-wrap gap-2">
+                {[
+                  { label: "Isenção IR - Doença Grave", prompt: "Escreva um artigo explicando como pessoas com doenças graves (câncer, HIV, Parkinson, etc.) podem solicitar isenção de imposto de renda sobre aposentadoria. Inclua requisitos, documentos necessários e o passo a passo do pedido." },
+                  { label: "Direitos da Gestante", prompt: "Crie um artigo sobre os direitos trabalhistas da gestante, incluindo estabilidade no emprego, licença-maternidade, intervalos para amamentação e proteção contra demissão. Foque em orientações práticas." },
+                  { label: "Revisão de Benefício INSS", prompt: "Escreva sobre como solicitar a revisão de benefício do INSS quando o valor está incorreto. Explique os tipos de revisão mais comuns, prazos e como o aposentado pode verificar se tem direito." },
+                  { label: "Horas Extras não Pagas", prompt: "Crie um artigo orientando trabalhadores que fazem horas extras mas não recebem corretamente. Explique como calcular, documentar e cobrar as horas extras devidas do empregador." },
+                  { label: "Acidente de Trabalho", prompt: "Escreva sobre os direitos do trabalhador que sofre acidente de trabalho. Inclua estabilidade, benefícios do INSS, indenizações e o que fazer logo após o acidente." },
+                ].map((example) => (
+                  <button
+                    key={example.label}
+                    type="button"
+                    onClick={() => setCustomInstructions(example.prompt)}
+                    className="px-3 py-1.5 text-xs rounded-full border border-border/50 bg-muted/30 hover:bg-accent/20 hover:border-accent/50 transition-colors text-muted-foreground hover:text-foreground"
+                  >
+                    {example.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+            
             <Textarea
               id="custom-instructions"
               value={customInstructions}
@@ -763,7 +787,7 @@ export function ArticleForm({ onSuccess, editingArticle, onCancelEdit }: Article
             />
             <div className="flex items-center justify-between">
               <p className="text-xs text-muted-foreground">
-                Descreva o tema, pontos que quer abordar e o objetivo do artigo. A IA irá gerar o título e o conteúdo completo.
+                Personalize as instruções conforme necessário. A IA irá gerar o título e o conteúdo completo.
               </p>
               <span className="text-xs text-muted-foreground">
                 {customInstructions.length}/1000
