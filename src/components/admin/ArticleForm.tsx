@@ -112,30 +112,70 @@ export function ArticleForm({ onSuccess, editingArticle, onCancelEdit }: Article
   const pdfSourceInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
-  // Pool of prompt examples - randomly select 5 on mount
-  const promptExamples = useMemo(() => {
-    const allExamples = [
-      { label: "Isenção IR - Doença Grave", prompt: "Escreva um artigo explicando como pessoas com doenças graves (câncer, HIV, Parkinson, etc.) podem solicitar isenção de imposto de renda sobre aposentadoria. Inclua requisitos, documentos necessários e o passo a passo do pedido." },
-      { label: "Direitos da Gestante", prompt: "Crie um artigo sobre os direitos trabalhistas da gestante, incluindo estabilidade no emprego, licença-maternidade, intervalos para amamentação e proteção contra demissão. Foque em orientações práticas." },
-      { label: "Revisão de Benefício INSS", prompt: "Escreva sobre como solicitar a revisão de benefício do INSS quando o valor está incorreto. Explique os tipos de revisão mais comuns, prazos e como o aposentado pode verificar se tem direito." },
-      { label: "Horas Extras não Pagas", prompt: "Crie um artigo orientando trabalhadores que fazem horas extras mas não recebem corretamente. Explique como calcular, documentar e cobrar as horas extras devidas do empregador." },
-      { label: "Acidente de Trabalho", prompt: "Escreva sobre os direitos do trabalhador que sofre acidente de trabalho. Inclua estabilidade, benefícios do INSS, indenizações e o que fazer logo após o acidente." },
-      { label: "Aposentadoria Especial", prompt: "Escreva um artigo sobre aposentadoria especial para trabalhadores expostos a agentes nocivos (ruído, calor, produtos químicos). Explique requisitos, como comprovar a atividade especial e diferenças para aposentadoria comum." },
-      { label: "Pensão por Morte", prompt: "Crie um artigo explicando quem tem direito à pensão por morte do INSS, documentos necessários, valor do benefício e como solicitar. Inclua informações sobre dependentes e prazos." },
-      { label: "Auxílio-Doença", prompt: "Escreva sobre como solicitar auxílio-doença no INSS, requisitos de carência, documentos médicos necessários e o que fazer se o pedido for negado." },
-      { label: "Direito do Consumidor", prompt: "Crie um artigo sobre os principais direitos do consumidor em compras online, incluindo direito de arrependimento, troca de produtos com defeito e como registrar reclamações." },
-      { label: "Pensão Alimentícia", prompt: "Escreva sobre como funciona a pensão alimentícia: quem pode pedir, como calcular o valor, revisão de valores e consequências do não pagamento." },
-      { label: "Demissão por Justa Causa", prompt: "Crie um artigo explicando o que caracteriza demissão por justa causa, direitos do trabalhador nessa situação e como contestar uma demissão injusta." },
-      { label: "FGTS Retido", prompt: "Escreva sobre situações em que o trabalhador pode sacar o FGTS, como verificar se a empresa está depositando corretamente e o que fazer se houver irregularidades." },
-      { label: "Seguro-Desemprego", prompt: "Crie um artigo explicando quem tem direito ao seguro-desemprego, quantas parcelas pode receber, como solicitar e prazos importantes." },
-      { label: "Erro Médico", prompt: "Escreva sobre responsabilidade por erro médico, quando cabe indenização, documentos para comprovar e diferença entre erro e resultado adverso." },
-      { label: "BPC/LOAS", prompt: "Crie um artigo sobre o Benefício de Prestação Continuada (BPC/LOAS) para idosos e pessoas com deficiência, requisitos de renda, como solicitar e documentos necessários." },
-    ];
-    
-    // Shuffle and pick 5 random examples
-    const shuffled = [...allExamples].sort(() => Math.random() - 0.5);
-    return shuffled.slice(0, 5);
-  }, []);
+  // Prompt examples organized by category
+  const promptCategories = useMemo(() => [
+    {
+      id: 'previdenciario',
+      label: 'Previdenciário',
+      prompts: [
+        { label: "Aposentadoria Especial", prompt: "Escreva um artigo sobre aposentadoria especial para trabalhadores expostos a agentes nocivos (ruído, calor, produtos químicos). Explique requisitos, como comprovar a atividade especial e diferenças para aposentadoria comum." },
+        { label: "Revisão de Benefício INSS", prompt: "Escreva sobre como solicitar a revisão de benefício do INSS quando o valor está incorreto. Explique os tipos de revisão mais comuns, prazos e como o aposentado pode verificar se tem direito." },
+        { label: "Pensão por Morte", prompt: "Crie um artigo explicando quem tem direito à pensão por morte do INSS, documentos necessários, valor do benefício e como solicitar. Inclua informações sobre dependentes e prazos." },
+        { label: "Auxílio-Doença", prompt: "Escreva sobre como solicitar auxílio-doença no INSS, requisitos de carência, documentos médicos necessários e o que fazer se o pedido for negado." },
+        { label: "BPC/LOAS", prompt: "Crie um artigo sobre o Benefício de Prestação Continuada (BPC/LOAS) para idosos e pessoas com deficiência, requisitos de renda, como solicitar e documentos necessários." },
+      ]
+    },
+    {
+      id: 'trabalhista',
+      label: 'Trabalhista',
+      prompts: [
+        { label: "Direitos da Gestante", prompt: "Crie um artigo sobre os direitos trabalhistas da gestante, incluindo estabilidade no emprego, licença-maternidade, intervalos para amamentação e proteção contra demissão. Foque em orientações práticas." },
+        { label: "Horas Extras não Pagas", prompt: "Crie um artigo orientando trabalhadores que fazem horas extras mas não recebem corretamente. Explique como calcular, documentar e cobrar as horas extras devidas do empregador." },
+        { label: "Acidente de Trabalho", prompt: "Escreva sobre os direitos do trabalhador que sofre acidente de trabalho. Inclua estabilidade, benefícios do INSS, indenizações e o que fazer logo após o acidente." },
+        { label: "Demissão por Justa Causa", prompt: "Crie um artigo explicando o que caracteriza demissão por justa causa, direitos do trabalhador nessa situação e como contestar uma demissão injusta." },
+        { label: "FGTS Retido", prompt: "Escreva sobre situações em que o trabalhador pode sacar o FGTS, como verificar se a empresa está depositando corretamente e o que fazer se houver irregularidades." },
+        { label: "Seguro-Desemprego", prompt: "Crie um artigo explicando quem tem direito ao seguro-desemprego, quantas parcelas pode receber, como solicitar e prazos importantes." },
+      ]
+    },
+    {
+      id: 'tributario',
+      label: 'Tributário',
+      prompts: [
+        { label: "Isenção IR - Doença Grave", prompt: "Escreva um artigo explicando como pessoas com doenças graves (câncer, HIV, Parkinson, etc.) podem solicitar isenção de imposto de renda sobre aposentadoria. Inclua requisitos, documentos necessários e o passo a passo do pedido." },
+        { label: "Restituição IR Indevido", prompt: "Crie um artigo sobre como solicitar restituição de imposto de renda pago indevidamente, incluindo situações comuns, prazos e documentação necessária." },
+        { label: "Isenção IPTU Aposentado", prompt: "Escreva sobre isenção ou desconto de IPTU para aposentados e idosos, requisitos por município e como solicitar o benefício." },
+      ]
+    },
+    {
+      id: 'consumidor',
+      label: 'Consumidor',
+      prompts: [
+        { label: "Compras Online", prompt: "Crie um artigo sobre os principais direitos do consumidor em compras online, incluindo direito de arrependimento, troca de produtos com defeito e como registrar reclamações." },
+        { label: "Cobrança Indevida", prompt: "Escreva sobre o que fazer quando receber cobrança indevida, direito à devolução em dobro, como contestar e órgãos de proteção ao consumidor." },
+        { label: "Produto com Defeito", prompt: "Crie um artigo explicando os direitos do consumidor quando o produto apresenta defeito, prazos para reclamação, opções de reparo/troca e quando pedir reembolso." },
+      ]
+    },
+    {
+      id: 'familia',
+      label: 'Família',
+      prompts: [
+        { label: "Pensão Alimentícia", prompt: "Escreva sobre como funciona a pensão alimentícia: quem pode pedir, como calcular o valor, revisão de valores e consequências do não pagamento." },
+        { label: "Guarda de Filhos", prompt: "Crie um artigo sobre os tipos de guarda (compartilhada, unilateral), como solicitar, direitos de visitação e o que considerar no melhor interesse da criança." },
+        { label: "Divórcio", prompt: "Escreva sobre o processo de divórcio no Brasil, diferença entre consensual e litigioso, documentos necessários e divisão de bens." },
+      ]
+    },
+    {
+      id: 'saude',
+      label: 'Saúde',
+      prompts: [
+        { label: "Erro Médico", prompt: "Escreva sobre responsabilidade por erro médico, quando cabe indenização, documentos para comprovar e diferença entre erro e resultado adverso." },
+        { label: "Plano de Saúde", prompt: "Crie um artigo sobre os direitos do beneficiário de plano de saúde, cobertura obrigatória, negativa de procedimentos e como recorrer." },
+        { label: "Medicamentos pelo SUS", prompt: "Escreva sobre como solicitar medicamentos de alto custo pelo SUS, requisitos, documentação e o que fazer em caso de negativa." },
+      ]
+    },
+  ], []);
+
+  const [activePromptCategory, setActivePromptCategory] = useState('previdenciario');
 
   // Populate form when editing
   useEffect(() => {
@@ -779,20 +819,43 @@ export function ArticleForm({ onSuccess, editingArticle, onCancelEdit }: Article
               Descreva o que você quer gerar
             </Label>
             
-            {/* Prompt Examples */}
-            <div className="space-y-2">
-              <p className="text-xs text-muted-foreground">Clique em um exemplo para usar como base:</p>
-              <div className="flex flex-wrap gap-2">
-                {promptExamples.map((example) => (
+            {/* Prompt Examples by Category */}
+            <div className="space-y-3">
+              <p className="text-xs text-muted-foreground">Escolha uma área e clique em um exemplo:</p>
+              
+              {/* Category Tabs */}
+              <div className="flex flex-wrap gap-1.5 pb-2 border-b border-border/30">
+                {promptCategories.map((cat) => (
                   <button
-                    key={example.label}
+                    key={cat.id}
                     type="button"
-                    onClick={() => setCustomInstructions(example.prompt)}
-                    className="px-3 py-1.5 text-xs rounded-full border border-border/50 bg-muted/30 hover:bg-accent/20 hover:border-accent/50 transition-colors text-muted-foreground hover:text-foreground"
+                    onClick={() => setActivePromptCategory(cat.id)}
+                    className={cn(
+                      "px-3 py-1.5 text-xs font-medium rounded-md transition-all",
+                      activePromptCategory === cat.id
+                        ? "bg-accent text-accent-foreground shadow-sm"
+                        : "bg-muted/30 text-muted-foreground hover:bg-muted/50 hover:text-foreground"
+                    )}
                   >
-                    {example.label}
+                    {cat.label}
                   </button>
                 ))}
+              </div>
+              
+              {/* Prompts for Active Category */}
+              <div className="flex flex-wrap gap-2">
+                {promptCategories
+                  .find(cat => cat.id === activePromptCategory)
+                  ?.prompts.map((example) => (
+                    <button
+                      key={example.label}
+                      type="button"
+                      onClick={() => setCustomInstructions(example.prompt)}
+                      className="px-3 py-1.5 text-xs rounded-full border border-border/50 bg-muted/30 hover:bg-accent/20 hover:border-accent/50 transition-colors text-muted-foreground hover:text-foreground"
+                    >
+                      {example.label}
+                    </button>
+                  ))}
               </div>
             </div>
             
