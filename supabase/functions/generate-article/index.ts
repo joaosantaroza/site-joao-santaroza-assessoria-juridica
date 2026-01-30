@@ -46,6 +46,18 @@ const getCorsHeaders = (origin: string | null) => ({
   Vary: "Origin",
 });
 
+// Domain filter for legal sources in Brazil
+const LEGAL_DOMAINS = [
+  "planalto.gov.br",
+  "stf.jus.br",
+  "stj.jus.br",
+  "tst.jus.br",
+  "gov.br",
+  "conjur.com.br",
+  "migalhas.com.br",
+  "jusbrasil.com.br",
+];
+
 serve(async (req) => {
   const origin = req.headers.get("origin");
   const corsHeaders = getCorsHeaders(origin);
@@ -145,16 +157,16 @@ serve(async (req) => {
       );
     }
 
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    if (!LOVABLE_API_KEY) {
-      console.error("LOVABLE_API_KEY not configured");
+    const PERPLEXITY_API_KEY = Deno.env.get("PERPLEXITY_API_KEY");
+    if (!PERPLEXITY_API_KEY) {
+      console.error("PERPLEXITY_API_KEY not configured");
       return new Response(
         JSON.stringify({ error: "Serviço de IA não configurado" }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
-    console.log(`Admin ${userData.user.email} generating article for title: ${title}`);
+    console.log(`Admin ${userData.user.email} generating article with Perplexity for title: ${title}`);
 
     const systemPrompt = `Você é um redator jurídico especializado em Direito Tributário, Trabalhista e Previdenciário brasileiro. 
 Seu estilo é profissional, acessível e educativo. Você escreve para um público leigo que busca entender seus direitos.
@@ -174,7 +186,9 @@ REGRAS DE FORMATAÇÃO:
 CONTEXTO DO ESCRITÓRIO:
 - O escritório é do Dr. João Victor Santaroza, OAB/PR 81.381
 - Atua principalmente com isenção de IR por moléstia grave, direitos trabalhistas e previdenciários
-- Localizado no Paraná, com atuação digital em todo Brasil`;
+- Localizado no Paraná, com atuação digital em todo Brasil
+
+IMPORTANTE: Baseie suas informações em fontes jurídicas oficiais e atualizadas. Cite leis, artigos e jurisprudência de forma precisa.`;
 
     const userPrompt = `Escreva um artigo jurídico completo e bem fundamentado sobre o seguinte tema:
 
@@ -182,55 +196,56 @@ CONTEXTO DO ESCRITÓRIO:
 
 O artigo deve:
 1. Começar com uma introdução impactante que contextualize o problema
-2. Apresentar a fundamentação legal detalhada
-3. Incluir jurisprudência relevante quando aplicável
+2. Apresentar a fundamentação legal detalhada com base em legislação atual
+3. Incluir jurisprudência relevante e atualizada quando aplicável
 4. Fornecer orientações práticas ao leitor
 5. Concluir com uma chamada para buscar orientação profissional
 
-Retorne também um resumo (excerpt) de no máximo 200 caracteres.
-
-Formato de resposta JSON:
+Retorne a resposta em formato JSON válido:
 {
-  "content": "<HTML do artigo>",
-  "excerpt": "Resumo curto do artigo",
+  "content": "<HTML do artigo completo>",
+  "excerpt": "Resumo curto do artigo (máximo 200 caracteres)",
   "category": "Categoria sugerida (Isenção Fiscal, Trabalho, Previdenciário, etc.)",
   "readTime": "X min"
 }`;
 
-    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+    // Call Perplexity API with sonar-pro model for grounded search
+    const response = await fetch("https://api.perplexity.ai/chat/completions", {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
+        Authorization: `Bearer ${PERPLEXITY_API_KEY}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-2.5-flash",
+        model: "sonar-pro",
         messages: [
           { role: "system", content: systemPrompt },
           { role: "user", content: userPrompt },
         ],
-        temperature: 0.7,
+        temperature: 0.3,
         max_tokens: 4000,
+        search_domain_filter: LEGAL_DOMAINS,
+        return_related_questions: false,
       }),
     });
 
     if (!response.ok) {
+      const errorText = await response.text();
+      console.error("Perplexity API error:", response.status, errorText);
+      
       if (response.status === 429) {
-        console.error("Rate limit exceeded");
         return new Response(
           JSON.stringify({ error: "Limite de requisições excedido. Tente novamente em alguns minutos." }),
           { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
-      if (response.status === 402) {
-        console.error("Payment required");
+      if (response.status === 401 || response.status === 403) {
         return new Response(
-          JSON.stringify({ error: "Créditos de IA esgotados. Adicione créditos ao workspace." }),
-          { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          JSON.stringify({ error: "Erro de autenticação com o serviço de IA." }),
+          { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
-      const errorText = await response.text();
-      console.error("AI gateway error:", response.status, errorText);
+      
       return new Response(
         JSON.stringify({ error: "Erro ao gerar conteúdo" }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
@@ -239,16 +254,17 @@ Formato de resposta JSON:
 
     const aiResponse = await response.json();
     const rawContent = aiResponse.choices?.[0]?.message?.content;
+    const citations = aiResponse.citations || [];
 
     if (!rawContent) {
-      console.error("No content in AI response");
+      console.error("No content in Perplexity response");
       return new Response(
         JSON.stringify({ error: "Resposta vazia da IA" }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
-    console.log("AI response received, parsing...");
+    console.log("Perplexity response received with", citations.length, "citations");
 
     // Try to parse JSON from the response
     let parsed;
@@ -307,16 +323,28 @@ Formato de resposta JSON:
       };
     }
 
+    // Add sources section if citations exist
+    let finalContent = parsed.content || rawContent;
+    if (citations.length > 0) {
+      const sourcesHtml = `
+<h3>Fontes Consultadas</h3>
+<ul class="sources-list">
+${citations.slice(0, 5).map((url: string, i: number) => `  <li><a href="${url}" target="_blank" rel="noopener noreferrer">Fonte ${i + 1}</a></li>`).join('\n')}
+</ul>`;
+      finalContent += sourcesHtml;
+    }
+
     console.log("Article generated successfully for admin:", userData.user.email);
 
     return new Response(
       JSON.stringify({
         success: true,
         data: {
-          content: parsed.content || rawContent,
+          content: finalContent,
           excerpt: parsed.excerpt || title.slice(0, 150),
           category: parsed.category || "Geral",
           readTime: parsed.readTime || "5 min",
+          sources: citations,
         },
       }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
