@@ -60,6 +60,14 @@ interface ArticleFormProps {
   onCancelEdit?: () => void;
 }
 
+type ArticleTone = 'formal' | 'acessivel' | 'tecnico';
+
+const TONE_OPTIONS: { value: ArticleTone; label: string; description: string }[] = [
+  { value: 'formal', label: 'Formal', description: 'Linguagem jurídica tradicional' },
+  { value: 'acessivel', label: 'Acessível', description: 'Fácil compreensão para leigos' },
+  { value: 'tecnico', label: 'Técnico', description: 'Detalhado com citações legais' },
+];
+
 export function ArticleForm({ onSuccess, editingArticle, onCancelEdit }: ArticleFormProps) {
   const [title, setTitle] = useState('');
   const [excerpt, setExcerpt] = useState('');
@@ -74,6 +82,7 @@ export function ArticleForm({ onSuccess, editingArticle, onCancelEdit }: Article
   const [isSaving, setIsSaving] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+  const [articleTone, setArticleTone] = useState<ArticleTone>('acessivel');
   
   // eBook fields
   const [hasEbook, setHasEbook] = useState(false);
@@ -366,7 +375,7 @@ export function ArticleForm({ onSuccess, editingArticle, onCancelEdit }: Article
             'apikey': import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
             'Authorization': `Bearer ${session?.access_token || import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
           },
-          body: JSON.stringify({ title: title.trim() }),
+          body: JSON.stringify({ title: title.trim(), tone: articleTone }),
         }
       );
 
@@ -576,6 +585,27 @@ export function ArticleForm({ onSuccess, editingArticle, onCancelEdit }: Article
           <p className="text-xs text-muted-foreground">
             Digite o título e clique em "Gerar com IA" para criar o conteúdo automaticamente
           </p>
+          
+          {/* Tone Selector */}
+          <div className="flex flex-wrap gap-2 pt-2">
+            <span className="text-xs text-muted-foreground self-center mr-1">Tom:</span>
+            {TONE_OPTIONS.map((option) => (
+              <button
+                key={option.value}
+                type="button"
+                onClick={() => setArticleTone(option.value)}
+                className={cn(
+                  "px-3 py-1.5 text-xs rounded-full border transition-all",
+                  articleTone === option.value
+                    ? "bg-primary text-primary-foreground border-primary"
+                    : "bg-muted/50 text-muted-foreground border-border hover:border-primary/50"
+                )}
+                title={option.description}
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* Excerpt */}

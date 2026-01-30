@@ -148,7 +148,7 @@ serve(async (req) => {
       );
     }
 
-    const { title } = await req.json();
+    const { title, tone = 'acessivel' } = await req.json();
     
     if (!title || typeof title !== "string" || title.trim().length < 5) {
       return new Response(
@@ -156,6 +156,10 @@ serve(async (req) => {
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
+
+    // Validate tone
+    const validTones = ['formal', 'acessivel', 'tecnico'];
+    const selectedTone = validTones.includes(tone) ? tone : 'acessivel';
 
     const PERPLEXITY_API_KEY = Deno.env.get("PERPLEXITY_API_KEY");
     if (!PERPLEXITY_API_KEY) {
@@ -166,10 +170,34 @@ serve(async (req) => {
       );
     }
 
-    console.log(`Admin ${userData.user.email} generating article with Perplexity for title: ${title}`);
+    console.log(`Admin ${userData.user.email} generating article with Perplexity (tone: ${selectedTone}) for title: ${title}`);
+
+    // Tone-specific instructions
+    const toneInstructions = {
+      formal: `ESTILO DE ESCRITA:
+- Use linguagem jurídica formal e técnica
+- Mantenha um tom sóbrio e institucional
+- Use termos latinos quando apropriado (ex: "in casu", "ab initio")
+- Estruture com rigor acadêmico
+- Cite doutrinas e autores renomados`,
+      acessivel: `ESTILO DE ESCRITA:
+- Use linguagem clara e acessível para leigos
+- Explique termos técnicos quando usá-los
+- Use exemplos práticos do dia a dia
+- Mantenha parágrafos curtos e diretos
+- Priorize a compreensão do cidadão comum`,
+      tecnico: `ESTILO DE ESCRITA:
+- Seja extremamente detalhado nas citações legais
+- Inclua números de artigos, incisos e alíneas
+- Cite jurisprudência com número do processo
+- Use referências a súmulas e orientações jurisprudenciais
+- Inclua fundamentação doutrinária robusta`,
+    };
 
     const systemPrompt = `Você é um redator jurídico especializado em Direito Tributário, Trabalhista e Previdenciário brasileiro. 
-Seu estilo é profissional, acessível e educativo. Você escreve para um público leigo que busca entender seus direitos.
+Você escreve para um público que busca entender seus direitos.
+
+${toneInstructions[selectedTone as keyof typeof toneInstructions]}
 
 REGRAS DE FORMATAÇÃO:
 - Use HTML semântico para estruturar o conteúdo
