@@ -351,16 +351,8 @@ Retorne a resposta em formato JSON válido:
       };
     }
 
-    // Add sources section if citations exist
-    let finalContent = parsed.content || rawContent;
-    if (citations.length > 0) {
-      const sourcesHtml = `
-<h3>Fontes Consultadas</h3>
-<ul class="sources-list">
-${citations.slice(0, 5).map((url: string, i: number) => `  <li><a href="${url}" target="_blank" rel="noopener noreferrer">Fonte ${i + 1}</a></li>`).join('\n')}
-</ul>`;
-      finalContent += sourcesHtml;
-    }
+    // Content without sources section - sources are still returned in the response for reference
+    const finalContent = parsed.content || rawContent;
 
     console.log("Article generated successfully for admin:", userData.user.email);
 
