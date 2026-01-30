@@ -256,20 +256,53 @@ Formato de resposta JSON:
       // Remove markdown code blocks if present (```json ... ```)
       let cleanedContent = rawContent.trim();
       
-      // Handle nested JSON in markdown blocks
+      // Handle markdown code blocks with or without language identifier
       const jsonMatch = cleanedContent.match(/```(?:json)?\s*([\s\S]*?)```/);
       if (jsonMatch) {
         cleanedContent = jsonMatch[1].trim();
       }
       
       parsed = JSON.parse(cleanedContent);
-    } catch {
-      console.log("Failed to parse as JSON, using raw content");
-      // If not valid JSON, use the content as-is
+      
+      // Clean up the content: convert literal \n to actual line breaks and remove escaped sequences
+      if (parsed.content && typeof parsed.content === 'string') {
+        parsed.content = parsed.content
+          .replace(/\\n\\n/g, '</p><p class="text-justify">')  // Double newlines become paragraph breaks
+          .replace(/\\n/g, ' ')  // Single newlines become spaces
+          .replace(/\\/g, '');   // Remove remaining backslashes
+        
+        // Ensure content is wrapped in paragraphs if it starts with text
+        if (!parsed.content.startsWith('<')) {
+          parsed.content = `<p class="text-justify">${parsed.content}</p>`;
+        }
+      }
+    } catch (e) {
+      console.log("Failed to parse as JSON, extracting content manually. Error:", e);
+      
+      // Try to extract just the HTML content if JSON parsing failed
+      let extractedContent = rawContent;
+      
+      // Remove any markdown code block wrappers
+      extractedContent = extractedContent.replace(/```(?:json|html)?\s*/g, '').replace(/```/g, '');
+      
+      // Try to extract content from partial JSON
+      const contentMatch = extractedContent.match(/"content"\s*:\s*"([\s\S]*?)(?:"\s*,\s*"excerpt"|"\s*})/);
+      if (contentMatch) {
+        extractedContent = contentMatch[1]
+          .replace(/\\n\\n/g, '</p><p class="text-justify">')
+          .replace(/\\n/g, ' ')
+          .replace(/\\"/g, '"')
+          .replace(/\\/g, '');
+      }
+      
+      // Extract excerpt if present
+      const excerptMatch = rawContent.match(/"excerpt"\s*:\s*"([^"]+)"/);
+      const categoryMatch = rawContent.match(/"category"\s*:\s*"([^"]+)"/);
+      
       parsed = {
-        content: rawContent,
-        excerpt: title.slice(0, 150) + "...",
-        category: "Geral",
+        content: extractedContent,
+        excerpt: excerptMatch ? excerptMatch[1] : title.slice(0, 150) + "...",
+        category: categoryMatch ? categoryMatch[1] : "Geral",
         readTime: "5 min",
       };
     }
