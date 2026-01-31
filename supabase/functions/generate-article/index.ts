@@ -148,7 +148,14 @@ serve(async (req) => {
       );
     }
 
-    const { title, tone = 'acessivel', includeLegalBasis = true, customInstructions } = await req.json();
+    const { 
+      title, 
+      tone = 'acessivel', 
+      includeLegalBasis = true, 
+      customInstructions,
+      seoMode = false,
+      seoKeywords = []
+    } = await req.json();
     
     // If using custom instructions, we need those instead of title
     const isCustomMode = !!customInstructions && customInstructions.trim().length >= 10;
@@ -180,7 +187,39 @@ serve(async (req) => {
       );
     }
 
-    console.log(`Admin ${userData.user.email} generating article with Perplexity (tone: ${selectedTone}, legalBasis: ${includeLegalBasis}, customMode: ${isCustomMode}) for ${isCustomMode ? 'custom instructions' : 'title: ' + title}`);
+    console.log(`Admin ${userData.user.email} generating article with Perplexity (tone: ${selectedTone}, legalBasis: ${includeLegalBasis}, customMode: ${isCustomMode}, seoMode: ${seoMode}) for ${isCustomMode ? 'custom instructions' : 'title: ' + title}`);
+
+    // SEO-specific instructions when in SEO mode
+    const seoInstructions = seoMode && seoKeywords.length > 0
+      ? `
+OTIMIZAÇÃO SEO (PRIORIDADE MÁXIMA):
+Este artigo deve ser 100% otimizado para SEO e ranqueamento orgânico no Google.
+
+PALAVRAS-CHAVE ALVO: ${seoKeywords.join(', ')}
+
+ESTRATÉGIAS SEO OBRIGATÓRIAS:
+1. TÍTULO (será definido externamente, mas estruture o conteúdo para ele)
+2. Primeira frase deve conter a palavra-chave principal de forma natural
+3. Use as palavras-chave nos primeiros 100 caracteres do texto
+4. Distribua as palavras-chave naturalmente ao longo do texto (densidade 1-2%)
+5. Use sinônimos e variações das palavras-chave (LSI keywords)
+6. Estruture com H2 e H3 contendo palavras-chave secundárias
+7. Escreva parágrafos curtos (máximo 3-4 frases)
+8. Inclua listas com bullets para facilitar a leitura
+9. Use perguntas como subtítulos (formato FAQ implícito)
+10. Mencione "2025" ou "atualizado" para relevância temporal
+11. O texto deve ter entre 1200 e 2000 palavras para ranquear bem
+12. Inclua uma seção de "Perguntas Frequentes" no final
+13. Termine com CTA forte convidando para contato profissional
+
+ESTRUTURA SEO IDEAL:
+- Introdução com gancho e palavra-chave (100-150 palavras)
+- Seção "O que é [tema]" ou "Como funciona [tema]"
+- Seção com requisitos/documentos/passo a passo
+- Seção de benefícios ou vantagens
+- Seção de perguntas frequentes (3-5 perguntas)
+- Conclusão com CTA`
+      : '';
 
     // Tone-specific instructions for blog-style articles
     const toneInstructions = {
@@ -216,6 +255,7 @@ serve(async (req) => {
 - Use expressões genéricas como "a lei permite", "você tem direito a", "é garantido que"`;
 
     const systemPrompt = `Você é um redator de conteúdo especializado em criar artigos de BLOG informativos sobre temas jurídicos no Brasil.
+${seoInstructions}
 
 IMPORTANTE - ESTILO BLOG INFORMATIVO:
 - Escreva como um artigo de blog para INFORMAR e EDUCAR o leitor
@@ -235,7 +275,7 @@ REGRAS DE FORMATAÇÃO:
 - Use <ul> e <li> para listas quando apropriado
 - Use <blockquote> para destaques importantes ou dicas
 - Use <strong> para termos importantes
-- O texto deve ter entre 800 e 1500 palavras
+- O texto deve ter entre ${seoMode ? '1200 e 2000' : '800 e 1500'} palavras
 - Termine com um parágrafo convidando o leitor a buscar orientação profissional
 
 CONTEXTO DO ESCRITÓRIO:
