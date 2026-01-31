@@ -12,6 +12,7 @@ import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { useToast } from '@/hooks/use-toast';
 import { ArticlePreviewModal } from './ArticlePreviewModal';
+import { TrendingResearch } from './TrendingResearch';
 import { cn } from '@/lib/utils';
 import { calculateReadingTime, getWordCount } from '@/lib/readingTime';
 import { 
@@ -33,7 +34,9 @@ import {
   BookOpen,
   FileDown,
   RefreshCw,
-  HelpCircle
+  HelpCircle,
+  TrendingUp,
+  Target
 } from 'lucide-react';
 import { TagInput } from '@/components/ui/tag-input';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
@@ -96,6 +99,11 @@ export function ArticleForm({ onSuccess, editingArticle, onCancelEdit }: Article
   const [pdfSourceText, setPdfSourceText] = useState('');
   const [isPdfMode, setIsPdfMode] = useState(false);
   const [isPdfPreviewOpen, setIsPdfPreviewOpen] = useState(false);
+  
+  // SEO Mode from Trending Research
+  const [isSeoMode, setIsSeoMode] = useState(false);
+  const [seoKeywords, setSeoKeywords] = useState<string[]>([]);
+  const [showTrendingResearch, setShowTrendingResearch] = useState(false);
   
   // eBook fields
   const [hasEbook, setHasEbook] = useState(false);
@@ -228,6 +236,20 @@ export function ArticleForm({ onSuccess, editingArticle, onCancelEdit }: Article
     setEbookSubtitle('');
     setEbookPdfUrl('');
     setEbookCoverUrl('');
+    // Reset SEO mode
+    setIsSeoMode(false);
+    setSeoKeywords([]);
+    setShowTrendingResearch(false);
+  };
+
+  // Handle topic selection from trending research
+  const handleSelectTrendingTopic = (topic: { title: string; keywords: string[]; category: string }) => {
+    setTitle(topic.title);
+    setSeoKeywords(topic.keywords || []);
+    setCategory([topic.category]);
+    setIsSeoMode(true);
+    setShowTrendingResearch(false);
+    setUseCustomInstructions(false);
   };
 
   const generateSlug = (text: string) => {
@@ -478,6 +500,8 @@ export function ArticleForm({ onSuccess, editingArticle, onCancelEdit }: Article
             tone: articleTone, 
             includeLegalBasis,
             customInstructions: useCustomInstructions ? customInstructions.trim() : undefined,
+            seoMode: isSeoMode,
+            seoKeywords: isSeoMode ? seoKeywords : undefined,
           }),
         }
       );
@@ -501,11 +525,19 @@ export function ArticleForm({ onSuccess, editingArticle, onCancelEdit }: Article
         }
 
         toast({
-          title: 'Conteúdo gerado!',
-          description: useCustomInstructions 
-            ? 'Título e artigo gerados com sucesso. Revise antes de publicar.'
-            : 'O artigo foi gerado com sucesso. Revise antes de publicar.',
+          title: isSeoMode ? 'Artigo SEO gerado!' : 'Conteúdo gerado!',
+          description: isSeoMode
+            ? 'Artigo otimizado para ranqueamento gerado com sucesso. Revise antes de publicar.'
+            : useCustomInstructions 
+              ? 'Título e artigo gerados com sucesso. Revise antes de publicar.'
+              : 'O artigo foi gerado com sucesso. Revise antes de publicar.',
         });
+        
+        // Clear SEO mode after successful generation
+        if (isSeoMode) {
+          setIsSeoMode(false);
+          setSeoKeywords([]);
+        }
       }
     } catch (error) {
       console.error('Error generating article:', error);
@@ -811,6 +843,53 @@ export function ArticleForm({ onSuccess, editingArticle, onCancelEdit }: Article
         </div>
       </CardHeader>
       <CardContent className="space-y-6">
+        {/* Trending Research Section */}
+        {!editingArticle && (
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <Button
+                type="button"
+                variant={showTrendingResearch ? "default" : "outline"}
+                onClick={() => setShowTrendingResearch(!showTrendingResearch)}
+                className={cn(
+                  "gap-2",
+                  showTrendingResearch && "bg-amber-600 hover:bg-amber-700"
+                )}
+              >
+                <TrendingUp className="h-4 w-4" />
+                {showTrendingResearch ? 'Ocultar Pesquisa' : 'Descobrir Trending Topics'}
+              </Button>
+              
+              {isSeoMode && (
+                <div className="flex items-center gap-2 px-3 py-1.5 bg-green-100 dark:bg-green-900/30 rounded-lg border border-green-300 dark:border-green-700">
+                  <Target className="h-4 w-4 text-green-600 dark:text-green-400" />
+                  <span className="text-xs font-medium text-green-700 dark:text-green-300">
+                    Modo SEO Ativado
+                  </span>
+                  {seoKeywords.length > 0 && (
+                    <span className="text-xs text-green-600 dark:text-green-400">
+                      ({seoKeywords.length} keywords)
+                    </span>
+                  )}
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => { setIsSeoMode(false); setSeoKeywords([]); }}
+                    className="h-5 w-5 p-0 text-green-600 hover:text-green-700"
+                  >
+                    <X className="h-3 w-3" />
+                  </Button>
+                </div>
+              )}
+            </div>
+            
+            {showTrendingResearch && (
+              <TrendingResearch onSelectTopic={handleSelectTrendingTopic} />
+            )}
+          </div>
+        )}
+        
         {/* Custom Instructions Field - shown when toggle is on and not in PDF mode */}
         {useCustomInstructions && !isPdfMode && (
           <div className="space-y-3">

@@ -11,3 +11,6 @@ verify_jwt = false
 
 [functions.format-pdf-article]
 verify_jwt = false
+
+[functions.research-trending-topics]
+verify_jwt = false
