@@ -104,6 +104,7 @@ export function ArticleForm({ onSuccess, editingArticle, onCancelEdit }: Article
   const [isSeoMode, setIsSeoMode] = useState(false);
   const [seoKeywords, setSeoKeywords] = useState<string[]>([]);
   const [showTrendingResearch, setShowTrendingResearch] = useState(false);
+  const [approvedTopicTitle, setApprovedTopicTitle] = useState<string | null>(null);
   
   // eBook fields
   const [hasEbook, setHasEbook] = useState(false);
@@ -240,6 +241,7 @@ export function ArticleForm({ onSuccess, editingArticle, onCancelEdit }: Article
     setIsSeoMode(false);
     setSeoKeywords([]);
     setShowTrendingResearch(false);
+    setApprovedTopicTitle(null);
   };
 
   // Handle topic selection from trending research
@@ -250,6 +252,7 @@ export function ArticleForm({ onSuccess, editingArticle, onCancelEdit }: Article
     setIsSeoMode(true);
     setShowTrendingResearch(false);
     setUseCustomInstructions(false);
+    setApprovedTopicTitle(topic.title); // Track approved topic for analytics linking
   };
 
   const generateSlug = (text: string) => {
@@ -773,15 +776,26 @@ export function ArticleForm({ onSuccess, editingArticle, onCancelEdit }: Article
         });
       } else {
         // Create new article
-        const { error } = await supabase
+        const { data: newArticle, error } = await supabase
           .from('blog_posts')
-          .insert(postData);
+          .insert(postData)
+          .select('id')
+          .single();
 
         if (error) {
           if (error.code === '23505') {
             throw new Error('Já existe um artigo com este título. Escolha outro.');
           }
           throw error;
+        }
+
+        // Link article to trending topic analytics if came from SEO mode
+        if (approvedTopicTitle && newArticle?.id) {
+          await supabase
+            .from('trending_topic_analytics')
+            .update({ article_id: newArticle.id })
+            .eq('topic_title', approvedTopicTitle)
+            .is('article_id', null);
         }
 
         toast({

@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/hooks/useAuth';
 import { 
   Loader2, 
   TrendingUp, 
@@ -53,7 +54,9 @@ export function TrendingResearch({ onSelectTopic }: TrendingResearchProps) {
   const [trendingTopics, setTrendingTopics] = useState<TrendingTopic[]>([]);
   const [researchSummary, setResearchSummary] = useState('');
   const [researchedAt, setResearchedAt] = useState<string | null>(null);
+  const [approvingIndex, setApprovingIndex] = useState<number | null>(null);
   const { toast } = useToast();
+  const { user } = useAuth();
 
   const handleResearch = async () => {
     setIsResearching(true);
@@ -104,12 +107,41 @@ export function TrendingResearch({ onSelectTopic }: TrendingResearchProps) {
     }
   };
 
-  const handleSelectTopic = (topic: TrendingTopic) => {
-    onSelectTopic(topic);
-    toast({
-      title: 'Tópico selecionado!',
-      description: 'O título foi definido. Agora gere o artigo com foco em SEO.',
-    });
+  const handleSelectTopic = async (topic: TrendingTopic, index: number) => {
+    setApprovingIndex(index);
+    
+    try {
+      // Save to analytics table
+      const { error } = await supabase
+        .from('trending_topic_analytics')
+        .insert({
+          topic_title: topic.title,
+          category: topic.category,
+          interest_level: topic.interest_level,
+          source_domains: topic.keywords || [],
+          approved_by: user?.id,
+        });
+
+      if (error) {
+        console.error('Error saving analytics:', error);
+        // Continue anyway - analytics is secondary
+      }
+
+      onSelectTopic(topic);
+      toast({
+        title: 'Tópico aprovado!',
+        description: 'O título foi definido. Agora gere o artigo com foco em SEO.',
+      });
+    } catch (err) {
+      console.error('Error in handleSelectTopic:', err);
+      onSelectTopic(topic);
+      toast({
+        title: 'Tópico selecionado!',
+        description: 'O título foi definido. Agora gere o artigo com foco em SEO.',
+      });
+    } finally {
+      setApprovingIndex(null);
+    }
   };
 
   return (
@@ -251,11 +283,18 @@ export function TrendingResearch({ onSelectTopic }: TrendingResearchProps) {
                     
                     <Button 
                       size="sm" 
-                      onClick={() => handleSelectTopic(topic)}
+                      onClick={() => handleSelectTopic(topic, index)}
+                      disabled={approvingIndex === index}
                       className="shrink-0 bg-green-600 hover:bg-green-700"
                     >
-                      <Check className="h-4 w-4 mr-1" />
-                      Aprovar
+                      {approvingIndex === index ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <>
+                          <Check className="h-4 w-4 mr-1" />
+                          Aprovar
+                        </>
+                      )}
                     </Button>
                   </div>
                 </div>

@@ -2,10 +2,12 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Loader2, ShieldAlert } from 'lucide-react';
+import { ArrowLeft, Loader2, ShieldAlert, BarChart3 } from 'lucide-react';
 import { ArticleForm, BlogPostEdit } from '@/components/admin/ArticleForm';
 import { ArticlesList } from '@/components/admin/ArticlesList';
+import { TrendingAnalytics } from '@/components/admin/TrendingAnalytics';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 export default function AdminArticles() {
   const { isAdmin, isLoading } = useAuth();
@@ -70,17 +72,33 @@ export default function AdminArticles() {
           Voltar ao Painel
         </Button>
 
-        <div className="space-y-6">
-          <ArticleForm 
-            onSuccess={handleArticleSaved} 
-            editingArticle={editingArticle}
-            onCancelEdit={handleCancelEdit}
-          />
-          <ArticlesList 
-            refreshTrigger={articleRefreshTrigger} 
-            onEditArticle={handleEditArticle}
-          />
-        </div>
+        <Tabs defaultValue="articles" className="space-y-6">
+          <TabsList className="bg-card border border-border">
+            <TabsTrigger value="articles" className="gap-2 data-[state=active]:bg-accent data-[state=active]:text-accent-foreground">
+              Criar & Gerenciar
+            </TabsTrigger>
+            <TabsTrigger value="analytics" className="gap-2 data-[state=active]:bg-accent data-[state=active]:text-accent-foreground">
+              <BarChart3 className="h-4 w-4" />
+              Analytics
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="articles" className="space-y-6">
+            <ArticleForm 
+              onSuccess={handleArticleSaved} 
+              editingArticle={editingArticle}
+              onCancelEdit={handleCancelEdit}
+            />
+            <ArticlesList 
+              refreshTrigger={articleRefreshTrigger} 
+              onEditArticle={handleEditArticle}
+            />
+          </TabsContent>
+
+          <TabsContent value="analytics">
+            <TrendingAnalytics />
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );

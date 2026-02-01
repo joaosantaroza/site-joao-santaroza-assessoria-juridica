@@ -137,6 +137,50 @@ export type Database = {
         }
         Relationships: []
       }
+      trending_topic_analytics: {
+        Row: {
+          approved_at: string
+          approved_by: string | null
+          article_id: string | null
+          category: string
+          created_at: string
+          id: string
+          interest_level: string | null
+          source_domains: string[] | null
+          topic_title: string
+        }
+        Insert: {
+          approved_at?: string
+          approved_by?: string | null
+          article_id?: string | null
+          category: string
+          created_at?: string
+          id?: string
+          interest_level?: string | null
+          source_domains?: string[] | null
+          topic_title: string
+        }
+        Update: {
+          approved_at?: string
+          approved_by?: string | null
+          article_id?: string | null
+          category?: string
+          created_at?: string
+          id?: string
+          interest_level?: string | null
+          source_domains?: string[] | null
+          topic_title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trending_topic_analytics_article_id_fkey"
+            columns: ["article_id"]
+            isOneToOne: false
+            referencedRelation: "blog_posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       tts_rate_limits: {
         Row: {
           created_at: string
