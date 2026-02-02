@@ -130,7 +130,7 @@ serve(async (req) => {
       );
     }
 
-    const { category = 'geral' } = await req.json();
+    const { category = 'geral', useMaringaMode = true } = await req.json();
 
     const PERPLEXITY_API_KEY = Deno.env.get("PERPLEXITY_API_KEY");
     if (!PERPLEXITY_API_KEY) {
@@ -140,10 +140,10 @@ serve(async (req) => {
       );
     }
 
-    console.log(`Admin ${userData.user.email} researching trending legal topics (category: ${category})`);
+    console.log(`Admin ${userData.user.email} researching trending legal topics (category: ${category}, maringaMode: ${useMaringaMode})`);
 
-    // Category-specific prompts for better research - Enhanced for regional focus
-    const categoryPrompts: Record<string, string> = {
+    // Category-specific prompts - with or without regional focus
+    const categoryPromptsMaringa: Record<string, string> = {
       'geral': 'direito brasileiro em geral, com foco em temas que impactam Maringá e Norte do Paraná',
       'previdenciario': 'direito previdenciário, INSS, aposentadoria, benefícios, pensões e auxílios - com relevância para trabalhadores do Paraná',
       'trabalhista': 'direito trabalhista, CLT, demissões, direitos do trabalhador, rescisão e assédio - incluindo setor agroindustrial do Norte do Paraná',
@@ -153,9 +153,22 @@ serve(async (req) => {
       'saude': 'direito à saúde, planos de saúde, erro médico, medicamentos e SUS - incluindo atendimento em Maringá',
     };
 
+    const categoryPromptsNacional: Record<string, string> = {
+      'geral': 'direito brasileiro em geral, abrangendo todo o território nacional',
+      'previdenciario': 'direito previdenciário, INSS, aposentadoria, benefícios, pensões e auxílios em todo o Brasil',
+      'trabalhista': 'direito trabalhista, CLT, demissões, direitos do trabalhador, rescisão e assédio no Brasil',
+      'tributario': 'direito tributário, impostos, isenções fiscais, imposto de renda e restituição',
+      'consumidor': 'direito do consumidor, compras online, garantias, trocas e reclamações',
+      'familia': 'direito de família, divórcio, pensão alimentícia, guarda e inventário',
+      'saude': 'direito à saúde, planos de saúde, erro médico, medicamentos e SUS',
+    };
+
+    const categoryPrompts = useMaringaMode ? categoryPromptsMaringa : categoryPromptsNacional;
+
     const categoryContext = categoryPrompts[category] || categoryPrompts['geral'];
 
-    const systemPrompt = `Você é um especialista em Marketing Jurídico e SEO Local focado na região de Maringá e Norte do Paraná.
+    // System prompt changes based on Maringá mode
+    const systemPromptMaringa = `Você é um especialista em Marketing Jurídico e SEO Local focado na região de Maringá e Norte do Paraná.
 Você atua como analista de tendências para o escritório "João Santaroza Assessoria Jurídica".
 
 SUA BASE DE CONHECIMENTO:
@@ -179,7 +192,34 @@ CRITÉRIOS DE SELEÇÃO (OBRIGATÓRIO):
 - Evite temas que só funcionariam com abordagem mercantil ou sensacionalista
 - Foque em temas onde podemos EDUCAR o leitor sobre seus direitos`;
 
-    const userPrompt = `Realize uma "Deep Research" sobre temas jurídicos em alta na última semana, com foco na área de ${categoryContext}.
+    const systemPromptNacional = `Você é um especialista em Marketing Jurídico e SEO para o mercado brasileiro.
+Você atua como analista de tendências para o escritório "João Santaroza Assessoria Jurídica".
+
+SUA BASE DE CONHECIMENTO:
+- Foco em direitos trabalhistas, previdenciários e isenção de IR por moléstia grave
+- Abrangência: Todo o território nacional brasileiro
+
+FONTES DE MONITORAMENTO PRIORITÁRIAS:
+- Supremo Tribunal Federal (STF)
+- Superior Tribunal de Justiça (STJ)
+- Conjur, Migalhas, Jota e portais jurídicos
+- Notícias jurídicas de grande repercussão nacional
+
+CRITÉRIOS DE SELEÇÃO (OBRIGATÓRIO):
+1. Escolha temas que afetam a vida COTIDIANA dos brasileiros
+2. Exemplos ideais: mudanças em benefícios do INSS, novas leis trabalhistas, decisões importantes dos tribunais superiores
+3. Priorize mudanças legislativas, julgamentos recentes e casos de repercussão nacional
+4. Potencial para artigo com palavras-chave de alto volume de busca
+
+ÉTICA (PROVIMENTO 205/2021 OAB):
+- Todos os temas sugeridos devem permitir conteúdo INFORMATIVO e EDUCATIVO
+- Evite temas que só funcionariam com abordagem mercantil ou sensacionalista
+- Foque em temas onde podemos EDUCAR o leitor sobre seus direitos`;
+
+    const systemPrompt = useMaringaMode ? systemPromptMaringa : systemPromptNacional;
+
+    // User prompt changes based on Maringá mode
+    const userPromptMaringa = `Realize uma "Deep Research" sobre temas jurídicos em alta na última semana, com foco na área de ${categoryContext}.
 
 PESQUISA OBRIGATÓRIA:
 1. Verifique mudanças legislativas no Paraná (ALEP)
@@ -214,6 +254,43 @@ Retorne a resposta em formato JSON válido:
   "research_summary": "Resumo geral das tendências identificadas para a região",
   "data_sources": ["Fontes consultadas incluindo fontes regionais"]
 }`;
+
+    const userPromptNacional = `Realize uma "Deep Research" sobre temas jurídicos em alta na última semana, com foco na área de ${categoryContext}.
+
+PESQUISA OBRIGATÓRIA:
+1. Verifique mudanças legislativas federais e estaduais relevantes
+2. Busque julgamentos recentes do STF e STJ
+3. Monitore notícias em Conjur, Migalhas, Jota e grandes portais
+4. Identifique temas de grande repercussão nacional
+
+Para cada tema identificado, forneça:
+1. Um TÍTULO otimizado para SEO
+   - Máximo 70 caracteres
+   - Use palavras-chave de alto volume de busca
+   - EXEMPLO: "Nova regra do INSS para aposentadoria em 2025: o que muda"
+2. Por quê o tema está em alta e afeta os brasileiros (2-3 frases)
+3. Palavras-chave SEO (3-5 palavras)
+4. Nível de interesse estimado (alto, médio-alto, médio)
+5. Categoria sugerida
+6. Impacto nacional (como o tema afeta os brasileiros)
+
+Retorne a resposta em formato JSON válido:
+{
+  "trending_topics": [
+    {
+      "title": "Título otimizado para SEO",
+      "description": "Por que este tema está em alta",
+      "keywords": ["palavra-chave principal", "palavra-chave secundária"],
+      "interest_level": "alto",
+      "category": "Categoria sugerida",
+      "seo_potential": "Potencial de ranqueamento nacional"
+    }
+  ],
+  "research_summary": "Resumo geral das tendências identificadas",
+  "data_sources": ["Fontes consultadas"]
+}`;
+
+    const userPrompt = useMaringaMode ? userPromptMaringa : userPromptNacional;
 
     // Use sonar-deep-research for comprehensive trending analysis
     const response = await fetch("https://api.perplexity.ai/chat/completions", {
