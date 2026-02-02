@@ -36,7 +36,8 @@ import {
   RefreshCw,
   HelpCircle,
   TrendingUp,
-  Target
+  Target,
+  MapPin
 } from 'lucide-react';
 import { TagInput } from '@/components/ui/tag-input';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
@@ -105,6 +106,9 @@ export function ArticleForm({ onSuccess, editingArticle, onCancelEdit }: Article
   const [seoKeywords, setSeoKeywords] = useState<string[]>([]);
   const [showTrendingResearch, setShowTrendingResearch] = useState(false);
   const [approvedTopicTitle, setApprovedTopicTitle] = useState<string | null>(null);
+  
+  // Modo Maringá - Geolocalização máxima
+  const [isMaringaMode, setIsMaringaMode] = useState(false);
   
   // eBook fields
   const [hasEbook, setHasEbook] = useState(false);
@@ -242,6 +246,8 @@ export function ArticleForm({ onSuccess, editingArticle, onCancelEdit }: Article
     setSeoKeywords([]);
     setShowTrendingResearch(false);
     setApprovedTopicTitle(null);
+    // Reset Maringá mode
+    setIsMaringaMode(false);
   };
 
   // Handle topic selection from trending research
@@ -505,6 +511,7 @@ export function ArticleForm({ onSuccess, editingArticle, onCancelEdit }: Article
             customInstructions: useCustomInstructions ? customInstructions.trim() : undefined,
             seoMode: isSeoMode,
             seoKeywords: isSeoMode ? seoKeywords : undefined,
+            maringaMode: isMaringaMode,
           }),
         }
       );
@@ -1110,6 +1117,40 @@ export function ArticleForm({ onSuccess, editingArticle, onCancelEdit }: Article
                       </p>
                       <p className="text-xs mt-1">
                         <strong>Desativado:</strong> O artigo será 100% prático, sem citar números de leis ou artigos.
+                      </p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </div>
+            )}
+            
+            {/* Modo Maringá Toggle - only show when not in PDF mode */}
+            {!isPdfMode && (
+              <div className="flex items-center gap-2 pl-4 border-l border-border/50">
+                <Switch
+                  id="maringa-mode"
+                  checked={isMaringaMode}
+                  onCheckedChange={setIsMaringaMode}
+                />
+                <Label 
+                  htmlFor="maringa-mode" 
+                  className="text-xs text-muted-foreground cursor-pointer flex items-center gap-1"
+                >
+                  <MapPin className="h-3 w-3" />
+                  Modo Maringá
+                </Label>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <HelpCircle className="h-3.5 w-3.5 text-muted-foreground/60 cursor-help" />
+                    </TooltipTrigger>
+                    <TooltipContent side="top" className="max-w-[320px] text-center">
+                      <p className="text-xs font-semibold mb-1">Geolocalização Máxima</p>
+                      <p className="text-xs">
+                        <strong>Ativado:</strong> Força menções a Maringá, Sarandi, Paiçandu, Marialva e Norte do Paraná no artigo para otimização de SEO Local.
+                      </p>
+                      <p className="text-xs mt-1">
+                        <strong>Desativado:</strong> Artigo genérico para todo o Brasil.
                       </p>
                     </TooltipContent>
                   </Tooltip>

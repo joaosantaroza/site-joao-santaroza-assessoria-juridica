@@ -157,7 +157,8 @@ serve(async (req) => {
       includeLegalBasis = true, 
       customInstructions,
       seoMode = false,
-      seoKeywords = []
+      seoKeywords = [],
+      maringaMode = false
     } = await req.json();
     
     // If using custom instructions, we need those instead of title
@@ -190,7 +191,39 @@ serve(async (req) => {
       );
     }
 
-    console.log(`Admin ${userData.user.email} generating article with Perplexity (tone: ${selectedTone}, legalBasis: ${includeLegalBasis}, customMode: ${isCustomMode}, seoMode: ${seoMode}) for ${isCustomMode ? 'custom instructions' : 'title: ' + title}`);
+    console.log(`Admin ${userData.user.email} generating article with Perplexity (tone: ${selectedTone}, legalBasis: ${includeLegalBasis}, customMode: ${isCustomMode}, seoMode: ${seoMode}, maringaMode: ${maringaMode}) for ${isCustomMode ? 'custom instructions' : 'title: ' + title}`);
+
+    // Modo Maringá - Geolocalização Máxima
+    const maringaModeInstructions = maringaMode
+      ? `
+MODO MARINGÁ - GEOLOCALIZAÇÃO MÁXIMA (OBRIGATÓRIO):
+Este artigo DEVE ser fortemente geolocalizado para Maringá e Norte do Paraná.
+
+MENÇÕES GEOGRÁFICAS OBRIGATÓRIAS (distribuir ao longo do texto):
+- "Maringá" (pelo menos 3-5 vezes)
+- "Norte do Paraná" ou "região Norte do Paraná"
+- Cidades vizinhas: Sarandi, Paiçandu, Marialva, Mandaguari, Astorga, Apucarana
+- Zonas específicas: Zona 3, Zona 7, Novo Centro, Zona Industrial
+
+CONEXÕES REGIONAIS OBRIGATÓRIAS:
+- Cite o Fórum de Maringá quando mencionar processos judiciais
+- Cite o TJ-PR (Tribunal de Justiça do Paraná) para decisões estaduais
+- Cite a OAB Maringá ou OAB Paraná para referências institucionais
+- Relacione com a economia local (agronegócio, agroindústria, cooperativas)
+- Use exemplos práticos de trabalhadores e empresários da região
+
+TÍTULO E INTRODUÇÃO:
+- O título DEVE conter "Maringá" ou "Paraná" ou "Norte do Paraná"
+- A primeira frase DEVE mencionar Maringá ou região
+- Exemplo de título: "Direitos do Trabalhador Rural em Maringá: Guia Completo 2025"
+
+EXEMPLOS CONTEXTUAIS REGIONAIS:
+- "Para trabalhadores das cooperativas agrícolas de Maringá..."
+- "Se você mora em Maringá, Sarandi ou região..."
+- "Conforme entendimento do Fórum de Maringá..."
+- "Os trabalhadores da Zona Industrial de Maringá têm direito a..."
+`
+      : '';
 
     // SEO-specific instructions when in SEO mode - Enhanced with Local SEO for Maringá
     const seoInstructions = seoMode && seoKeywords.length > 0
@@ -269,6 +302,8 @@ ESTRUTURA SEO LOCAL IDEAL:
 
     const systemPrompt = `Você é um especialista em Marketing Jurídico e SEO Local focado na região de Maringá e Norte do Paraná.
 Você atua como redator sênior para o escritório "João Santaroza Assessoria Jurídica".
+
+${maringaModeInstructions}
 
 ${seoInstructions}
 
