@@ -266,41 +266,168 @@ Retorne a resposta em formato JSON válido:
 
     console.log("Deep research response received with", citations.length, "citations");
 
-    // Parse the response
+    // Parse the response - Deep Research often returns Markdown, not JSON
     let parsed;
     try {
       let cleanedContent = rawContent.trim();
+      
+      // Try to extract JSON from code blocks first
       const jsonMatch = cleanedContent.match(/```(?:json)?\s*([\s\S]*?)```/);
       if (jsonMatch) {
         cleanedContent = jsonMatch[1].trim();
       }
+      
+      // Try direct JSON parse
       parsed = JSON.parse(cleanedContent);
     } catch (e) {
-      console.log("Failed to parse JSON, extracting manually:", e);
+      console.log("Response is not JSON, extracting topics from Markdown...");
       
-      // Try to extract topics array
-      const topicsMatch = rawContent.match(/"trending_topics"\s*:\s*\[([\s\S]*?)\]/);
-      if (topicsMatch) {
-        try {
-          parsed = {
-            trending_topics: JSON.parse(`[${topicsMatch[1]}]`),
-            research_summary: "Pesquisa realizada com sucesso",
-            data_sources: citations,
-          };
-        } catch {
-          parsed = {
-            trending_topics: [],
-            research_summary: rawContent,
-            data_sources: citations,
-          };
+      // Deep Research returns Markdown - extract topics manually
+      const topics: Array<{
+        title: string;
+        description: string;
+        keywords: string[];
+        interest_level: string;
+        category: string;
+        seo_potential: string;
+        regional_connection?: string;
+      }> = [];
+      
+      // Pattern 1: Look for numbered sections with titles (## 1. Title or ### Title or **1. Title**)
+      const sectionPatterns = [
+        /(?:^|\n)(?:#{1,3}\s*)?(?:\*\*)?(?:\d+[\.\)]\s*)?(.+?)(?:\*\*)?[\n\r]+([^#]*?)(?=(?:\n(?:#{1,3}|\*\*?\d+|\d+[\.\)]))|$)/gim,
+        /\*\*([^*]+)\*\*[:\s]*([^*\n]+)/gim,
+      ];
+      
+      // Try to find structured topic blocks
+      const topicBlocks = rawContent.split(/(?=(?:^|\n)(?:#{1,3}\s*)?(?:\*\*)?\d+[\.\)])/);
+      
+      for (const block of topicBlocks) {
+        if (!block.trim() || block.length < 50) continue;
+        
+        // Extract title - look for the first bold text or heading
+        const titleMatch = block.match(/(?:#{1,3}\s*)?(?:\*\*)?(?:\d+[\.\)]\s*)?([^*\n:]+?)(?:\*\*)?(?:[\n:]|$)/);
+        if (!titleMatch) continue;
+        
+        const title = titleMatch[1]
+          .replace(/^\d+[\.\)]\s*/, '')
+          .replace(/\*\*/g, '')
+          .replace(/^#+\s*/, '')
+          .trim();
+        
+        // Skip if title is too short or looks like a section header
+        if (title.length < 15 || /^(pesquisa|resumo|fontes|conclus|introdu)/i.test(title)) continue;
+        
+        // Extract description - text after title until next section
+        const descMatch = block.match(/(?:por\s*qu[êe]|motivo|raz[ãa]o|contexto|descri[çc][ãa]o)[:\s]*([^\n]+)/i) 
+          || block.match(/[\n]([^#*\n][^\n]{30,})/);
+        const description = descMatch 
+          ? descMatch[1].replace(/\*\*/g, '').trim().slice(0, 300)
+          : 'Tema jurídico em alta identificado pela pesquisa de tendências.';
+        
+        // Extract keywords
+        const keywordsMatch = block.match(/(?:palavras[- ]?chave|keywords)[:\s]*([^\n]+)/i);
+        let keywords: string[] = [];
+        if (keywordsMatch) {
+          keywords = keywordsMatch[1]
+            .split(/[,;]/)
+            .map((k: string) => k.replace(/["\[\]]/g, '').trim())
+            .filter((k: string) => k.length > 2 && k.length < 50);
         }
-      } else {
-        parsed = {
-          trending_topics: [],
-          research_summary: rawContent,
-          data_sources: citations,
+        if (keywords.length === 0) {
+          // Generate keywords from title
+          keywords = title
+            .toLowerCase()
+            .split(/\s+/)
+            .filter((w: string) => w.length > 4 && !/^(para|como|sobre|quando|onde|qual|quais|porque|porqu[êe])$/i.test(w))
+            .slice(0, 5);
+        }
+        
+        // Extract interest level
+        const interestMatch = block.match(/(?:n[íi]vel|interesse)[:\s]*(alto|m[ée]dio[- ]?alto|m[ée]dio|baixo)/i);
+        const interest_level = interestMatch ? interestMatch[1].toLowerCase() : 'alto';
+        
+        // Extract category
+        const categoryMatch = block.match(/(?:categoria|[áa]rea)[:\s]*([^\n,]+)/i);
+        const categoryMap: Record<string, string> = {
+          'previdenci': 'Previdenciário',
+          'trabalh': 'Trabalhista',
+          'tribut': 'Tributário',
+          'consum': 'Consumidor',
+          'fam[íi]l': 'Família',
+          'sa[úu]de': 'Saúde',
         };
+        let detectedCategory = 'Geral';
+        const lowerBlock = block.toLowerCase();
+        for (const [pattern, cat] of Object.entries(categoryMap)) {
+          if (new RegExp(pattern, 'i').test(lowerBlock)) {
+            detectedCategory = cat;
+            break;
+          }
+        }
+        const category = categoryMatch 
+          ? categoryMatch[1].replace(/[*#]/g, '').trim() 
+          : detectedCategory;
+        
+        // Extract SEO potential
+        const seoMatch = block.match(/(?:seo|potencial|ranqueamento)[:\s]*([^\n]+)/i);
+        const seo_potential = seoMatch 
+          ? seoMatch[1].replace(/\*\*/g, '').trim().slice(0, 150)
+          : 'Alto potencial para ranqueamento com palavras-chave geolocalizadas.';
+        
+        // Extract regional connection
+        const regionalMatch = block.match(/(?:conex[ãa]o\s*regional|regi[ãa]o|maring[áa]|paran[áa])[:\s]*([^\n]+)/i);
+        const regional_connection = regionalMatch
+          ? regionalMatch[1].replace(/\*\*/g, '').trim().slice(0, 200)
+          : undefined;
+        
+        topics.push({
+          title: title.slice(0, 100),
+          description,
+          keywords,
+          interest_level,
+          category,
+          seo_potential,
+          regional_connection,
+        });
       }
+      
+      // If no topics found with block parsing, try simpler extraction
+      if (topics.length === 0) {
+        console.log("Trying alternative topic extraction...");
+        
+        // Look for bold titles that look like article titles
+        const boldTitles = rawContent.matchAll(/\*\*([^*]{20,100})\*\*/g);
+        for (const match of boldTitles) {
+          const title = match[1].trim();
+          if (!/^(pesquisa|resumo|fontes|conclus|introdu|observa)/i.test(title) && title.length > 20) {
+            topics.push({
+              title,
+              description: 'Tema jurídico identificado como tendência na última semana.',
+              keywords: title.toLowerCase().split(/\s+/).filter((w: string) => w.length > 4).slice(0, 4),
+              interest_level: 'alto',
+              category: 'Geral',
+              seo_potential: 'Tema com potencial para ranqueamento orgânico.',
+            });
+          }
+          if (topics.length >= 5) break;
+        }
+      }
+      
+      // Extract summary from the beginning of the response
+      const summaryMatch = rawContent.match(/^(?:#{1,2}\s*)?(?:\*\*)?(?:resumo|introdu[çc][ãa]o|vis[ãa]o\s*geral)[:\s]*(?:\*\*)?[\n\r]*([^\n#]+)/im)
+        || rawContent.match(/^([^\n#*]{50,300})/);
+      const research_summary = summaryMatch
+        ? summaryMatch[1].replace(/\*\*/g, '').trim()
+        : `Foram identificados ${topics.length} temas jurídicos em tendência para a região de Maringá e Norte do Paraná.`;
+      
+      parsed = {
+        trending_topics: topics,
+        research_summary,
+        data_sources: citations,
+      };
+      
+      console.log(`Extracted ${topics.length} topics from Markdown response`);
     }
 
     console.log("Trending topics research completed for admin:", userData.user.email);
