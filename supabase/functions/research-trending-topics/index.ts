@@ -515,9 +515,12 @@ Retorne a resposta em formato JSON válido:
       // Extract summary from the beginning of the response
       const summaryMatch = rawContent.match(/^(?:#{1,2}\s*)?(?:\*\*)?(?:resumo|introdu[çc][ãa]o|vis[ãa]o\s*geral)[:\s]*(?:\*\*)?[\n\r]*([^\n#]+)/im)
         || rawContent.match(/^([^\n#*]{50,300})/);
+      const fallbackSummary = useMaringaMode
+        ? `Foram identificados ${topics.length} temas jurídicos em tendência para a região de Maringá e Norte do Paraná.`
+        : `Foram identificados ${topics.length} temas jurídicos em tendência no cenário nacional brasileiro.`;
       const research_summary = summaryMatch
         ? summaryMatch[1].replace(/\*\*/g, '').trim()
-        : `Foram identificados ${topics.length} temas jurídicos em tendência para a região de Maringá e Norte do Paraná.`;
+        : fallbackSummary;
       
       parsed = {
         trending_topics: topics,
