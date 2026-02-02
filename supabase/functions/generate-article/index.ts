@@ -46,7 +46,7 @@ const getCorsHeaders = (origin: string | null) => ({
   Vary: "Origin",
 });
 
-// Domain filter for legal sources in Brazil
+// Domain filter for legal sources in Brazil - Prioritizing regional and authoritative sources
 const LEGAL_DOMAINS = [
   "planalto.gov.br",
   "stf.jus.br",
@@ -56,6 +56,9 @@ const LEGAL_DOMAINS = [
   "conjur.com.br",
   "migalhas.com.br",
   "jusbrasil.com.br",
+  "tjpr.jus.br",
+  "oabpr.org.br",
+  "alep.pr.gov.br",
 ];
 
 serve(async (req) => {
@@ -189,51 +192,61 @@ serve(async (req) => {
 
     console.log(`Admin ${userData.user.email} generating article with Perplexity (tone: ${selectedTone}, legalBasis: ${includeLegalBasis}, customMode: ${isCustomMode}, seoMode: ${seoMode}) for ${isCustomMode ? 'custom instructions' : 'title: ' + title}`);
 
-    // SEO-specific instructions when in SEO mode
+    // SEO-specific instructions when in SEO mode - Enhanced with Local SEO for Maringá
     const seoInstructions = seoMode && seoKeywords.length > 0
       ? `
-OTIMIZAÇÃO SEO (PRIORIDADE MÁXIMA):
-Este artigo deve ser 100% otimizado para SEO e ranqueamento orgânico no Google.
+OTIMIZAÇÃO SEO LOCAL (PRIORIDADE MÁXIMA):
+Este artigo deve ser 100% otimizado para SEO Local e ranqueamento orgânico no Google para Maringá e região Norte do Paraná.
 
 PALAVRAS-CHAVE ALVO: ${seoKeywords.join(', ')}
 
-ESTRATÉGIAS SEO OBRIGATÓRIAS:
-1. TÍTULO (será definido externamente, mas estruture o conteúdo para ele)
-2. Primeira frase deve conter a palavra-chave principal de forma natural
+ESTRATÉGIAS SEO LOCAL OBRIGATÓRIAS:
+1. GEOLOCALIZAÇÃO: Mencione explicitamente "Maringá", "Norte do Paraná" ou cidades vizinhas (Sarandi, Paiçandu, Marialva, Mandaguari)
+2. Primeira frase deve conter a palavra-chave principal + localização de forma natural
 3. Use as palavras-chave nos primeiros 100 caracteres do texto
 4. Distribua as palavras-chave naturalmente ao longo do texto (densidade 1-2%)
 5. Use sinônimos e variações das palavras-chave (LSI keywords)
-6. Estruture com H2 e H3 contendo palavras-chave secundárias
-7. Escreva parágrafos curtos (máximo 3-4 frases)
+6. Estruture com H2 e H3 contendo palavras-chave secundárias + local quando apropriado
+7. Escreva parágrafos curtos (máximo 3-4 linhas para facilitar leitura no celular)
 8. Inclua listas com bullets para facilitar a leitura
 9. Use perguntas como subtítulos (formato FAQ implícito)
 10. Mencione "2025" ou "atualizado" para relevância temporal
 11. O texto deve ter entre 1200 e 2000 palavras para ranquear bem
-12. Inclua uma seção de "Perguntas Frequentes" no final
-13. Termine com CTA forte convidando para contato profissional
+12. Inclua uma seção de "Perguntas Frequentes" no final (3-5 perguntas)
+13. Termine com CTA suave convidando para esclarecimento de dúvidas
 
-ESTRUTURA SEO IDEAL:
-- Introdução com gancho e palavra-chave (100-150 palavras)
-- Seção "O que é [tema]" ou "Como funciona [tema]"
+CONEXÃO REGIONAL OBRIGATÓRIA:
+- Cite órgãos locais quando relevante (ex: "Fórum de Maringá", "TJ-PR", "OAB Maringá")
+- Relacione o tema com a realidade da região (agronegócio, trabalhadores da Zona Industrial, etc.)
+- Use exemplos práticos do cotidiano de Maringá e região
+
+ESTRUTURA SEO LOCAL IDEAL:
+- Título H1 com palavra-chave + modificador geográfico (ex: "em Maringá", "no Paraná")
+- Introdução com gancho local e palavra-chave (100-150 palavras)
+- Seção "O que é [tema]" ou "Como funciona [tema] em Maringá"
 - Seção com requisitos/documentos/passo a passo
-- Seção de benefícios ou vantagens
+- Seção de benefícios ou vantagens para o cidadão da região
 - Seção de perguntas frequentes (3-5 perguntas)
-- Conclusão com CTA`
+- Conclusão com CTA suave (convite para dúvidas ou materiais educativos)`
       : '';
 
-    // Tone-specific instructions for blog-style articles
+    // Tone-specific instructions for blog-style articles - Enhanced with Linguagem Simples
     const toneInstructions = {
       formal: `ESTILO DE ESCRITA:
 - Use linguagem clara mas com tom profissional
 - Mantenha formalidade sem ser rebuscado
 - Evite jargões excessivos, prefira explicar conceitos
 - Estruture de forma organizada e elegante`,
-      acessivel: `ESTILO DE ESCRITA:
+      acessivel: `ESTILO DE ESCRITA (LINGUAGEM SIMPLES - OBRIGATÓRIO):
+- ZERO JURIDIQUÊS: Traduza termos complexos para linguagem acessível
+  - Exemplos: "litispendência" → "o processo está em andamento"
+  - "exequibilidade" → "se pode ser cobrado na justiça"
 - Use linguagem simples e direta, como uma conversa
 - Explique tudo como se falasse com um amigo leigo
-- Use exemplos práticos do cotidiano
-- Parágrafos curtos e fáceis de ler
-- Priorize clareza acima de tudo`,
+- Use exemplos práticos do cotidiano de Maringá e região
+- Parágrafos curtos (máximo 3-4 linhas) para leitura no celular
+- Priorize clareza acima de tudo
+- Ilustre como decisões jurídicas impactam a vida cotidiana`,
       tecnico: `ESTILO DE ESCRITA:
 - Seja detalhado mas sem exagerar em citações
 - Mencione artigos de lei quando essencial, de forma natural
@@ -254,12 +267,21 @@ ESTRUTURA SEO IDEAL:
 - Foque APENAS em explicar o tema de forma prática e acessível
 - Use expressões genéricas como "a lei permite", "você tem direito a", "é garantido que"`;
 
-    const systemPrompt = `Você é um redator de conteúdo especializado em criar artigos de BLOG informativos sobre temas jurídicos no Brasil.
+    const systemPrompt = `Você é um especialista em Marketing Jurídico e SEO Local focado na região de Maringá e Norte do Paraná.
+Você atua como redator sênior para o escritório "João Santaroza Assessoria Jurídica".
+
 ${seoInstructions}
+
+ÉTICA JURÍDICA (PROVIMENTO 205/2021 OAB - OBRIGATÓRIO):
+- Seja 100% INFORMATIVO e EDUCATIVO
+- NUNCA use termos mercantis como "Ligue agora", "Contrate", "Melhor advogado", "preço promocional"
+- O objetivo é EDUCAR o leitor, não vender diretamente
+- Use CTAs suaves: "esclareça suas dúvidas", "saiba mais", "consulte um profissional"
+- Mantenha sobriedade e dignidade da advocacia
 
 IMPORTANTE - ESTILO BLOG INFORMATIVO:
 - Escreva como um artigo de blog para INFORMAR e EDUCAR o leitor
-- NÃO use linguagem rebuscada ou excessivamente jurídica
+- NÃO use linguagem rebuscada ou excessivamente jurídica (zero juridiquês)
 - O foco é o leitor entender o assunto, não impressionar com termos técnicos
 - Use uma linguagem que qualquer pessoa consiga entender facilmente
 
@@ -276,12 +298,13 @@ REGRAS DE FORMATAÇÃO:
 - Use <blockquote> para destaques importantes ou dicas
 - Use <strong> para termos importantes
 - O texto deve ter entre ${seoMode ? '1200 e 2000' : '800 e 1500'} palavras
-- Termine com um parágrafo convidando o leitor a buscar orientação profissional
+- Termine com um parágrafo convidando o leitor a esclarecer dúvidas ou acessar materiais educativos
 
 CONTEXTO DO ESCRITÓRIO:
 - O escritório é do Dr. João Victor Santaroza, OAB/PR 81.381
 - Atua principalmente com isenção de IR por moléstia grave, direitos trabalhistas e previdenciários
-- Localizado no Paraná, com atuação digital em todo Brasil`;
+- Localizado em Maringá, Paraná, com atuação digital em todo Brasil
+- Foco regional: Maringá, Sarandi, Paiçandu, Marialva, Mandaguari, Norte do Paraná`;
 
     const legalBasisUserInstruction = includeLegalBasis
       ? `3. Pode citar leis e artigos quando necessário, mas integre naturalmente ao texto (ex: "De acordo com a Lei X..." ou "A legislação prevê que...")`

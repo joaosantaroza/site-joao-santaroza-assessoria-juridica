@@ -43,7 +43,7 @@ const getCorsHeaders = (origin: string | null) => ({
   Vary: "Origin",
 });
 
-// Legal news sources for trending research
+// Legal news sources for trending research - Prioritizing regional and authoritative sources
 const LEGAL_NEWS_DOMAINS = [
   "conjur.com.br",
   "migalhas.com.br",
@@ -54,6 +54,10 @@ const LEGAL_NEWS_DOMAINS = [
   "jota.info",
   "folha.uol.com.br",
   "g1.globo.com",
+  "tjpr.jus.br",
+  "oabpr.org.br",
+  "alep.pr.gov.br",
+  "oabmaringa.org.br",
 ];
 
 serve(async (req) => {
@@ -138,61 +142,77 @@ serve(async (req) => {
 
     console.log(`Admin ${userData.user.email} researching trending legal topics (category: ${category})`);
 
-    // Category-specific prompts for better research
+    // Category-specific prompts for better research - Enhanced for regional focus
     const categoryPrompts: Record<string, string> = {
-      'geral': 'direito brasileiro em geral, incluindo todas as áreas jurídicas',
-      'previdenciario': 'direito previdenciário, INSS, aposentadoria, benefícios, pensões e auxílios',
-      'trabalhista': 'direito trabalhista, CLT, demissões, direitos do trabalhador, rescisão e assédio',
+      'geral': 'direito brasileiro em geral, com foco em temas que impactam Maringá e Norte do Paraná',
+      'previdenciario': 'direito previdenciário, INSS, aposentadoria, benefícios, pensões e auxílios - com relevância para trabalhadores do Paraná',
+      'trabalhista': 'direito trabalhista, CLT, demissões, direitos do trabalhador, rescisão e assédio - incluindo setor agroindustrial do Norte do Paraná',
       'tributario': 'direito tributário, impostos, isenções fiscais, imposto de renda e restituição',
       'consumidor': 'direito do consumidor, compras online, garantias, trocas e reclamações',
       'familia': 'direito de família, divórcio, pensão alimentícia, guarda e inventário',
-      'saude': 'direito à saúde, planos de saúde, erro médico, medicamentos e SUS',
+      'saude': 'direito à saúde, planos de saúde, erro médico, medicamentos e SUS - incluindo atendimento em Maringá',
     };
 
     const categoryContext = categoryPrompts[category] || categoryPrompts['geral'];
 
-    const systemPrompt = `Você é um especialista em análise de tendências jurídicas no Brasil. Sua tarefa é identificar os temas jurídicos mais relevantes e em alta na última semana.
+    const systemPrompt = `Você é um especialista em Marketing Jurídico e SEO Local focado na região de Maringá e Norte do Paraná.
+Você atua como analista de tendências para o escritório "João Santaroza Assessoria Jurídica".
 
-FOCO DA PESQUISA:
-- Área: ${categoryContext}
-- Busque notícias e discussões dos últimos 7 dias
-- Priorize temas com alto interesse público e potencial de engajamento
-- Considere mudanças legislativas, decisões judiciais importantes e casos de grande repercussão
+SUA BASE DE CONHECIMENTO:
+- Foco em direitos trabalhistas, previdenciários e isenção de IR por moléstia grave
+- Região prioritária: Maringá, Sarandi, Paiçandu, Marialva, Mandaguari, Norte do Paraná
 
-CRITÉRIOS DE SELEÇÃO:
-1. Relevância atual (está sendo discutido agora)
-2. Interesse público (afeta muitas pessoas)
-3. Potencial educativo (pode ajudar o leitor a entender seus direitos)
-4. Viabilidade para artigo de blog (tema claro e objetivo)
+FONTES DE MONITORAMENTO PRIORITÁRIAS:
+- Assembleia Legislativa do Paraná (ALEP)
+- Tribunal de Justiça do Paraná (TJ-PR)
+- OAB Maringá e OAB Paraná
+- Notícias jurídicas nacionais com impacto regional
 
-IMPORTANTE:
-- Foque em temas práticos que interessam ao cidadão comum
-- Evite temas excessivamente técnicos ou de nicho
-- Prefira assuntos com aplicação prática no dia a dia`;
+CRITÉRIOS DE SELEÇÃO (OBRIGATÓRIO):
+1. Escolha temas que afetam a vida COTIDIANA das pessoas em Maringá e região
+2. Exemplos ideais: filas no SUS local, decisões trabalhistas do agro na região, surtos de doenças que geram direitos
+3. Priorize mudanças legislativas, julgamentos recentes e casos de repercussão que impactam o cidadão comum
+4. Potencial para artigo com palavras-chave GEOLOCALIZADAS (ex: "em Maringá", "no Paraná")
 
-    const userPrompt = `Pesquise e identifique os 5 temas jurídicos mais relevantes e em alta na última semana no Brasil, na área de ${categoryContext}.
+ÉTICA (PROVIMENTO 205/2021 OAB):
+- Todos os temas sugeridos devem permitir conteúdo INFORMATIVO e EDUCATIVO
+- Evite temas que só funcionariam com abordagem mercantil ou sensacionalista
+- Foque em temas onde podemos EDUCAR o leitor sobre seus direitos`;
 
-Para cada tema, forneça:
-1. Um título atrativo para artigo de blog (máximo 70 caracteres)
-2. Uma breve descrição do por quê o tema está em alta (2-3 frases)
-3. Palavras-chave SEO relevantes (3-5 palavras)
+    const userPrompt = `Realize uma "Deep Research" sobre temas jurídicos em alta na última semana, com foco na área de ${categoryContext}.
+
+PESQUISA OBRIGATÓRIA:
+1. Verifique mudanças legislativas no Paraná (ALEP)
+2. Busque julgamentos recentes do TJ-PR
+3. Monitore notícias da OAB Maringá e OAB Paraná
+4. Identifique temas nacionais com impacto na região Norte do Paraná
+
+Para cada tema identificado, forneça:
+1. Um TÍTULO que use palavras-chave GEOLOCALIZADAS (ex: "em Maringá", "no Paraná", "para trabalhadores do agro")
+   - Máximo 70 caracteres
+   - EXEMPLO RUIM: "Direitos do Paciente com Dengue"
+   - EXEMPLO BOM: "Negativa de atendimento por Dengue em Maringá: O que diz a lei sobre o direito à saúde"
+2. Por quê o tema está em alta e afeta a vida cotidiana na região (2-3 frases)
+3. Palavras-chave SEO com modificadores geográficos (3-5 palavras)
 4. Nível de interesse estimado (alto, médio-alto, médio)
 5. Categoria sugerida
+6. Conexão regional (como o tema se relaciona com Maringá/Norte do Paraná)
 
 Retorne a resposta em formato JSON válido:
 {
   "trending_topics": [
     {
-      "title": "Título atrativo para o artigo",
-      "description": "Por que este tema está em alta e por que é importante",
-      "keywords": ["palavra1", "palavra2", "palavra3"],
+      "title": "Título com palavra-chave + geolocalização",
+      "description": "Por que este tema está em alta e como afeta a região",
+      "keywords": ["palavra-chave Maringá", "palavra-chave Paraná", "palavra-chave"],
       "interest_level": "alto",
       "category": "Categoria sugerida",
-      "seo_potential": "Explicação breve do potencial SEO"
+      "seo_potential": "Potencial de ranqueamento local",
+      "regional_connection": "Como o tema se conecta com Maringá e região"
     }
   ],
-  "research_summary": "Resumo geral das tendências identificadas",
-  "data_sources": ["Fontes consultadas"]
+  "research_summary": "Resumo geral das tendências identificadas para a região",
+  "data_sources": ["Fontes consultadas incluindo fontes regionais"]
 }`;
 
     // Use sonar-deep-research for comprehensive trending analysis
