@@ -4,6 +4,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
 import { 
@@ -51,6 +53,7 @@ const INTEREST_COLORS: Record<string, string> = {
 export function TrendingResearch({ onSelectTopic }: TrendingResearchProps) {
   const [isResearching, setIsResearching] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState('geral');
+  const [useMaringaMode, setUseMaringaMode] = useState(true);
   const [trendingTopics, setTrendingTopics] = useState<TrendingTopic[]>([]);
   const [researchSummary, setResearchSummary] = useState('');
   const [researchedAt, setResearchedAt] = useState<string | null>(null);
@@ -75,7 +78,7 @@ export function TrendingResearch({ onSelectTopic }: TrendingResearchProps) {
             'apikey': import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
             'Authorization': `Bearer ${session?.access_token || import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
           },
-          body: JSON.stringify({ category: selectedCategory }),
+          body: JSON.stringify({ category: selectedCategory, useMaringaMode }),
         }
       );
 
@@ -161,37 +164,59 @@ export function TrendingResearch({ onSelectTopic }: TrendingResearchProps) {
       </CardHeader>
       <CardContent className="space-y-4">
         {/* Research Controls */}
-        <div className="flex flex-col sm:flex-row gap-3">
-          <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-            <SelectTrigger className="w-full sm:w-48">
-              <SelectValue placeholder="Categoria" />
-            </SelectTrigger>
-            <SelectContent>
-              {CATEGORY_OPTIONS.map((option) => (
-                <SelectItem key={option.value} value={option.value}>
-                  {option.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          
-          <Button 
-            onClick={handleResearch} 
-            disabled={isResearching}
-            className="bg-amber-600 hover:bg-amber-700 text-white"
-          >
-            {isResearching ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Pesquisando...
-              </>
-            ) : (
-              <>
-                <Search className="mr-2 h-4 w-4" />
-                Pesquisar Trending Topics
-              </>
-            )}
-          </Button>
+        <div className="flex flex-col gap-4">
+          <div className="flex flex-col sm:flex-row gap-3">
+            <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+              <SelectTrigger className="w-full sm:w-48">
+                <SelectValue placeholder="Categoria" />
+              </SelectTrigger>
+              <SelectContent>
+                {CATEGORY_OPTIONS.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            
+            <Button 
+              onClick={handleResearch} 
+              disabled={isResearching}
+              className="bg-amber-600 hover:bg-amber-700 text-white"
+            >
+              {isResearching ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Pesquisando...
+                </>
+              ) : (
+                <>
+                  <Search className="mr-2 h-4 w-4" />
+                  Pesquisar Trending Topics
+                </>
+              )}
+            </Button>
+          </div>
+
+          {/* Maringá Mode Toggle */}
+          <div className="flex items-center space-x-3 p-3 bg-white dark:bg-gray-900 rounded-lg border">
+            <Switch 
+              id="maringa-mode"
+              checked={useMaringaMode}
+              onCheckedChange={setUseMaringaMode}
+            />
+            <Label htmlFor="maringa-mode" className="flex items-center gap-2 cursor-pointer">
+              <span className="font-medium text-sm">Modo Maringá</span>
+              <Badge variant="outline" className="text-xs">
+                {useMaringaMode ? 'Ativo' : 'Desativado'}
+              </Badge>
+            </Label>
+            <span className="text-xs text-muted-foreground hidden sm:inline">
+              {useMaringaMode 
+                ? 'Pesquisa focada em Maringá e Norte do Paraná' 
+                : 'Pesquisa abrangente de todo o Brasil'}
+            </span>
+          </div>
         </div>
 
         {/* Loading State */}
