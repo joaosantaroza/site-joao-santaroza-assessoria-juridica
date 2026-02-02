@@ -43,8 +43,23 @@ const getCorsHeaders = (origin: string | null) => ({
   Vary: "Origin",
 });
 
-// Legal news sources for trending research - Prioritizing regional and authoritative sources
-const LEGAL_NEWS_DOMAINS = [
+// Legal news sources for trending research - National sources
+const LEGAL_NEWS_DOMAINS_NACIONAL = [
+  "conjur.com.br",
+  "migalhas.com.br",
+  "stf.jus.br",
+  "stj.jus.br",
+  "gov.br",
+  "jusbrasil.com.br",
+  "jota.info",
+  "folha.uol.com.br",
+  "g1.globo.com",
+  "uol.com.br",
+  "estadao.com.br",
+];
+
+// Legal news sources for trending research - Regional sources (Maringá/Paraná focus)
+const LEGAL_NEWS_DOMAINS_MARINGA = [
   "conjur.com.br",
   "migalhas.com.br",
   "stf.jus.br",
@@ -58,6 +73,7 @@ const LEGAL_NEWS_DOMAINS = [
   "oabpr.org.br",
   "alep.pr.gov.br",
   "oabmaringa.org.br",
+  "gazetadopovo.com.br",
 ];
 
 serve(async (req) => {
@@ -292,6 +308,11 @@ Retorne a resposta em formato JSON válido:
 
     const userPrompt = useMaringaMode ? userPromptMaringa : userPromptNacional;
 
+    // Select domain filter based on mode
+    const searchDomains = useMaringaMode ? LEGAL_NEWS_DOMAINS_MARINGA : LEGAL_NEWS_DOMAINS_NACIONAL;
+
+    console.log(`Using ${useMaringaMode ? 'regional (Maringá)' : 'national'} domain filter with ${searchDomains.length} domains`);
+
     // Use sonar-deep-research for comprehensive trending analysis
     const response = await fetch("https://api.perplexity.ai/chat/completions", {
       method: "POST",
@@ -307,7 +328,7 @@ Retorne a resposta em formato JSON válido:
         ],
         temperature: 0.2,
         max_tokens: 4000,
-        search_domain_filter: LEGAL_NEWS_DOMAINS,
+        search_domain_filter: searchDomains,
         search_recency_filter: "week",
         return_related_questions: false,
       }),
