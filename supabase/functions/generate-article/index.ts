@@ -361,13 +361,23 @@ ${legalBasisUserInstruction}
 5. Foque em orientações práticas e informações úteis
 6. Conclua incentivando o leitor a buscar ajuda profissional se precisar
 
+GERAÇÃO DE TAGS SEO (OBRIGATÓRIO):
+Gere 3-5 tags otimizadas para SEO que:
+- Sejam palavras-chave relevantes para busca orgânica
+- Incluam termos que as pessoas realmente pesquisam no Google
+- Combinem termos gerais (ex: "direito trabalhista") com específicos (ex: "rescisão contratual")
+- Priorizem termos com volume de busca (ex: "aposentadoria", "INSS", "demissão")
+- Incluam variações geográficas se relevante (ex: "Maringá", "Paraná")
+
 Retorne a resposta em formato JSON válido:
 {
   "title": "Título atrativo para o artigo",
   "content": "<HTML do artigo completo>",
   "excerpt": "Resumo curto do artigo (máximo 200 caracteres)",
-  "category": "Categoria sugerida (Isenção Fiscal, Trabalho, Previdenciário, etc.)",
-  "readTime": "X min"
+  "category": "Categoria principal (Isenção Fiscal, Trabalho, Previdenciário, etc.)",
+  "tags": ["tag1", "tag2", "tag3", "tag4", "tag5"],
+  "readTime": "X min",
+  "metaDescription": "Meta description otimizada para SEO com 150-160 caracteres"
 }`
       : `Escreva um artigo de BLOG informativo sobre o seguinte tema:
 
@@ -381,12 +391,22 @@ ${legalBasisUserInstruction}
 5. Foque em orientações práticas e informações úteis
 6. Conclua incentivando o leitor a buscar ajuda profissional se precisar
 
+GERAÇÃO DE TAGS SEO (OBRIGATÓRIO):
+Gere 3-5 tags otimizadas para SEO que:
+- Sejam palavras-chave relevantes para busca orgânica
+- Incluam termos que as pessoas realmente pesquisam no Google
+- Combinem termos gerais (ex: "direito trabalhista") com específicos (ex: "rescisão contratual")
+- Priorizem termos com volume de busca (ex: "aposentadoria", "INSS", "demissão")
+- Incluam variações geográficas se relevante (ex: "Maringá", "Paraná")
+
 Retorne a resposta em formato JSON válido:
 {
   "content": "<HTML do artigo completo>",
   "excerpt": "Resumo curto do artigo (máximo 200 caracteres)",
-  "category": "Categoria sugerida (Isenção Fiscal, Trabalho, Previdenciário, etc.)",
-  "readTime": "X min"
+  "category": "Categoria principal (Isenção Fiscal, Trabalho, Previdenciário, etc.)",
+  "tags": ["tag1", "tag2", "tag3", "tag4", "tag5"],
+  "readTime": "X min",
+  "metaDescription": "Meta description otimizada para SEO com 150-160 caracteres"
 }`;
 
     // Call Perplexity API with sonar-pro model for grounded search
@@ -496,11 +516,26 @@ Retorne a resposta em formato JSON válido:
       const excerptMatch = rawContent.match(/"excerpt"\s*:\s*"([^"]+)"/);
       const categoryMatch = rawContent.match(/"category"\s*:\s*"([^"]+)"/);
       
+      // Try to extract tags array
+      const tagsMatch = rawContent.match(/"tags"\s*:\s*\[(.*?)\]/s);
+      let extractedTags: string[] = [];
+      if (tagsMatch) {
+        try {
+          extractedTags = JSON.parse(`[${tagsMatch[1]}]`);
+        } catch {
+          extractedTags = tagsMatch[1].split(',').map((t: string) => t.replace(/"/g, '').trim()).filter(Boolean);
+        }
+      }
+      
+      const metaDescMatch = rawContent.match(/"metaDescription"\s*:\s*"([^"]+)"/);
+      
       parsed = {
         title: titleMatch ? titleMatch[1] : null,
         content: extractedContent,
         excerpt: excerptMatch ? excerptMatch[1] : (isCustomMode ? "" : title.slice(0, 150) + "..."),
         category: categoryMatch ? categoryMatch[1] : "Geral",
+        tags: extractedTags,
+        metaDescription: metaDescMatch ? metaDescMatch[1] : null,
         readTime: "5 min",
       };
     }
@@ -510,8 +545,23 @@ Retorne a resposta em formato JSON válido:
     
     // Extract generated title for custom mode
     const generatedTitle = isCustomMode ? (parsed.title || null) : null;
+    
+    // Generate SEO tags array - combine category with generated tags
+    const seoTags: string[] = [];
+    if (parsed.category && parsed.category !== "Geral") {
+      seoTags.push(parsed.category);
+    }
+    if (Array.isArray(parsed.tags)) {
+      parsed.tags.forEach((tag: string) => {
+        if (tag && !seoTags.includes(tag)) {
+          seoTags.push(tag);
+        }
+      });
+    }
+    // Limit to 5 unique tags
+    const finalTags = [...new Set(seoTags)].slice(0, 5);
 
-    console.log("Article generated successfully for admin:", userData.user.email);
+    console.log("Article generated successfully for admin:", userData.user.email, "with", finalTags.length, "SEO tags");
 
     return new Response(
       JSON.stringify({
@@ -521,6 +571,8 @@ Retorne a resposta em formato JSON válido:
           content: finalContent,
           excerpt: parsed.excerpt || (isCustomMode ? "" : title.slice(0, 150)),
           category: parsed.category || "Geral",
+          tags: finalTags,
+          metaDescription: parsed.metaDescription || parsed.excerpt || null,
           readTime: parsed.readTime || "5 min",
           sources: citations,
         },
