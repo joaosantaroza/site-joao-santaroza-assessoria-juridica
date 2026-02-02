@@ -1,11 +1,12 @@
-import { useState, useMemo } from "react";
-import { Link } from "react-router-dom";
+import { useState, useMemo, useEffect } from "react";
+import { Link, useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Calendar, Clock, Tag, ChevronLeft, ChevronRight, Loader2, Search, X, ArrowUpDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { SectionTitle } from "@/components/ui/SectionTitle";
 import { useBlogArticles } from "@/hooks/useBlogArticles";
+import { useBlogPaginationSEO } from "@/hooks/useBlogPaginationSEO";
 import { BlogArticle } from "@/lib/constants";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
@@ -107,11 +108,13 @@ const ArticleCard = ({
 const Pagination = ({ 
   currentPage, 
   totalPages, 
-  onPageChange 
+  onPageChange,
+  basePath = "/blog"
 }: { 
   currentPage: number; 
   totalPages: number; 
   onPageChange: (page: number) => void;
+  basePath?: string;
 }) => {
   const pages = useMemo(() => {
     const items: (number | string)[] = [];
@@ -134,50 +137,85 @@ const Pagination = ({
     return items;
   }, [currentPage, totalPages]);
 
+  // Helper to get page URL for SEO-friendly links
+  const getPageUrl = (page: number) => {
+    if (page === 1) return basePath;
+    return `${basePath}?pagina=${page}`;
+  };
+
   if (totalPages <= 1) return null;
 
   return (
-    <div className="flex items-center justify-center gap-2 mt-12">
-      <Button
-        variant="outline"
-        size="icon"
-        onClick={() => onPageChange(currentPage - 1)}
-        disabled={currentPage === 1}
-        className="h-10 w-10"
-      >
-        <ChevronLeft className="w-4 h-4" />
-      </Button>
+    <nav aria-label="Paginação do blog" className="flex items-center justify-center gap-2 mt-12">
+      {currentPage > 1 ? (
+        <Link
+          to={getPageUrl(currentPage - 1)}
+          onClick={(e) => { e.preventDefault(); onPageChange(currentPage - 1); }}
+          className="inline-flex items-center justify-center h-10 w-10 rounded-md border border-input bg-background hover:bg-accent hover:text-accent-foreground"
+          aria-label="Página anterior"
+        >
+          <ChevronLeft className="w-4 h-4" />
+        </Link>
+      ) : (
+        <Button
+          variant="outline"
+          size="icon"
+          disabled
+          className="h-10 w-10"
+          aria-label="Página anterior"
+        >
+          <ChevronLeft className="w-4 h-4" />
+        </Button>
+      )}
       
       {pages.map((page, idx) => (
         typeof page === 'number' ? (
-          <Button
+          <Link
             key={idx}
-            variant={currentPage === page ? "default" : "outline"}
-            onClick={() => onPageChange(page)}
-            className="h-10 w-10"
+            to={getPageUrl(page)}
+            onClick={(e) => { e.preventDefault(); onPageChange(page); }}
+            className={`inline-flex items-center justify-center h-10 w-10 rounded-md text-sm font-medium transition-colors ${
+              currentPage === page 
+                ? 'bg-primary text-primary-foreground' 
+                : 'border border-input bg-background hover:bg-accent hover:text-accent-foreground'
+            }`}
+            aria-current={currentPage === page ? 'page' : undefined}
           >
             {page}
-          </Button>
+          </Link>
         ) : (
-          <span key={idx} className="px-2 text-muted-foreground">...</span>
+          <span key={idx} className="px-2 text-muted-foreground" aria-hidden="true">...</span>
         )
       ))}
       
-      <Button
-        variant="outline"
-        size="icon"
-        onClick={() => onPageChange(currentPage + 1)}
-        disabled={currentPage === totalPages}
-        className="h-10 w-10"
-      >
-        <ChevronRight className="w-4 h-4" />
-      </Button>
-    </div>
+      {currentPage < totalPages ? (
+        <Link
+          to={getPageUrl(currentPage + 1)}
+          onClick={(e) => { e.preventDefault(); onPageChange(currentPage + 1); }}
+          className="inline-flex items-center justify-center h-10 w-10 rounded-md border border-input bg-background hover:bg-accent hover:text-accent-foreground"
+          aria-label="Próxima página"
+        >
+          <ChevronRight className="w-4 h-4" />
+        </Link>
+      ) : (
+        <Button
+          variant="outline"
+          size="icon"
+          disabled
+          className="h-10 w-10"
+          aria-label="Próxima página"
+        >
+          <ChevronRight className="w-4 h-4" />
+        </Button>
+      )}
+    </nav>
   );
 };
 
 export default function Blog() {
-  const [currentPage, setCurrentPage] = useState(1);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const initialPage = parseInt(searchParams.get("pagina") || "1", 10);
+  const [currentPage, setCurrentPage] = useState(initialPage > 0 ? initialPage : 1);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState<SortOption>("newest");
@@ -223,10 +261,23 @@ export default function Blog() {
 
   const totalPages = Math.ceil(filteredArticles.length / ARTICLES_PER_PAGE);
   
+  // SEO pagination meta tags
+  useBlogPaginationSEO({ currentPage, totalPages });
+
   const paginatedArticles = useMemo(() => {
     const start = (currentPage - 1) * ARTICLES_PER_PAGE;
     return filteredArticles.slice(start, start + ARTICLES_PER_PAGE);
   }, [filteredArticles, currentPage]);
+
+  // Sync URL when page changes
+  useEffect(() => {
+    if (currentPage === 1) {
+      searchParams.delete("pagina");
+    } else {
+      searchParams.set("pagina", String(currentPage));
+    }
+    setSearchParams(searchParams, { replace: true });
+  }, [currentPage, searchParams, setSearchParams]);
 
   const handleCategoryClick = (category: string) => {
     setSelectedCategory(prev => prev === category ? null : category);
