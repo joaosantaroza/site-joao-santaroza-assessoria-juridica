@@ -11,6 +11,7 @@ import { BlogArticle } from "@/lib/constants";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { ContactModal } from "@/components/ContactModal";
+import { BreadcrumbsJsonLd } from "@/components/BreadcrumbsJsonLd";
 import {
   Select,
   SelectContent,
@@ -297,8 +298,15 @@ export default function Blog() {
   // Dummy navigation handler for Navbar compatibility
   const handleNavigate = () => {};
 
+  // Breadcrumbs for JSON-LD structured data
+  const breadcrumbs = useMemo(() => [
+    { name: "Início", path: "/" },
+    { name: "Blog", path: "/blog" },
+  ], []);
+
   return (
     <div className="min-h-screen font-sans selection:bg-accent selection:text-accent-foreground">
+      <BreadcrumbsJsonLd items={breadcrumbs} />
       <Navbar onNavigate={handleNavigate} onContact={() => setShowModal(true)} />
       
       <main className="min-h-screen bg-background">
