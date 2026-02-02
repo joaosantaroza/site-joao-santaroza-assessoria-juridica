@@ -18,8 +18,21 @@ import {
   BarChart3,
   Target,
   Clock,
-  Zap
+  Zap,
+  MapPin
 } from 'lucide-react';
+
+// Check if topic title has regional geolocation keywords
+const hasGeolocation = (title: string): boolean => {
+  const geoKeywords = [
+    'maringá', 'maringa', 'paraná', 'parana', 'pr',
+    'sarandi', 'paiçandu', 'paicandu', 'marialva', 'mandaguari',
+    'londrina', 'curitiba', 'cascavel', 'norte do paraná',
+    'noroeste do paraná', 'tj-pr', 'tjpr', 'alep', 'oab-pr', 'oabpr'
+  ];
+  const lowerTitle = title.toLowerCase();
+  return geoKeywords.some(keyword => lowerTitle.includes(keyword));
+};
 
 interface TrendingTopic {
   title: string;
@@ -275,6 +288,15 @@ export function TrendingResearch({ onSelectTopic }: TrendingResearchProps) {
                     <div className="flex-1 space-y-2">
                       <div className="flex items-center gap-2 flex-wrap">
                         <h5 className="font-medium text-sm">{topic.title}</h5>
+                        {hasGeolocation(topic.title) && (
+                          <Badge 
+                            variant="outline" 
+                            className="text-xs bg-blue-50 dark:bg-blue-950/50 border-blue-300 dark:border-blue-700 text-blue-700 dark:text-blue-300"
+                          >
+                            <MapPin className="h-3 w-3 mr-1" />
+                            Regional
+                          </Badge>
+                        )}
                         <Badge 
                           variant="secondary"
                           className={`${INTEREST_COLORS[topic.interest_level.toLowerCase()] || 'bg-gray-500'} text-white text-xs`}
