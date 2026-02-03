@@ -67,41 +67,68 @@ export default function Admin() {
 
   const fetchLeads = async () => {
     setIsLoadingLeads(true);
-    const { data, error } = await supabase
-      .from('ebook_leads')
-      .select('*')
-      .order('created_at', { ascending: false });
+    try {
+      const { data, error } = await supabase.functions.invoke('admin-leads', {
+        method: 'GET',
+      });
 
-    if (error) {
+      if (error) {
+        toast({
+          title: 'Erro ao carregar leads',
+          description: 'Falha ao conectar com o servidor.',
+          variant: 'destructive'
+        });
+      } else if (data?.error) {
+        toast({
+          title: 'Erro ao carregar leads',
+          description: data.error,
+          variant: 'destructive'
+        });
+      } else {
+        setLeads(data?.data || []);
+      }
+    } catch (err) {
       toast({
         title: 'Erro ao carregar leads',
-        description: error.message,
+        description: 'Falha inesperada ao carregar dados.',
         variant: 'destructive'
       });
-    } else {
-      setLeads(data || []);
     }
     setIsLoadingLeads(false);
   };
 
   const handleDelete = async (id: string) => {
     setDeletingId(id);
-    const { error } = await supabase
-      .from('ebook_leads')
-      .delete()
-      .eq('id', id);
+    try {
+      const { data, error } = await supabase.functions.invoke('admin-leads', {
+        method: 'DELETE',
+        body: { id },
+      });
 
-    if (error) {
+      if (error) {
+        toast({
+          title: 'Erro ao excluir',
+          description: 'Falha ao conectar com o servidor.',
+          variant: 'destructive'
+        });
+      } else if (data?.error) {
+        toast({
+          title: 'Erro ao excluir',
+          description: data.error,
+          variant: 'destructive'
+        });
+      } else {
+        setLeads(leads.filter(lead => lead.id !== id));
+        toast({
+          title: 'Lead excluído',
+          description: 'O registro foi removido com sucesso.'
+        });
+      }
+    } catch (err) {
       toast({
         title: 'Erro ao excluir',
-        description: error.message,
+        description: 'Falha inesperada ao excluir registro.',
         variant: 'destructive'
-      });
-    } else {
-      setLeads(leads.filter(lead => lead.id !== id));
-      toast({
-        title: 'Lead excluído',
-        description: 'O registro foi removido com sucesso.'
       });
     }
     setDeletingId(null);
