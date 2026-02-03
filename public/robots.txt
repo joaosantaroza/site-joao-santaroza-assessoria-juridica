@@ -1,8 +1,13 @@
+# Robots.txt for João Santaroza Assessoria Jurídica
+# https://joaosantarozaadvocacia.com.br
+
 User-agent: Googlebot
 Allow: /
+Crawl-delay: 1
 
 User-agent: Bingbot
 Allow: /
+Crawl-delay: 1
 
 User-agent: Twitterbot
 Allow: /
@@ -10,8 +15,16 @@ Allow: /
 User-agent: facebookexternalhit
 Allow: /
 
-User-agent: *
+User-agent: LinkedInBot
 Allow: /
 
-# Sitemap dinâmico
+User-agent: *
+Allow: /
+Crawl-delay: 2
+
+# Disallow admin and auth routes
+Disallow: /admin
+Disallow: /auth
+
+# Sitemap
 Sitemap: https://joaosantarozaadvocacia.com.br/sitemap.xml

@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { BlogSection } from "@/components/BlogSection";
 import FAQSection from "@/components/FAQSection";
 import { useNavigate } from "react-router-dom";
+import { LocalBusinessSchema, WebsiteSchema } from "@/components/seo";
 
 interface HomePageProps {
   onNavigate: (view: ViewType) => void;
@@ -16,6 +17,10 @@ export const HomePage = ({ onNavigate, onContact }: HomePageProps) => {
   
   return (
   <>
+    {/* Schema.org JSON-LD for Rich Snippets */}
+    <LocalBusinessSchema />
+    <WebsiteSchema />
+    
     {/* Hero Section */}
     <section className="relative pt-24 pb-32 lg:pt-40 lg:pb-48 overflow-hidden bg-primary">
       {/* Background Image with Overlay */}
