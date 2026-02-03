@@ -4,6 +4,7 @@ import { CONTACT_INFO, ViewType } from "@/lib/constants";
 import { motion } from "framer-motion";
 import { BlogSection } from "@/components/BlogSection";
 import FAQSection from "@/components/FAQSection";
+import { SEOSection } from "@/components/SEOSection";
 import { useNavigate } from "react-router-dom";
 import { LocalBusinessSchema, WebsiteSchema } from "@/components/seo";
 
@@ -178,6 +179,9 @@ export const HomePage = ({ onNavigate, onContact }: HomePageProps) => {
         </div>
       </div>
     </section>
+
+    {/* SEO Section with Keywords */}
+    <SEOSection />
 
     {/* Blog Section */}
     <BlogSection onContact={onContact} />
