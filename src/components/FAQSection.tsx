@@ -5,6 +5,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { SectionTitle } from "./ui/SectionTitle";
+import { FAQSchema } from "./seo/FAQSchema";
 
 const faqs = [
   {
@@ -57,8 +58,19 @@ const faqs = [
 ];
 
 const FAQSection = () => {
+  // Flatten all FAQs for schema
+  const allFaqs = faqs.flatMap(category => 
+    category.questions.map(q => ({
+      question: q.question,
+      answer: q.answer,
+    }))
+  );
+
   return (
     <section className="py-16 md:py-24 bg-muted/30">
+      {/* JSON-LD Schema for Google Rich Snippets */}
+      <FAQSchema faqs={allFaqs} />
+      
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
           <SectionTitle className="text-center">Perguntas Frequentes</SectionTitle>
