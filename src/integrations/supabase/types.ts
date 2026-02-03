@@ -44,6 +44,30 @@ export type Database = {
         }
         Relationships: []
       }
+      article_view_rate_limits: {
+        Row: {
+          article_slug: string
+          created_at: string
+          id: string
+          ip_address: string
+          last_view_at: string
+        }
+        Insert: {
+          article_slug: string
+          created_at?: string
+          id?: string
+          ip_address: string
+          last_view_at?: string
+        }
+        Update: {
+          article_slug?: string
+          created_at?: string
+          id?: string
+          ip_address?: string
+          last_view_at?: string
+        }
+        Relationships: []
+      }
       blog_posts: {
         Row: {
           author_id: string | null
@@ -280,6 +304,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      cleanup_article_view_rate_limits: { Args: never; Returns: undefined }
       cleanup_old_rate_limits: { Args: never; Returns: undefined }
       has_role: {
         Args: {
@@ -288,7 +313,9 @@ export type Database = {
         }
         Returns: boolean
       }
-      increment_article_view: { Args: { p_slug: string }; Returns: undefined }
+      increment_article_view:
+        | { Args: { p_slug: string }; Returns: undefined }
+        | { Args: { p_ip_address?: string; p_slug: string }; Returns: boolean }
     }
     Enums: {
       app_role: "admin" | "user"

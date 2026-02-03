@@ -45,10 +45,17 @@ const transformArticle = (dbArticle: DatabaseArticle): BlogArticle => ({
   viewCount: dbArticle.view_count || 0,
 });
 
-// Increment view count for an article
+// Increment view count for an article (via Edge Function with rate limiting)
 export const incrementArticleView = async (slug: string): Promise<void> => {
   try {
-    await supabase.rpc('increment_article_view', { p_slug: slug });
+    // Use Edge Function for server-side IP-based rate limiting
+    const response = await supabase.functions.invoke('track-article-view', {
+      body: { slug }
+    });
+    
+    if (response.error) {
+      console.error('Error tracking article view:', response.error);
+    }
   } catch (error) {
     console.error('Error incrementing view count:', error);
   }
