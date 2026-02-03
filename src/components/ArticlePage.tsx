@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { ArticleAudioPlayer } from "@/components/ArticleAudioPlayer";
 import { EbookLeadModal } from "@/components/EbookLeadModal";
 import { RelatedArticles } from "@/components/RelatedArticles";
+import { InternalLinks } from "@/components/InternalLinks";
 import { SocialShareButtons } from "@/components/SocialShareButtons";
 import { incrementArticleView } from "@/hooks/useBlogArticles";
 import ebookGestanteCapa from '@/assets/ebook-gestante-capa.png';
@@ -207,6 +208,12 @@ export const ArticlePage = ({ article, allArticles, onBack, onContact, onArticle
               </ReactMarkdown>
             )}
           </motion.div>
+
+          {/* Internal Links - SEO Cluster Links */}
+          <InternalLinks
+            currentArticle={article}
+            allArticles={allArticles}
+          />
 
           {/* Download PDF Section - Only for HIV article */}
           {article.id === 'isencao-ir-hiv' && (
