@@ -13,5 +13,5 @@ Allow: /
 User-agent: *
 Allow: /
 
-# Sitemap dinâmico gerado via Edge Function
-Sitemap: https://vlojfdgcbokneeammddo.supabase.co/functions/v1/sitemap
+# Sitemap dinâmico
+Sitemap: https://joaosantarozaadvocacia.com.br/sitemap.xml

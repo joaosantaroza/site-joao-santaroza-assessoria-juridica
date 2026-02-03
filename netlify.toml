@@ -1,3 +1,11 @@
+# Sitemap proxy - deve vir ANTES do catch-all
+[[redirects]]
+  from = "/sitemap.xml"
+  to = "https://vlojfdgcbokneeammddo.supabase.co/functions/v1/sitemap"
+  status = 200
+  force = true
+
+# SPA catch-all
 [[redirects]]
   from = "/*"
   to = "/index.html"
