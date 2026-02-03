@@ -12,3 +12,6 @@ Allow: /
 
 User-agent: *
 Allow: /
+
+# Sitemap dinâmico gerado via Edge Function
+Sitemap: https://vlojfdgcbokneeammddo.supabase.co/functions/v1/sitemap
