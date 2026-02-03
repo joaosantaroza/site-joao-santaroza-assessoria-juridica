@@ -167,7 +167,7 @@ export function ArticlesList({ refreshTrigger, onEditArticle }: ArticlesListProp
             </div>
             <div>
               <CardTitle className="font-heading">Artigos</CardTitle>
-              <CardDescription>{posts.length} artigo(s) cadastrado(s)</CardDescription>
+              <CardDescription>Gerencie seus artigos do blog</CardDescription>
             </div>
           </div>
           <Button onClick={fetchPosts} variant="outline" size="sm" disabled={isLoading}>
