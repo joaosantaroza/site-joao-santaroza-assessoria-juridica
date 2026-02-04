@@ -174,8 +174,12 @@ export const ArticleEbookLeadModal = ({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             transition={{ duration: 0.2 }}
+            onClick={handleClose}
           >
-            <div className="w-full max-w-sm max-h-[90vh] overflow-y-auto">
+            <div 
+              className="w-full max-w-sm max-h-[90vh] overflow-y-auto"
+              onClick={(e) => e.stopPropagation()}
+            >
               <div className="relative bg-card rounded-xl shadow-2xl border border-accent/20 overflow-hidden">
                 {/* Close button */}
                 <button
