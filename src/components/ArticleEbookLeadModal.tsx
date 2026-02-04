@@ -152,63 +152,63 @@ export const ArticleEbookLeadModal = ({
 
           {/* Modal */}
           <motion.div
-            className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-full max-w-2xl px-4 max-h-[90vh] overflow-y-auto"
+            className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-full max-w-lg px-3 max-h-[90vh] overflow-y-auto"
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             transition={{ duration: 0.2 }}
           >
-            <div className="bg-primary rounded-2xl shadow-2xl border border-accent/20 overflow-hidden">
+            <div className="bg-primary rounded-xl shadow-2xl border border-accent/20 overflow-hidden">
               {/* Close button */}
               <button
                 onClick={onClose}
-                className="absolute top-4 right-4 p-2 rounded-full hover:bg-primary-foreground/10 transition-colors z-10"
+                className="absolute top-3 right-3 p-1.5 rounded-full hover:bg-primary-foreground/10 transition-colors z-10"
                 aria-label="Fechar"
               >
-                <X className="w-5 h-5 text-primary-foreground" />
+                <X className="w-4 h-4 text-primary-foreground" />
               </button>
 
               <div className="flex flex-col md:flex-row">
-                {/* Left side - eBook Cover */}
-                <div className="md:w-2/5 p-6 flex items-center justify-center bg-gradient-to-br from-primary to-primary/80">
+                {/* Left side - eBook Cover (hidden on mobile, smaller on tablet) */}
+                <div className="hidden md:flex md:w-2/5 p-4 items-center justify-center bg-gradient-to-br from-primary to-primary/80">
                   <div className="text-center">
                     <img 
                       src={ebookCoverUrl} 
                       alt={ebookTitle}
-                      className="w-full max-w-[180px] mx-auto rounded-lg shadow-xl border border-accent/20 mb-4"
+                      className="w-full max-w-[140px] mx-auto rounded-lg shadow-xl border border-accent/20 mb-3"
                     />
-                    <h3 className="text-lg font-bold text-primary-foreground font-heading">
+                    <h3 className="text-sm font-bold text-primary-foreground font-heading line-clamp-2">
                       {ebookTitle}
                     </h3>
                   </div>
                 </div>
 
                 {/* Right side - Form */}
-                <div className="md:w-3/5 p-6 bg-card">
-                  <div className="flex items-center gap-2 mb-4">
-                    <BookOpen className="w-5 h-5 text-accent" />
+                <div className="md:w-3/5 p-4 md:p-5 bg-card">
+                  <div className="flex items-center gap-2 mb-3">
+                    <BookOpen className="w-4 h-4 text-accent" />
                     <span className="text-xs font-bold uppercase tracking-wider text-accent">
                       E-book Gratuito
                     </span>
                   </div>
                   
-                  <h2 className="text-xl font-bold text-primary font-heading mb-2">
+                  <h2 className="text-lg font-bold text-primary font-heading mb-1">
                     Baixe Agora
                   </h2>
-                  <p className="text-sm text-muted-foreground mb-6">
-                    Preencha seus dados para receber o e-book gratuitamente.
+                  <p className="text-xs text-muted-foreground mb-4">
+                    Preencha seus dados para receber o e-book.
                   </p>
 
-                  <form onSubmit={handleSubmit} className="space-y-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="lead-name">Nome</Label>
+                  <form onSubmit={handleSubmit} className="space-y-3">
+                    <div className="space-y-1.5">
+                      <Label htmlFor="lead-name" className="text-sm">Nome</Label>
                       <Input
                         id="lead-name"
                         type="text"
                         placeholder="Seu nome completo"
                         value={name}
                         onChange={(e) => setName(e.target.value)}
-                        className={`bg-background ${errors.name ? "border-destructive" : ""}`}
+                        className={`bg-background h-9 text-sm ${errors.name ? "border-destructive" : ""}`}
                         disabled={isSubmitting}
                       />
                       {errors.name && (
@@ -216,15 +216,15 @@ export const ArticleEbookLeadModal = ({
                       )}
                     </div>
 
-                    <div className="space-y-2">
-                      <Label htmlFor="lead-email">Email</Label>
+                    <div className="space-y-1.5">
+                      <Label htmlFor="lead-email" className="text-sm">Email</Label>
                       <Input
                         id="lead-email"
                         type="email"
                         placeholder="seu@email.com"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        className={`bg-background ${errors.email ? "border-destructive" : ""}`}
+                        className={`bg-background h-9 text-sm ${errors.email ? "border-destructive" : ""}`}
                         disabled={isSubmitting}
                       />
                       {errors.email && (
@@ -232,15 +232,15 @@ export const ArticleEbookLeadModal = ({
                       )}
                     </div>
 
-                    <div className="space-y-2">
-                      <Label htmlFor="lead-phone">WhatsApp</Label>
+                    <div className="space-y-1.5">
+                      <Label htmlFor="lead-phone" className="text-sm">WhatsApp</Label>
                       <Input
                         id="lead-phone"
                         type="tel"
                         placeholder="(00) 00000-0000"
                         value={phone}
                         onChange={handlePhoneChange}
-                        className={`bg-background ${errors.phone ? "border-destructive" : ""}`}
+                        className={`bg-background h-9 text-sm ${errors.phone ? "border-destructive" : ""}`}
                         disabled={isSubmitting}
                         maxLength={16}
                       />
@@ -251,25 +251,24 @@ export const ArticleEbookLeadModal = ({
 
                     <Button
                       type="submit"
-                      className="w-full bg-accent hover:bg-accent/90 text-accent-foreground font-bold"
-                      size="lg"
+                      className="w-full bg-accent hover:bg-accent/90 text-accent-foreground font-bold h-9 text-sm"
                       disabled={isSubmitting}
                     >
                       {isSubmitting ? (
                         <>
-                          <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                           Processando...
                         </>
                       ) : (
                         <>
-                          <Download className="w-5 h-5 mr-2" />
+                          <Download className="w-4 h-4 mr-2" />
                           Baixar E-book Grátis
                         </>
                       )}
                     </Button>
 
-                    <p className="text-xs text-center text-muted-foreground">
-                      🔒 Seus dados estão seguros e não serão compartilhados.
+                    <p className="text-[10px] text-center text-muted-foreground">
+                      🔒 Seus dados estão seguros.
                     </p>
                   </form>
                 </div>
