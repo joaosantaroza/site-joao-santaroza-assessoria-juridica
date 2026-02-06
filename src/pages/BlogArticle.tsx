@@ -17,6 +17,7 @@ import { ContactModal } from "@/components/ContactModal";
 import { useBlogArticles } from "@/hooks/useBlogArticles";
 import { RelatedArticles } from "@/components/RelatedArticles";
 import { ArticleSchema } from "@/components/seo";
+import { BreadcrumbsJsonLd, BreadcrumbItem as BreadcrumbItemType } from "@/components/BreadcrumbsJsonLd";
 import { useSEO } from "@/hooks/useSEO";
 import {
   Breadcrumb,
@@ -82,6 +83,13 @@ export default function BlogArticle() {
     };
   }, [article?.content]);
 
+  // Breadcrumb items for JSON-LD structured data
+  const breadcrumbItems: BreadcrumbItemType[] = useMemo(() => [
+    { name: "Início", path: "/" },
+    { name: "Blog", path: "/blog" },
+    { name: article?.title || "", path: `/blog/${slug}` },
+  ], [article?.title, slug]);
+
   const handleWhatsAppContact = () => {
     if (!article) return;
     const text = `Olá, Dr. João Victor. Li o artigo "${article.title}" e gostaria de tirar algumas dúvidas sobre meu caso.`;
@@ -146,6 +154,9 @@ export default function BlogArticle() {
 
   return (
     <div className="min-h-screen font-sans selection:bg-accent selection:text-accent-foreground">
+      {/* Breadcrumbs JSON-LD Schema for Rich Snippets */}
+      <BreadcrumbsJsonLd items={breadcrumbItems} />
+      
       {/* Article JSON-LD Schema for Rich Snippets */}
       {article && (
         <ArticleSchema
