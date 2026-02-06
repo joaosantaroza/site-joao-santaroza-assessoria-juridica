@@ -13,6 +13,7 @@ import { RelatedArticles } from "@/components/RelatedArticles";
 import { InternalLinks } from "@/components/InternalLinks";
 import { SocialShareButtons } from "@/components/SocialShareButtons";
 import { incrementArticleView } from "@/hooks/useBlogArticles";
+import { ArticleSchema } from "@/components/seo";
 import ebookGestanteCapa from '@/assets/ebook-gestante-capa.png';
 import ebookPontoBritanicoCapa from '@/assets/ebook-ponto-britanico-capa.png';
 
@@ -87,6 +88,17 @@ export const ArticlePage = ({ article, allArticles, onBack, onContact, onArticle
 
   return (
     <div className="animate-fade-in min-h-screen bg-background pb-20">
+      {/* Article JSON-LD Schema for Rich Snippets */}
+      <ArticleSchema
+        title={article.title}
+        slug={article.id}
+        excerpt={article.excerpt}
+        image={article.image}
+        datePublished={article.date}
+        categories={article.categories}
+        readTime={article.readTime}
+        content={article.content}
+      />
       {/* Header */}
       <motion.div 
         className="bg-primary py-8"
