@@ -35,6 +35,7 @@ const transformArticle = (dbArticle: DatabaseArticle): BlogArticle => ({
     month: 'short',
     year: 'numeric'
   }),
+  updatedAt: dbArticle.updated_at, // ISO format for SEO meta tags
   readTime: dbArticle.read_time,
   image: dbArticle.image_url || 'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
   hasEbook: dbArticle.has_ebook || false,

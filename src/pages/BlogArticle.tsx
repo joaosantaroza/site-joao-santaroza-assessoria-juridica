@@ -53,15 +53,23 @@ export default function BlogArticle() {
     window.scrollTo(0, 0);
   }, [slug]);
 
+  // Ensure image URL is absolute for OG/Twitter meta tags
+  const absoluteImageUrl = useMemo(() => {
+    if (!article?.image) return undefined;
+    if (article.image.startsWith('http')) return article.image;
+    return `https://joaosantarozaadvocacia.com.br${article.image.startsWith('/') ? '' : '/'}${article.image}`;
+  }, [article?.image]);
+
   // Dynamic SEO meta tags with keywords from categories
   useSEO({
     title: article?.title || 'Artigo não encontrado',
     description: article?.excerpt || 'Artigo jurídico do escritório João Santaroza Assessoria Jurídica.',
-    image: article?.image,
+    image: absoluteImageUrl,
     url: `/blog/${slug}`,
     type: 'article',
     author: CONTACT_INFO.lawyerName,
     publishedTime: article?.date,
+    modifiedTime: article?.updatedAt,
     section: article?.categories?.[0],
     keywords: article?.categories || [],
   });

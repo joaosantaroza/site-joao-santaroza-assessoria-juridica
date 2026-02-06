@@ -121,12 +121,22 @@ export function useSEO({
       });
     }
 
-    // Twitter Card tags
+    // Twitter Card tags - optimized for article sharing
     setMetaTag('meta[name="twitter:card"]', 'summary_large_image');
     setMetaTag('meta[name="twitter:title"]', fullTitle);
     setMetaTag('meta[name="twitter:description"]', description);
     setMetaTag('meta[name="twitter:image"]', image);
+    setMetaTag('meta[name="twitter:image:alt"]', title);
     setMetaTag('meta[name="twitter:site"]', '@joaosantaroza');
+    
+    // Article-specific Twitter meta for better attribution
+    if (type === 'article' && author) {
+      setMetaTag('meta[name="twitter:creator"]', '@joaosantaroza');
+      setMetaTag('meta[name="twitter:label1"]', 'Escrito por');
+      setMetaTag('meta[name="twitter:data1"]', author);
+      setMetaTag('meta[name="twitter:label2"]', 'Tempo de leitura');
+      setMetaTag('meta[name="twitter:data2"]', section || '5 min');
+    }
 
     // Cleanup: reset to defaults when component unmounts
     return () => {
