@@ -113,6 +113,7 @@ export interface BlogArticle {
   content: string;
   categories: string[]; // Array of category tags
   date: string;
+  updatedAt?: string; // ISO date string for article:modified_time meta tag
   readTime: string;
   image: string;
   hasEbook?: boolean;
