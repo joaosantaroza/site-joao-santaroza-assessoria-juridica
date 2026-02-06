@@ -16,6 +16,7 @@ import { Footer } from "@/components/Footer";
 import { ContactModal } from "@/components/ContactModal";
 import { useBlogArticles } from "@/hooks/useBlogArticles";
 import { RelatedArticles } from "@/components/RelatedArticles";
+import { ArticleSchema } from "@/components/seo";
 import { useSEO } from "@/hooks/useSEO";
 import {
   Breadcrumb,
@@ -64,85 +65,6 @@ export default function BlogArticle() {
     keywords: article?.categories || [],
   });
 
-  // Generate JSON-LD structured data for SEO
-  const jsonLd = useMemo(() => {
-    if (!article) return null;
-    
-    const baseUrl = 'https://joaosantarozaadvocacia.com.br';
-    
-    return {
-      '@context': 'https://schema.org',
-      '@type': 'Article',
-      headline: article.title,
-      description: article.excerpt,
-      image: article.image,
-      author: {
-        '@type': 'Person',
-        name: CONTACT_INFO.lawyerName,
-        url: baseUrl,
-        jobTitle: 'Advogado',
-        worksFor: {
-          '@type': 'LegalService',
-          name: 'João Santaroza Assessoria Jurídica',
-          address: {
-            '@type': 'PostalAddress',
-            addressLocality: 'Maringá',
-            addressRegion: 'PR',
-            addressCountry: 'BR'
-          }
-        }
-      },
-      publisher: {
-        '@type': 'Organization',
-        name: 'João Santaroza Assessoria Jurídica',
-        logo: {
-          '@type': 'ImageObject',
-          url: `${baseUrl}/logo-full.png`
-        }
-      },
-      datePublished: article.date,
-      dateModified: article.date,
-      mainEntityOfPage: {
-        '@type': 'WebPage',
-        '@id': `${baseUrl}/blog/${slug}`
-      },
-      keywords: article.categories.join(', '),
-      articleSection: article.categories[0] || 'Direito',
-      wordCount: article.content?.split(/\s+/).length || 0,
-      inLanguage: 'pt-BR',
-      about: {
-        '@type': 'Thing',
-        name: article.categories[0] || 'Direito'
-      },
-      isAccessibleForFree: true,
-      speakable: {
-        '@type': 'SpeakableSpecification',
-        cssSelector: ['.article-content', 'h1']
-      }
-    };
-  }, [article, slug]);
-
-  // Inject JSON-LD script
-  useEffect(() => {
-    if (!jsonLd) return;
-    
-    // Remove existing JSON-LD if any
-    const existingScript = document.querySelector('script[type="application/ld+json"][data-article]');
-    if (existingScript) {
-      existingScript.remove();
-    }
-    
-    // Create and inject new JSON-LD script
-    const script = document.createElement('script');
-    script.type = 'application/ld+json';
-    script.setAttribute('data-article', 'true');
-    script.textContent = JSON.stringify(jsonLd);
-    document.head.appendChild(script);
-    
-    return () => {
-      script.remove();
-    };
-  }, [jsonLd]);
 
   // Process content: convert literal \n to actual newlines and check if it's HTML or Markdown
   const { isHtml, processedContent } = useMemo(() => {
@@ -224,6 +146,20 @@ export default function BlogArticle() {
 
   return (
     <div className="min-h-screen font-sans selection:bg-accent selection:text-accent-foreground">
+      {/* Article JSON-LD Schema for Rich Snippets */}
+      {article && (
+        <ArticleSchema
+          title={article.title}
+          slug={slug || article.id}
+          excerpt={article.excerpt}
+          image={article.image}
+          datePublished={article.date}
+          categories={article.categories}
+          readTime={article.readTime}
+          content={article.content}
+        />
+      )}
+      
       <Navbar onNavigate={handleNavigate} onContact={() => setShowContactModal(true)} />
       
       <main className="animate-fade-in min-h-screen bg-background pb-20">
