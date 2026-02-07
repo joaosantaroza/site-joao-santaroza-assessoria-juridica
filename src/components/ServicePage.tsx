@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Service } from "@/lib/constants";
 import { motion } from "framer-motion";
 import { PracticeAreaArticles } from "@/components/PracticeAreaArticles";
+import { TestimonialsSection } from "@/components/TestimonialsSection";
 import { PRACTICE_AREA_CATEGORIES, PRACTICE_AREA_ARTICLE_TITLES } from "@/lib/practiceAreaCategories";
 
 interface ServicePageProps {
@@ -92,6 +93,15 @@ export const ServicePage = ({ service, onBack, onContact }: ServicePageProps) =>
             </motion.div>
           ))}
         </motion.div>
+
+        {/* Testimonials Section */}
+        <div className="max-w-6xl mx-auto mt-16">
+          <TestimonialsSection
+            areaId={service.id}
+            title="Depoimentos de Clientes"
+            maxItems={3}
+          />
+        </div>
 
         {/* Related Articles Section */}
         <div className="max-w-4xl mx-auto mt-16">

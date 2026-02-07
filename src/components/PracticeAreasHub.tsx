@@ -4,6 +4,7 @@ import { ServiceCard } from "@/components/ui/ServiceCard";
 import { CONTACT_INFO, ViewType } from "@/lib/constants";
 import { motion } from "framer-motion";
 import { PracticeAreaArticles } from "@/components/PracticeAreaArticles";
+import { TestimonialsSection } from "@/components/TestimonialsSection";
 
 interface PracticeAreasHubProps {
   onNavigate: (view: ViewType) => void;
@@ -116,6 +117,14 @@ export const PracticeAreasHub = ({ onNavigate, onBack }: PracticeAreasHubProps) 
             </div>
           </motion.div>
         </motion.div>
+
+        {/* Testimonials Section */}
+        <div className="max-w-6xl mx-auto mt-16">
+          <TestimonialsSection
+            title="O Que Nossos Clientes Dizem"
+            maxItems={3}
+          />
+        </div>
 
         {/* Featured Articles Section */}
         <div className="max-w-4xl mx-auto mt-16">
