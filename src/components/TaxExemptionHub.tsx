@@ -3,6 +3,7 @@ import { SectionTitle } from "@/components/ui/SectionTitle";
 import { ViewType } from "@/lib/constants";
 import { motion } from "framer-motion";
 import { PracticeAreaArticles } from "@/components/PracticeAreaArticles";
+import { TestimonialsSection } from "@/components/TestimonialsSection";
 import { PRACTICE_AREA_CATEGORIES, PRACTICE_AREA_ARTICLE_TITLES } from "@/lib/practiceAreaCategories";
 
 interface TaxExemptionHubProps {
@@ -82,6 +83,15 @@ export const TaxExemptionHub = ({ onSelect, onBack }: TaxExemptionHubProps) => {
               </div>
             </div>
           </motion.div>
+        </div>
+
+        {/* Testimonials Section */}
+        <div className="max-w-6xl mx-auto mt-16">
+          <TestimonialsSection
+            areaId="tax_hub"
+            title="Clientes que Conquistaram a Isenção"
+            maxItems={3}
+          />
         </div>
 
         {/* Related Articles Section */}
