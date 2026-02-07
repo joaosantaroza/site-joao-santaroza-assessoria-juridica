@@ -2,6 +2,8 @@ import { ArrowRight, CheckCircle, Lock, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Service } from "@/lib/constants";
 import { motion } from "framer-motion";
+import { PracticeAreaArticles } from "@/components/PracticeAreaArticles";
+import { PRACTICE_AREA_CATEGORIES, PRACTICE_AREA_ARTICLE_TITLES } from "@/lib/practiceAreaCategories";
 
 interface ServicePageProps {
   service: Service;
@@ -90,6 +92,15 @@ export const ServicePage = ({ service, onBack, onContact }: ServicePageProps) =>
             </motion.div>
           ))}
         </motion.div>
+
+        {/* Related Articles Section */}
+        <div className="max-w-4xl mx-auto mt-16">
+          <PracticeAreaArticles
+            categories={PRACTICE_AREA_CATEGORIES[service.id] || []}
+            title={PRACTICE_AREA_ARTICLE_TITLES[service.id] || 'Artigos Relacionados'}
+            maxArticles={3}
+          />
+        </div>
       </section>
     </div>
   );

@@ -2,6 +2,8 @@ import { ArrowRight, Lock, Activity, Shield } from "lucide-react";
 import { SectionTitle } from "@/components/ui/SectionTitle";
 import { ViewType } from "@/lib/constants";
 import { motion } from "framer-motion";
+import { PracticeAreaArticles } from "@/components/PracticeAreaArticles";
+import { PRACTICE_AREA_CATEGORIES, PRACTICE_AREA_ARTICLE_TITLES } from "@/lib/practiceAreaCategories";
 
 interface TaxExemptionHubProps {
   onSelect: (view: ViewType) => void;
@@ -80,6 +82,15 @@ export const TaxExemptionHub = ({ onSelect, onBack }: TaxExemptionHubProps) => {
               </div>
             </div>
           </motion.div>
+        </div>
+
+        {/* Related Articles Section */}
+        <div className="max-w-4xl mx-auto mt-16">
+          <PracticeAreaArticles
+            categories={PRACTICE_AREA_CATEGORIES['tax_hub'] || []}
+            title={PRACTICE_AREA_ARTICLE_TITLES['tax_hub'] || 'Artigos sobre Isenção Fiscal'}
+            maxArticles={4}
+          />
         </div>
       </section>
     </div>

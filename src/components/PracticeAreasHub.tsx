@@ -3,6 +3,7 @@ import { SectionTitle } from "@/components/ui/SectionTitle";
 import { ServiceCard } from "@/components/ui/ServiceCard";
 import { CONTACT_INFO, ViewType } from "@/lib/constants";
 import { motion } from "framer-motion";
+import { PracticeAreaArticles } from "@/components/PracticeAreaArticles";
 
 interface PracticeAreasHubProps {
   onNavigate: (view: ViewType) => void;
@@ -115,6 +116,15 @@ export const PracticeAreasHub = ({ onNavigate, onBack }: PracticeAreasHubProps) 
             </div>
           </motion.div>
         </motion.div>
+
+        {/* Featured Articles Section */}
+        <div className="max-w-4xl mx-auto mt-16">
+          <PracticeAreaArticles
+            categories={['Isenção', 'Tributário', 'Trabalho', 'Contrato', 'Holding', 'Planejamento']}
+            title="Publicações Recentes"
+            maxArticles={4}
+          />
+        </div>
       </section>
     </div>
   );
