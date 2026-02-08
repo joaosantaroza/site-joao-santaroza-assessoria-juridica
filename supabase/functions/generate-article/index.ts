@@ -154,7 +154,8 @@ serve(async (req) => {
     const { 
       title, 
       tone = 'acessivel', 
-      includeLegalBasis = true, 
+      includeLegalBasis = true,
+      includeFaq = true,
       customInstructions,
       seoMode = false,
       seoKeywords = [],
@@ -201,7 +202,7 @@ serve(async (req) => {
       );
     }
 
-    console.log(`Admin ${userData.user.email} generating article with Perplexity (tone: ${selectedTone}, legalBasis: ${includeLegalBasis}, customMode: ${isCustomMode}, seoMode: ${seoMode}, maringaMode: ${maringaMode}, imageStyle: ${imageStyle}, length: ${articleLength}) for ${isCustomMode ? 'custom instructions' : 'title: ' + title}`);
+    console.log(`Admin ${userData.user.email} generating article with Perplexity (tone: ${selectedTone}, legalBasis: ${includeLegalBasis}, faq: ${includeFaq}, customMode: ${isCustomMode}, seoMode: ${seoMode}, maringaMode: ${maringaMode}, imageStyle: ${imageStyle}, length: ${articleLength}) for ${isCustomMode ? 'custom instructions' : 'title: ' + title}`);
 
     // Modo Maringá - Geolocalização Máxima
     const maringaModeInstructions = maringaMode
@@ -371,6 +372,7 @@ REGRAS DE FORMATAÇÃO:
 - Use <blockquote> para destaques importantes ou dicas
 - Use <strong> para termos importantes
 - O texto deve ter entre ${seoMode ? '1200 e 2000' : `${selectedLength.min} e ${selectedLength.max}`} palavras (tamanho ${selectedLength.label})
+${includeFaq ? `- OBRIGATÓRIO: Inclua uma seção "Perguntas Frequentes" no final do artigo com 3-5 perguntas e respostas relevantes sobre o tema. Use <h2>Perguntas Frequentes</h2> seguido de <h3> para cada pergunta e <p> para as respostas.` : '- NÃO inclua seção de perguntas frequentes'}
 - Termine com um parágrafo convidando o leitor a esclarecer dúvidas ou acessar materiais educativos
 
 PROIBIÇÃO DE NÚMEROS DE CITAÇÃO (OBRIGATÓRIO):
