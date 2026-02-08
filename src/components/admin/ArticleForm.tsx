@@ -113,6 +113,7 @@ export function ArticleForm({ onSuccess, editingArticle, onCancelEdit }: Article
   const [imageStyle, setImageStyle] = useState<ImageStyle>('photographic');
   const [articleLength, setArticleLength] = useState<ArticleLength>('medium');
   const [includeLegalBasis, setIncludeLegalBasis] = useState(true);
+  const [includeFaq, setIncludeFaq] = useState(true);
   
   // Custom instructions state
   const [useCustomInstructions, setUseCustomInstructions] = useState(false);
@@ -588,6 +589,7 @@ export function ArticleForm({ onSuccess, editingArticle, onCancelEdit }: Article
             title: useCustomInstructions ? '' : title.trim(), 
             tone: articleTone, 
             includeLegalBasis,
+            includeFaq,
             customInstructions: useCustomInstructions ? customInstructions.trim() : undefined,
             seoMode: isSeoMode,
             seoKeywords: isSeoMode ? seoKeywords : undefined,
@@ -1285,6 +1287,38 @@ export function ArticleForm({ onSuccess, editingArticle, onCancelEdit }: Article
                       </p>
                       <p className="text-xs mt-1">
                         <strong>Desativado:</strong> O artigo será 100% prático, sem citar números de leis ou artigos.
+                      </p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </div>
+            )}
+            
+            {/* FAQ Toggle - only show when not in PDF mode */}
+            {!isPdfMode && (
+              <div className="flex items-center gap-2 pl-4 border-l border-border/50">
+                <Switch
+                  id="include-faq"
+                  checked={includeFaq}
+                  onCheckedChange={setIncludeFaq}
+                />
+                <Label 
+                  htmlFor="include-faq" 
+                  className="text-xs text-muted-foreground cursor-pointer"
+                >
+                  Incluir FAQ
+                </Label>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <HelpCircle className="h-3.5 w-3.5 text-muted-foreground/60 cursor-help" />
+                    </TooltipTrigger>
+                    <TooltipContent side="top" className="max-w-[280px] text-center">
+                      <p className="text-xs">
+                        <strong>Ativado:</strong> Adiciona 3-5 perguntas frequentes no final do artigo (ótimo para SEO).
+                      </p>
+                      <p className="text-xs mt-1">
+                        <strong>Desativado:</strong> Artigo sem seção de perguntas frequentes.
                       </p>
                     </TooltipContent>
                   </Tooltip>
