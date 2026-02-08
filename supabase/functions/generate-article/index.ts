@@ -364,6 +364,13 @@ REGRAS DE FORMATAÇÃO:
 - O texto deve ter entre ${seoMode ? '1200 e 2000' : '800 e 1500'} palavras
 - Termine com um parágrafo convidando o leitor a esclarecer dúvidas ou acessar materiais educativos
 
+PROIBIÇÃO DE NÚMEROS DE CITAÇÃO (OBRIGATÓRIO):
+- NUNCA inclua números entre colchetes como [1], [2], [3] ou similares
+- NUNCA use notação de referência numérica de nenhum tipo
+- NÃO adicione notas de rodapé ou indicadores de fonte numerados
+- O texto deve ser puramente narrativo e fluido, sem marcadores de citação
+- Se precisar indicar uma fonte, mencione-a naturalmente no texto (ex: "segundo a CLT", "conforme o STF")
+
 ${officeContext}`;
 
     const legalBasisUserInstruction = includeLegalBasis
