@@ -16,6 +16,8 @@ import { Footer } from "@/components/Footer";
 import { ContactModal } from "@/components/ContactModal";
 import { useBlogArticles } from "@/hooks/useBlogArticles";
 import { RelatedArticles } from "@/components/RelatedArticles";
+import { SocialShareButtons } from "@/components/SocialShareButtons";
+import { FloatingShareButton } from "@/components/FloatingShareButton";
 import { ArticleSchema } from "@/components/seo";
 import { BreadcrumbsJsonLd, BreadcrumbItem as BreadcrumbItemType } from "@/components/BreadcrumbsJsonLd";
 import { useSEO } from "@/hooks/useSEO";
@@ -495,6 +497,22 @@ export default function BlogArticle() {
               </motion.div>
             </motion.div>
 
+            {/* Share Section at End of Article */}
+            <motion.div 
+              className="mt-12 p-6 bg-muted/50 rounded-xl border border-border"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-50px" }}
+              transition={{ duration: 0.5 }}
+            >
+              <h3 className="text-lg font-bold text-center mb-4 font-heading">Gostou do conteúdo? Compartilhe!</h3>
+              <SocialShareButtons 
+                url={typeof window !== 'undefined' ? window.location.href : ''}
+                title={article.title}
+                className="justify-center"
+              />
+            </motion.div>
+
             {/* Author Box */}
             <motion.div 
               className="mt-12 p-6 bg-secondary rounded-xl flex flex-col md:flex-row items-center gap-6"
@@ -546,6 +564,13 @@ export default function BlogArticle() {
         isOpen={showContactModal} 
         onClose={() => setShowContactModal(false)} 
         initialSubject={article?.title || ''} 
+      />
+
+      {/* Floating Share Button */}
+      <FloatingShareButton 
+        url={typeof window !== 'undefined' ? window.location.href : ''}
+        title={article?.title || ''}
+        showAfterScroll={400}
       />
     </div>
   );
