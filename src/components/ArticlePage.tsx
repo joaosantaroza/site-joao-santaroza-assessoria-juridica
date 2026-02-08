@@ -12,6 +12,7 @@ import { EbookLeadModal } from "@/components/EbookLeadModal";
 import { RelatedArticles } from "@/components/RelatedArticles";
 import { InternalLinks } from "@/components/InternalLinks";
 import { SocialShareButtons } from "@/components/SocialShareButtons";
+import { FloatingShareButton } from "@/components/FloatingShareButton";
 import { incrementArticleView } from "@/hooks/useBlogArticles";
 import { ArticleSchema } from "@/components/seo";
 import ebookGestanteCapa from '@/assets/ebook-gestante-capa.png';
@@ -450,6 +451,13 @@ export const ArticlePage = ({ article, allArticles, onBack, onContact, onArticle
           ebookDownloadName={ebookModal.downloadName}
         />
       )}
+
+      {/* Floating Share Button */}
+      <FloatingShareButton 
+        url={typeof window !== 'undefined' ? window.location.href : ''}
+        title={article.title}
+        showAfterScroll={400}
+      />
     </div>
   );
 };
