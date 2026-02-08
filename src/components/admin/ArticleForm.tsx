@@ -67,11 +67,18 @@ interface ArticleFormProps {
 }
 
 type ArticleTone = 'formal' | 'acessivel' | 'tecnico';
+type ImageStyle = 'abstract' | 'photographic' | 'illustration';
 
 const TONE_OPTIONS: { value: ArticleTone; label: string; description: string; tooltip: string }[] = [
   { value: 'formal', label: 'Formal', description: 'Tom profissional e elegante', tooltip: 'Linguagem clara e profissional, sem ser rebuscada. Ideal para conteúdo institucional.' },
   { value: 'acessivel', label: 'Acessível', description: 'Fácil compreensão para leigos', tooltip: 'Linguagem simples e direta, como uma conversa. Perfeito para o público geral.' },
   { value: 'tecnico', label: 'Técnico', description: 'Mais detalhado e explicativo', tooltip: 'Conteúdo mais aprofundado, explicando os "porquês" das regras. Para leitores que querem entender melhor.' },
+];
+
+const IMAGE_STYLE_OPTIONS: { value: ImageStyle; label: string; description: string }[] = [
+  { value: 'abstract', label: 'Abstrato', description: 'Formas e cores abstratas' },
+  { value: 'photographic', label: 'Fotográfico', description: 'Estilo foto realista' },
+  { value: 'illustration', label: 'Ilustração', description: 'Arte digital ilustrada' },
 ];
 
 export function ArticleForm({ onSuccess, editingArticle, onCancelEdit }: ArticleFormProps) {
@@ -91,6 +98,7 @@ export function ArticleForm({ onSuccess, editingArticle, onCancelEdit }: Article
   const [isRegeneratingImage, setIsRegeneratingImage] = useState(false);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [articleTone, setArticleTone] = useState<ArticleTone>('acessivel');
+  const [imageStyle, setImageStyle] = useState<ImageStyle>('photographic');
   const [includeLegalBasis, setIncludeLegalBasis] = useState(true);
   
   // Custom instructions state
@@ -375,6 +383,7 @@ export function ArticleForm({ onSuccess, editingArticle, onCancelEdit }: Article
           body: JSON.stringify({ 
             title: title.trim(),
             category: category,
+            imageStyle: imageStyle,
           }),
         }
       );
@@ -570,6 +579,7 @@ export function ArticleForm({ onSuccess, editingArticle, onCancelEdit }: Article
             seoMode: isSeoMode,
             seoKeywords: isSeoMode ? seoKeywords : undefined,
             maringaMode: isMaringaMode,
+            imageStyle: imageStyle,
           }),
         }
       );
@@ -1162,6 +1172,27 @@ export function ArticleForm({ onSuccess, editingArticle, onCancelEdit }: Article
                   </Tooltip>
                 ))}
               </TooltipProvider>
+            </div>
+            
+            {/* Image Style Selector */}
+            <div className="flex flex-wrap gap-2 items-center pl-4 border-l border-border/50">
+              <span className="text-xs text-muted-foreground mr-1">Imagem:</span>
+              {IMAGE_STYLE_OPTIONS.map((option) => (
+                <button
+                  key={option.value}
+                  type="button"
+                  onClick={() => setImageStyle(option.value)}
+                  className={cn(
+                    "px-3 py-1.5 text-xs rounded-full border transition-all",
+                    imageStyle === option.value
+                      ? "bg-primary text-primary-foreground border-primary"
+                      : "bg-muted/50 text-muted-foreground border-border hover:border-primary/50"
+                  )}
+                  title={option.description}
+                >
+                  {option.label}
+                </button>
+              ))}
             </div>
             
             {/* Legal Basis Toggle - only show when not in PDF mode */}

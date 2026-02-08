@@ -158,7 +158,8 @@ serve(async (req) => {
       customInstructions,
       seoMode = false,
       seoKeywords = [],
-      maringaMode = false
+      maringaMode = false,
+      imageStyle = 'photographic'
     } = await req.json();
     
     // If using custom instructions, we need those instead of title
@@ -191,7 +192,7 @@ serve(async (req) => {
       );
     }
 
-    console.log(`Admin ${userData.user.email} generating article with Perplexity (tone: ${selectedTone}, legalBasis: ${includeLegalBasis}, customMode: ${isCustomMode}, seoMode: ${seoMode}, maringaMode: ${maringaMode}) for ${isCustomMode ? 'custom instructions' : 'title: ' + title}`);
+    console.log(`Admin ${userData.user.email} generating article with Perplexity (tone: ${selectedTone}, legalBasis: ${includeLegalBasis}, customMode: ${isCustomMode}, seoMode: ${seoMode}, maringaMode: ${maringaMode}, imageStyle: ${imageStyle}) for ${isCustomMode ? 'custom instructions' : 'title: ' + title}`);
 
     // Modo Maringá - Geolocalização Máxima
     const maringaModeInstructions = maringaMode
@@ -608,14 +609,24 @@ Retorne a resposta em formato JSON válido:
         
         const categoryHint = categoryKeywords[parsed.category] || categoryKeywords["Geral"];
         
+        // Style-specific instructions
+        const styleInstructions: Record<string, string> = {
+          'abstract': 'Abstract art style with geometric shapes, flowing gradients, and symbolic representations. Modern minimalist design with bold colors and clean lines. No realistic elements, purely conceptual and artistic.',
+          'photographic': 'Photorealistic professional stock photo style. Ultra high resolution, crisp details, natural lighting. Real-world objects and scenes that look like professional photography.',
+          'illustration': 'Digital illustration style with artistic rendering. Vector-like clean lines, stylized elements, flat design with subtle shadows. Modern corporate illustration aesthetic.',
+        };
+        
+        const selectedStyle = styleInstructions[imageStyle] || styleInstructions['photographic'];
+        
         // Image prompt optimized for blog cover
         const imagePrompt = `Professional, modern blog header image for a Brazilian law firm article about: "${articleTitle}". 
-Style: Clean, professional, corporate design with subtle blue and gold accents. 
+Art Style: ${selectedStyle}
+Design: Clean, professional, corporate design with subtle blue and gold accents. 
 Elements: ${categoryHint}. 
 Mood: Trustworthy, professional, accessible. 
 Format: Wide 16:9 aspect ratio blog cover image. 
-NO text, NO logos, NO people faces. Abstract or symbolic representation preferred.
-Ultra high resolution, photorealistic professional stock photo style.`;
+NO text, NO logos, NO people faces. ${imageStyle === 'abstract' ? 'Abstract or symbolic representation.' : 'Professional visual representation.'}
+Ultra high resolution.`;
 
         const imageResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
           method: "POST",
