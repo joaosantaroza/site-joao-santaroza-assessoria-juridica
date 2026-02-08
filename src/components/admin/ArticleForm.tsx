@@ -42,6 +42,11 @@ import {
 import { TagInput } from '@/components/ui/tag-input';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
+// Image style previews
+import stylePreviewAbstract from '@/assets/style-preview-abstract.jpg';
+import stylePreviewPhotographic from '@/assets/style-preview-photographic.jpg';
+import stylePreviewIllustration from '@/assets/style-preview-illustration.jpg';
+
 export interface BlogPostEdit {
   id: string;
   title: string;
@@ -75,10 +80,10 @@ const TONE_OPTIONS: { value: ArticleTone; label: string; description: string; to
   { value: 'tecnico', label: 'Técnico', description: 'Mais detalhado e explicativo', tooltip: 'Conteúdo mais aprofundado, explicando os "porquês" das regras. Para leitores que querem entender melhor.' },
 ];
 
-const IMAGE_STYLE_OPTIONS: { value: ImageStyle; label: string; description: string }[] = [
-  { value: 'abstract', label: 'Abstrato', description: 'Formas e cores abstratas' },
-  { value: 'photographic', label: 'Fotográfico', description: 'Estilo foto realista' },
-  { value: 'illustration', label: 'Ilustração', description: 'Arte digital ilustrada' },
+const IMAGE_STYLE_OPTIONS: { value: ImageStyle; label: string; description: string; preview: string }[] = [
+  { value: 'abstract', label: 'Abstrato', description: 'Formas e cores abstratas', preview: stylePreviewAbstract },
+  { value: 'photographic', label: 'Fotográfico', description: 'Estilo foto realista', preview: stylePreviewPhotographic },
+  { value: 'illustration', label: 'Ilustração', description: 'Arte digital ilustrada', preview: stylePreviewIllustration },
 ];
 
 export function ArticleForm({ onSuccess, editingArticle, onCancelEdit }: ArticleFormProps) {
@@ -1174,25 +1179,47 @@ export function ArticleForm({ onSuccess, editingArticle, onCancelEdit }: Article
               </TooltipProvider>
             </div>
             
-            {/* Image Style Selector */}
+            {/* Image Style Selector with Previews */}
             <div className="flex flex-wrap gap-2 items-center pl-4 border-l border-border/50">
               <span className="text-xs text-muted-foreground mr-1">Imagem:</span>
-              {IMAGE_STYLE_OPTIONS.map((option) => (
-                <button
-                  key={option.value}
-                  type="button"
-                  onClick={() => setImageStyle(option.value)}
-                  className={cn(
-                    "px-3 py-1.5 text-xs rounded-full border transition-all",
-                    imageStyle === option.value
-                      ? "bg-primary text-primary-foreground border-primary"
-                      : "bg-muted/50 text-muted-foreground border-border hover:border-primary/50"
-                  )}
-                  title={option.description}
-                >
-                  {option.label}
-                </button>
-              ))}
+              <TooltipProvider delayDuration={200}>
+                {IMAGE_STYLE_OPTIONS.map((option) => (
+                  <Tooltip key={option.value}>
+                    <TooltipTrigger asChild>
+                      <button
+                        type="button"
+                        onClick={() => setImageStyle(option.value)}
+                        className={cn(
+                          "flex items-center gap-1.5 px-2 py-1 text-xs rounded-lg border transition-all",
+                          imageStyle === option.value
+                            ? "bg-primary text-primary-foreground border-primary"
+                            : "bg-muted/50 text-muted-foreground border-border hover:border-primary/50"
+                        )}
+                      >
+                        <img 
+                          src={option.preview} 
+                          alt={option.label}
+                          className="w-5 h-5 rounded object-cover"
+                        />
+                        {option.label}
+                      </button>
+                    </TooltipTrigger>
+                    <TooltipContent side="top" className="p-0 overflow-hidden">
+                      <div className="flex flex-col">
+                        <img 
+                          src={option.preview} 
+                          alt={option.label}
+                          className="w-40 h-24 object-cover"
+                        />
+                        <div className="p-2 bg-popover">
+                          <p className="text-xs font-medium">{option.label}</p>
+                          <p className="text-xs text-muted-foreground">{option.description}</p>
+                        </div>
+                      </div>
+                    </TooltipContent>
+                  </Tooltip>
+                ))}
+              </TooltipProvider>
             </div>
             
             {/* Legal Basis Toggle - only show when not in PDF mode */}
