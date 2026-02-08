@@ -88,6 +88,7 @@ export function ArticleForm({ onSuccess, editingArticle, onCancelEdit }: Article
   const [isFormattingPdf, setIsFormattingPdf] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const [isRegeneratingImage, setIsRegeneratingImage] = useState(false);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [articleTone, setArticleTone] = useState<ArticleTone>('acessivel');
   const [includeLegalBasis, setIncludeLegalBasis] = useState(true);
@@ -344,6 +345,63 @@ export function ArticleForm({ onSuccess, editingArticle, onCancelEdit }: Article
 
   const handleRemoveImage = () => {
     setImageUrl('');
+  };
+
+  // Regenerate cover image with AI
+  const handleRegenerateImage = async () => {
+    if (!title || title.trim().length < 5) {
+      toast({
+        title: 'Título necessário',
+        description: 'Digite um título com pelo menos 5 caracteres para gerar a imagem.',
+        variant: 'destructive'
+      });
+      return;
+    }
+
+    setIsRegeneratingImage(true);
+
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      const response = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/regenerate-cover-image`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'apikey': import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+            'Authorization': `Bearer ${session?.access_token || import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+          },
+          body: JSON.stringify({ 
+            title: title.trim(),
+            category: category,
+          }),
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Erro ao regenerar imagem');
+      }
+
+      if (data.success && data.data?.coverImageUrl) {
+        setImageUrl(data.data.coverImageUrl);
+        toast({
+          title: 'Imagem gerada!',
+          description: 'Nova imagem de capa criada com sucesso.',
+        });
+      }
+    } catch (error) {
+      console.error('Error regenerating image:', error);
+      toast({
+        title: 'Erro na geração',
+        description: error instanceof Error ? error.message : 'Não foi possível gerar a imagem.',
+        variant: 'destructive'
+      });
+    } finally {
+      setIsRegeneratingImage(false);
+    }
   };
 
   // Handle PDF upload for eBook
@@ -1382,10 +1440,32 @@ export function ArticleForm({ onSuccess, editingArticle, onCancelEdit }: Article
 
         {/* Image Upload */}
         <div className="space-y-2">
-          <Label className="text-sm font-medium flex items-center gap-2">
-            <ImageIcon className="h-4 w-4 text-muted-foreground" />
-            Imagem de Capa
-          </Label>
+          <div className="flex items-center justify-between">
+            <Label className="text-sm font-medium flex items-center gap-2">
+              <ImageIcon className="h-4 w-4 text-muted-foreground" />
+              Imagem de Capa
+            </Label>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={handleRegenerateImage}
+              disabled={isRegeneratingImage || !title || title.trim().length < 5}
+              className="gap-1.5 h-7"
+            >
+              {isRegeneratingImage ? (
+                <>
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                  Gerando...
+                </>
+              ) : (
+                <>
+                  <Sparkles className="h-3.5 w-3.5" />
+                  Gerar com IA
+                </>
+              )}
+            </Button>
+          </div>
           
           {imageUrl ? (
             <div className="relative rounded-lg overflow-hidden border border-border">
@@ -1395,6 +1475,20 @@ export function ArticleForm({ onSuccess, editingArticle, onCancelEdit }: Article
                 className="w-full h-48 object-cover"
               />
               <div className="absolute inset-0 bg-black/50 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                <Button
+                  type="button"
+                  variant="secondary"
+                  size="sm"
+                  onClick={handleRegenerateImage}
+                  disabled={isRegeneratingImage || !title || title.trim().length < 5}
+                >
+                  {isRegeneratingImage ? (
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  ) : (
+                    <Sparkles className="h-4 w-4 mr-2" />
+                  )}
+                  {isRegeneratingImage ? 'Gerando...' : 'Gerar nova'}
+                </Button>
                 <Button
                   type="button"
                   variant="secondary"
@@ -1419,12 +1513,18 @@ export function ArticleForm({ onSuccess, editingArticle, onCancelEdit }: Article
           ) : (
             <div 
               className="border-2 border-dashed border-border rounded-lg p-8 text-center cursor-pointer hover:border-accent/50 transition-colors"
-              onClick={() => fileInputRef.current?.click()}
+              onClick={() => !isRegeneratingImage && fileInputRef.current?.click()}
             >
               {isUploading ? (
                 <div className="flex flex-col items-center gap-2">
                   <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
                   <p className="text-sm text-muted-foreground">Enviando imagem...</p>
+                </div>
+              ) : isRegeneratingImage ? (
+                <div className="flex flex-col items-center gap-2">
+                  <Loader2 className="h-8 w-8 animate-spin text-accent" />
+                  <p className="text-sm text-accent font-medium">Gerando imagem com IA...</p>
+                  <p className="text-xs text-muted-foreground">Isso pode levar alguns segundos</p>
                 </div>
               ) : (
                 <div className="flex flex-col items-center gap-2">
@@ -1433,7 +1533,7 @@ export function ArticleForm({ onSuccess, editingArticle, onCancelEdit }: Article
                     Clique para enviar uma imagem
                   </p>
                   <p className="text-xs text-muted-foreground">
-                    JPG, PNG, WebP ou GIF (máx. 5MB)
+                    JPG, PNG, WebP ou GIF (máx. 5MB) • ou use "Gerar com IA"
                   </p>
                 </div>
               )}
