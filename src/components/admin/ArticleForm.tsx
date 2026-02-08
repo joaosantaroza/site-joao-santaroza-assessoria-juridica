@@ -541,14 +541,20 @@ export function ArticleForm({ onSuccess, editingArticle, onCancelEdit }: Article
           setTitle(data.data.title);
         }
 
+        // Auto-apply generated cover image if available
+        if (data.data.coverImageUrl) {
+          setImageUrl(data.data.coverImageUrl);
+        }
+
         const tagsGenerated = data.data.tags?.length || 0;
+        const imageGenerated = data.data.coverImageUrl ? ' e imagem de capa' : '';
         toast({
           title: isSeoMode ? 'Artigo SEO gerado!' : 'Conteúdo gerado!',
           description: isSeoMode
-            ? `Artigo otimizado para ranqueamento gerado com ${tagsGenerated} tags SEO. Revise antes de publicar.`
+            ? `Artigo otimizado para ranqueamento gerado com ${tagsGenerated} tags SEO${imageGenerated}. Revise antes de publicar.`
             : useCustomInstructions 
-              ? `Título, artigo e ${tagsGenerated} tags SEO gerados automaticamente. Revise antes de publicar.`
-              : `O artigo foi gerado com ${tagsGenerated} tags SEO. Revise antes de publicar.`,
+              ? `Título, artigo, ${tagsGenerated} tags SEO${imageGenerated} gerados automaticamente. Revise antes de publicar.`
+              : `O artigo foi gerado com ${tagsGenerated} tags SEO${imageGenerated}. Revise antes de publicar.`,
         });
         
         // Clear SEO mode after successful generation

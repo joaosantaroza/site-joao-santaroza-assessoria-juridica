@@ -569,6 +569,7 @@ Retorne a resposta em formato JSON válido:
     
     // Extract generated title for custom mode
     const generatedTitle = isCustomMode ? (parsed.title || null) : null;
+    const articleTitle = generatedTitle || title;
     
     // Generate SEO tags array - combine category with generated tags
     const seoTags: string[] = [];
@@ -587,6 +588,101 @@ Retorne a resposta em formato JSON válido:
 
     console.log("Article generated successfully for admin:", userData.user.email, "with", finalTags.length, "SEO tags");
 
+    // Generate cover image using Lovable AI
+    let coverImageUrl: string | null = null;
+    try {
+      const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
+      
+      if (LOVABLE_API_KEY) {
+        console.log("Generating cover image with Lovable AI for article:", articleTitle);
+        
+        // Create a prompt for the cover image based on article theme
+        const categoryKeywords: Record<string, string> = {
+          "Isenção Fiscal": "tax documents, money, medical reports, health justice",
+          "Trabalho": "workplace, workers, labor rights, employment",
+          "Previdenciário": "retirement, pension, elderly care, INSS",
+          "Civil": "contracts, family, property, legal documents",
+          "Tributário": "taxes, finances, calculator, money",
+          "Geral": "law, justice, legal documents, professional office"
+        };
+        
+        const categoryHint = categoryKeywords[parsed.category] || categoryKeywords["Geral"];
+        
+        // Image prompt optimized for blog cover
+        const imagePrompt = `Professional, modern blog header image for a Brazilian law firm article about: "${articleTitle}". 
+Style: Clean, professional, corporate design with subtle blue and gold accents. 
+Elements: ${categoryHint}. 
+Mood: Trustworthy, professional, accessible. 
+Format: Wide 16:9 aspect ratio blog cover image. 
+NO text, NO logos, NO people faces. Abstract or symbolic representation preferred.
+Ultra high resolution, photorealistic professional stock photo style.`;
+
+        const imageResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${LOVABLE_API_KEY}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            model: "google/gemini-2.5-flash-image",
+            messages: [
+              {
+                role: "user",
+                content: imagePrompt
+              }
+            ],
+            modalities: ["image", "text"]
+          })
+        });
+
+        if (imageResponse.ok) {
+          const imageData = await imageResponse.json();
+          const generatedImageBase64 = imageData.choices?.[0]?.message?.images?.[0]?.image_url?.url;
+          
+          if (generatedImageBase64) {
+            console.log("Image generated successfully, uploading to storage...");
+            
+            // Extract base64 data (remove data:image/png;base64, prefix)
+            const base64Data = generatedImageBase64.replace(/^data:image\/\w+;base64,/, '');
+            const imageBuffer = Uint8Array.from(atob(base64Data), c => c.charCodeAt(0));
+            
+            // Generate unique filename
+            const timestamp = Date.now();
+            const randomId = crypto.randomUUID().split('-')[0];
+            const imagePath = `covers/${timestamp}-${randomId}.png`;
+            
+            // Upload to blog-images bucket
+            const { data: uploadData, error: uploadError } = await supabaseAdmin.storage
+              .from('blog-images')
+              .upload(imagePath, imageBuffer, {
+                contentType: 'image/png',
+                upsert: false
+              });
+            
+            if (uploadError) {
+              console.error("Failed to upload cover image:", uploadError.message);
+            } else {
+              // Get public URL
+              const { data: publicUrlData } = supabaseAdmin.storage
+                .from('blog-images')
+                .getPublicUrl(imagePath);
+              
+              coverImageUrl = publicUrlData?.publicUrl || null;
+              console.log("Cover image uploaded successfully:", coverImageUrl);
+            }
+          }
+        } else {
+          const errorText = await imageResponse.text();
+          console.error("Image generation failed:", imageResponse.status, errorText);
+        }
+      } else {
+        console.log("LOVABLE_API_KEY not configured, skipping cover image generation");
+      }
+    } catch (imageError) {
+      console.error("Error generating cover image:", imageError);
+      // Don't fail the whole request if image generation fails
+    }
+
     return new Response(
       JSON.stringify({
         success: true,
@@ -599,6 +695,7 @@ Retorne a resposta em formato JSON válido:
           metaDescription: parsed.metaDescription || parsed.excerpt || null,
           readTime: parsed.readTime || "5 min",
           sources: citations,
+          coverImageUrl: coverImageUrl,
         },
       }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
