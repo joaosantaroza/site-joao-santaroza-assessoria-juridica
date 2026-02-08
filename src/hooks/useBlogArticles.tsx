@@ -14,6 +14,7 @@ interface DatabaseArticle {
   published: boolean;
   created_at: string;
   updated_at: string;
+  scheduled_at: string | null;
   has_ebook?: boolean;
   ebook_title?: string | null;
   ebook_subtitle?: string | null;
@@ -23,28 +24,35 @@ interface DatabaseArticle {
 }
 
 // Transform database article to BlogArticle format
-const transformArticle = (dbArticle: DatabaseArticle): BlogArticle => ({
-  id: dbArticle.slug,
-  dbId: dbArticle.id,
-  title: dbArticle.title,
-  excerpt: dbArticle.excerpt,
-  content: dbArticle.content,
-  categories: Array.isArray(dbArticle.category) ? dbArticle.category : [dbArticle.category || 'Geral'],
-  date: new Date(dbArticle.created_at).toLocaleDateString('pt-BR', {
-    day: '2-digit',
-    month: 'short',
-    year: 'numeric'
-  }),
-  updatedAt: dbArticle.updated_at, // ISO format for SEO meta tags
-  readTime: dbArticle.read_time,
-  image: dbArticle.image_url || 'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-  hasEbook: dbArticle.has_ebook || false,
-  ebookTitle: dbArticle.ebook_title || undefined,
-  ebookSubtitle: dbArticle.ebook_subtitle || undefined,
-  ebookPdfUrl: dbArticle.ebook_pdf_url || undefined,
-  ebookCoverUrl: dbArticle.ebook_cover_url || undefined,
-  viewCount: dbArticle.view_count || 0,
-});
+const transformArticle = (dbArticle: DatabaseArticle): BlogArticle => {
+  // Use scheduled_at date if available, otherwise use created_at
+  const displayDate = dbArticle.scheduled_at 
+    ? new Date(dbArticle.scheduled_at) 
+    : new Date(dbArticle.created_at);
+  
+  return {
+    id: dbArticle.slug,
+    dbId: dbArticle.id,
+    title: dbArticle.title,
+    excerpt: dbArticle.excerpt,
+    content: dbArticle.content,
+    categories: Array.isArray(dbArticle.category) ? dbArticle.category : [dbArticle.category || 'Geral'],
+    date: displayDate.toLocaleDateString('pt-BR', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric'
+    }),
+    updatedAt: dbArticle.updated_at, // ISO format for SEO meta tags
+    readTime: dbArticle.read_time,
+    image: dbArticle.image_url || 'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+    hasEbook: dbArticle.has_ebook || false,
+    ebookTitle: dbArticle.ebook_title || undefined,
+    ebookSubtitle: dbArticle.ebook_subtitle || undefined,
+    ebookPdfUrl: dbArticle.ebook_pdf_url || undefined,
+    ebookCoverUrl: dbArticle.ebook_cover_url || undefined,
+    viewCount: dbArticle.view_count || 0,
+  };
+};
 
 // Increment view count for an article (via Edge Function with rate limiting)
 export const incrementArticleView = async (slug: string): Promise<void> => {
