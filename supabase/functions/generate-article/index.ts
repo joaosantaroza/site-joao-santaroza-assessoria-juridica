@@ -159,8 +159,17 @@ serve(async (req) => {
       seoMode = false,
       seoKeywords = [],
       maringaMode = false,
-      imageStyle = 'photographic'
+      imageStyle = 'photographic',
+      articleLength = 'medium'
     } = await req.json();
+    
+    // Article length configurations
+    const lengthConfigs: Record<string, { min: number; max: number; label: string }> = {
+      short: { min: 400, max: 600, label: 'curto' },
+      medium: { min: 800, max: 1200, label: 'médio' },
+      long: { min: 1500, max: 2000, label: 'longo' }
+    };
+    const selectedLength = lengthConfigs[articleLength] || lengthConfigs.medium;
     
     // If using custom instructions, we need those instead of title
     const isCustomMode = !!customInstructions && customInstructions.trim().length >= 10;
@@ -192,7 +201,7 @@ serve(async (req) => {
       );
     }
 
-    console.log(`Admin ${userData.user.email} generating article with Perplexity (tone: ${selectedTone}, legalBasis: ${includeLegalBasis}, customMode: ${isCustomMode}, seoMode: ${seoMode}, maringaMode: ${maringaMode}, imageStyle: ${imageStyle}) for ${isCustomMode ? 'custom instructions' : 'title: ' + title}`);
+    console.log(`Admin ${userData.user.email} generating article with Perplexity (tone: ${selectedTone}, legalBasis: ${includeLegalBasis}, customMode: ${isCustomMode}, seoMode: ${seoMode}, maringaMode: ${maringaMode}, imageStyle: ${imageStyle}, length: ${articleLength}) for ${isCustomMode ? 'custom instructions' : 'title: ' + title}`);
 
     // Modo Maringá - Geolocalização Máxima
     const maringaModeInstructions = maringaMode
@@ -361,7 +370,7 @@ REGRAS DE FORMATAÇÃO:
 - Use <ul> e <li> para listas quando apropriado
 - Use <blockquote> para destaques importantes ou dicas
 - Use <strong> para termos importantes
-- O texto deve ter entre ${seoMode ? '1200 e 2000' : '800 e 1500'} palavras
+- O texto deve ter entre ${seoMode ? '1200 e 2000' : `${selectedLength.min} e ${selectedLength.max}`} palavras (tamanho ${selectedLength.label})
 - Termine com um parágrafo convidando o leitor a esclarecer dúvidas ou acessar materiais educativos
 
 PROIBIÇÃO DE NÚMEROS DE CITAÇÃO (OBRIGATÓRIO):
