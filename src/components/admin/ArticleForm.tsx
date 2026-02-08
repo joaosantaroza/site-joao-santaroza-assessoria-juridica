@@ -73,6 +73,7 @@ interface ArticleFormProps {
 
 type ArticleTone = 'formal' | 'acessivel' | 'tecnico';
 type ImageStyle = 'abstract' | 'photographic' | 'illustration';
+type ArticleLength = 'short' | 'medium' | 'long';
 
 const TONE_OPTIONS: { value: ArticleTone; label: string; description: string; tooltip: string }[] = [
   { value: 'formal', label: 'Formal', description: 'Tom profissional e elegante', tooltip: 'Linguagem clara e profissional, sem ser rebuscada. Ideal para conteúdo institucional.' },
@@ -84,6 +85,12 @@ const IMAGE_STYLE_OPTIONS: { value: ImageStyle; label: string; description: stri
   { value: 'abstract', label: 'Abstrato', description: 'Formas e cores abstratas', preview: stylePreviewAbstract },
   { value: 'photographic', label: 'Fotográfico', description: 'Estilo foto realista', preview: stylePreviewPhotographic },
   { value: 'illustration', label: 'Ilustração', description: 'Arte digital ilustrada', preview: stylePreviewIllustration },
+];
+
+const ARTICLE_LENGTH_OPTIONS: { value: ArticleLength; label: string; description: string; wordRange: string }[] = [
+  { value: 'short', label: 'Curto', description: 'Leitura rápida', wordRange: '400-600 palavras' },
+  { value: 'medium', label: 'Médio', description: 'Conteúdo balanceado', wordRange: '800-1200 palavras' },
+  { value: 'long', label: 'Longo', description: 'Conteúdo detalhado', wordRange: '1500-2000 palavras' },
 ];
 
 export function ArticleForm({ onSuccess, editingArticle, onCancelEdit }: ArticleFormProps) {
@@ -104,6 +111,7 @@ export function ArticleForm({ onSuccess, editingArticle, onCancelEdit }: Article
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [articleTone, setArticleTone] = useState<ArticleTone>('acessivel');
   const [imageStyle, setImageStyle] = useState<ImageStyle>('photographic');
+  const [articleLength, setArticleLength] = useState<ArticleLength>('medium');
   const [includeLegalBasis, setIncludeLegalBasis] = useState(true);
   
   // Custom instructions state
@@ -585,6 +593,7 @@ export function ArticleForm({ onSuccess, editingArticle, onCancelEdit }: Article
             seoKeywords: isSeoMode ? seoKeywords : undefined,
             maringaMode: isMaringaMode,
             imageStyle: imageStyle,
+            articleLength: articleLength,
           }),
         }
       );
@@ -1216,6 +1225,35 @@ export function ArticleForm({ onSuccess, editingArticle, onCancelEdit }: Article
                           <p className="text-xs text-muted-foreground">{option.description}</p>
                         </div>
                       </div>
+                    </TooltipContent>
+                  </Tooltip>
+                ))}
+              </TooltipProvider>
+            </div>
+            
+            {/* Article Length Selector */}
+            <div className="flex flex-wrap gap-2 items-center pl-4 border-l border-border/50">
+              <span className="text-xs text-muted-foreground mr-1">Tamanho:</span>
+              <TooltipProvider>
+                {ARTICLE_LENGTH_OPTIONS.map((option) => (
+                  <Tooltip key={option.value}>
+                    <TooltipTrigger asChild>
+                      <button
+                        type="button"
+                        onClick={() => setArticleLength(option.value)}
+                        className={cn(
+                          "px-3 py-1.5 text-xs rounded-full border transition-all",
+                          articleLength === option.value
+                            ? "bg-primary text-primary-foreground border-primary"
+                            : "bg-muted/50 text-muted-foreground border-border hover:border-primary/50"
+                        )}
+                      >
+                        {option.label}
+                      </button>
+                    </TooltipTrigger>
+                    <TooltipContent side="top" className="max-w-[180px]">
+                      <p className="text-xs font-medium">{option.description}</p>
+                      <p className="text-xs text-muted-foreground">{option.wordRange}</p>
                     </TooltipContent>
                   </Tooltip>
                 ))}
