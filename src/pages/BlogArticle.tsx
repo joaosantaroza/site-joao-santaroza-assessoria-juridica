@@ -1,6 +1,7 @@
 import { useState, useMemo, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { Calendar, Clock, User, MessageCircle, Download, Loader2, Home } from "lucide-react";
+import { ReadingProgressBar } from "@/components/ReadingProgressBar";
 import { motion } from "framer-motion";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -164,6 +165,9 @@ export default function BlogArticle() {
 
   return (
     <div className="min-h-screen font-sans selection:bg-accent selection:text-accent-foreground">
+      {/* Reading Progress Bar */}
+      <ReadingProgressBar />
+      
       {/* Breadcrumbs JSON-LD Schema for Rich Snippets */}
       <BreadcrumbsJsonLd items={breadcrumbItems} />
       
