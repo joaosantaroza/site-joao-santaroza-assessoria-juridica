@@ -19,6 +19,7 @@ export const SocialShareButtons = ({ url, title, className }: SocialShareButtons
   const shareLinks = {
     whatsapp: `https://wa.me/?text=${encodedTitle}%20${encodedUrl}`,
     linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`,
+    x: `https://x.com/intent/tweet?text=${encodedTitle}&url=${encodedUrl}`,
   };
 
   const handleShare = (platform: keyof typeof shareLinks) => {
@@ -147,6 +148,23 @@ export const SocialShareButtons = ({ url, title, className }: SocialShareButtons
           aria-hidden="true"
         >
           <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm0 2c5.514 0 10 4.486 10 10s-4.486 10-10 10S2 17.514 2 12 6.486 2 12 2zm0 1c-4.962 0-9 4.038-9 9s4.038 9 9 9 9-4.038 9-9-4.038-9-9-9zm0 2c3.86 0 7 3.14 7 7s-3.14 7-7 7-7-3.14-7-7 3.14-7 7-7z"/>
+        </svg>
+      </Button>
+
+      {/* X (Twitter) */}
+      <Button
+        variant="outline"
+        size="icon"
+        onClick={() => handleShare('x')}
+        className="h-9 w-9 rounded-full bg-black/10 border-black/30 hover:bg-black hover:text-white hover:border-black transition-all dark:bg-white/10 dark:border-white/30 dark:hover:bg-white dark:hover:text-black dark:hover:border-white"
+        title="Compartilhar no X"
+      >
+        <svg 
+          viewBox="0 0 24 24" 
+          className="h-4 w-4 fill-current"
+          aria-hidden="true"
+        >
+          <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
         </svg>
       </Button>
 

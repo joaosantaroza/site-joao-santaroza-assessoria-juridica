@@ -39,6 +39,7 @@ export const FloatingShareButton = ({
   const shareLinks = {
     whatsapp: `https://wa.me/?text=${encodedTitle}%20${encodedUrl}`,
     linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`,
+    x: `https://x.com/intent/tweet?text=${encodedTitle}&url=${encodedUrl}`,
   };
 
   const handleShare = (platform: keyof typeof shareLinks) => {
@@ -153,6 +154,17 @@ export const FloatingShareButton = ({
         </svg>
       ),
       className: "bg-gradient-to-br from-[#833AB4] via-[#FD1D1D] to-[#F77737] hover:opacity-90 text-white",
+    },
+    {
+      id: 'x',
+      label: 'X',
+      onClick: () => handleShare('x'),
+      icon: (
+        <svg viewBox="0 0 24 24" className="h-5 w-5 fill-current" aria-hidden="true">
+          <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+        </svg>
+      ),
+      className: "bg-black hover:bg-black/90 text-white dark:bg-white dark:text-black dark:hover:bg-white/90",
     },
     {
       id: 'linkedin',
