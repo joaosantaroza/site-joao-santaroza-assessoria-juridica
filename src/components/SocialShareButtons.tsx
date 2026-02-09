@@ -58,42 +58,34 @@ export const SocialShareButtons = ({ url, title, className }: SocialShareButtons
   };
 
   const handleInstagramStoriesShare = async () => {
+    // Try Web Share API first (most reliable on mobile)
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: title,
+          text: title,
+          url: url,
+        });
+        return;
+      } catch (err) {
+        // User cancelled or error, continue to fallback
+        if ((err as Error).name === 'AbortError') return;
+      }
+    }
+    
+    // Fallback: copy text and show instructions
     try {
       await navigator.clipboard.writeText(`${title}\n\n${url}`);
       toast({
         title: "Texto copiado!",
-        description: "Abrindo Stories... Cole o link no sticker de link.",
+        description: "Abra o Instagram, crie um Story e use o sticker de link para colar.",
       });
     } catch (err) {
-      // Continue even if copy fails
+      toast({
+        title: "Compartilhar no Instagram",
+        description: "Abra o Instagram, crie um Story e adicione o link manualmente.",
+      });
     }
-    
-    // Try deep link first (works on mobile with app installed)
-    const deepLink = 'instagram://story-camera';
-    const webFallback = 'https://instagram.com/stories/create';
-    
-    // Create hidden iframe to test deep link
-    const iframe = document.createElement('iframe');
-    iframe.style.display = 'none';
-    document.body.appendChild(iframe);
-    
-    const timeout = setTimeout(() => {
-      // Deep link failed, open web version
-      window.open(webFallback, '_blank', 'noopener,noreferrer');
-    }, 1500);
-    
-    iframe.onload = () => {
-      clearTimeout(timeout);
-    };
-    
-    // Try to open deep link
-    window.location.href = deepLink;
-    
-    // Clean up iframe after delay
-    setTimeout(() => {
-      document.body.removeChild(iframe);
-      clearTimeout(timeout);
-    }, 2000);
   };
 
   return (
