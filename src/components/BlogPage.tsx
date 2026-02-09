@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
-import { motion } from "framer-motion";
-import { ArrowLeft, Calendar, Clock, Tag, ChevronLeft, ChevronRight, Loader2, Search, X, ArrowUpDown } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { ArrowLeft, Calendar, Clock, Tag, ChevronLeft, ChevronRight, Loader2, Search, X, ArrowUpDown, ChevronDown, ChevronUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { SectionTitle } from "@/components/ui/SectionTitle";
@@ -15,6 +15,8 @@ import {
 } from "@/components/ui/select";
 
 const ARTICLES_PER_PAGE = 6;
+const TAGS_PER_PAGE = 10;
+const INITIAL_TAGS_SHOWN = 5;
 
 type SortOption = "newest" | "oldest" | "title-asc" | "title-desc";
 
@@ -184,7 +186,26 @@ export const BlogPage = ({ onBack, onArticleClick }: BlogPageProps) => {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState<SortOption>("newest");
+  const [showAllTags, setShowAllTags] = useState(false);
+  const [tagPage, setTagPage] = useState(1);
   const { articles, categories, loading } = useBlogArticles();
+
+  // Sort categories by usage count (most used first)
+  const sortedCategories = useMemo(() => {
+    return [...categories].sort((a, b) => {
+      const countA = articles.filter(art => art.categories.includes(a)).length;
+      const countB = articles.filter(art => art.categories.includes(b)).length;
+      return countB - countA;
+    });
+  }, [categories, articles]);
+
+  const topCategories = sortedCategories.slice(0, INITIAL_TAGS_SHOWN);
+  const extraCategories = sortedCategories.slice(INITIAL_TAGS_SHOWN);
+  const totalTagPages = Math.ceil(extraCategories.length / TAGS_PER_PAGE);
+  const paginatedExtraTags = extraCategories.slice(
+    (tagPage - 1) * TAGS_PER_PAGE,
+    tagPage * TAGS_PER_PAGE
+  );
 
   const filteredArticles = useMemo(() => {
     let result = articles;
@@ -318,32 +339,33 @@ export const BlogPage = ({ onBack, onArticleClick }: BlogPageProps) => {
           </div>
 
           {/* Category Filters */}
-          <div className="flex flex-wrap gap-3">
-            <button
-              onClick={() => { setSelectedCategory(null); setCurrentPage(1); }}
-              className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                !selectedCategory 
-                  ? 'bg-primary text-primary-foreground' 
-                  : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
-              }`}
-            >
-              Todos
-              <span className={`px-2 py-0.5 rounded-full text-xs ${
-                !selectedCategory ? 'bg-primary-foreground/20 text-primary-foreground' : 'bg-primary/20 text-primary'
-              }`}>
-                {articles.length}
-              </span>
-            </button>
-            {categories.map((category) => (
+          <div className="space-y-3">
+            <div className="flex flex-wrap gap-3">
               <button
-                key={category}
-                onClick={() => handleCategoryClick(category)}
+                onClick={() => { setSelectedCategory(null); setCurrentPage(1); }}
                 className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                  selectedCategory === category 
+                  !selectedCategory 
                     ? 'bg-primary text-primary-foreground' 
                     : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
                 }`}
               >
+                Todos
+                <span className={`px-2 py-0.5 rounded-full text-xs ${
+                  !selectedCategory ? 'bg-primary-foreground/20 text-primary-foreground' : 'bg-primary/20 text-primary'
+                }`}>
+                  {articles.length}
+                </span>
+              </button>
+              {topCategories.map((category) => (
+                <button
+                  key={category}
+                  onClick={() => handleCategoryClick(category)}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                    selectedCategory === category 
+                      ? 'bg-primary text-primary-foreground' 
+                      : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
+                  }`}
+                >
                   <Tag className="w-3.5 h-3.5" />
                   {category}
                   <span className={`px-2 py-0.5 rounded-full text-xs ${
@@ -351,8 +373,75 @@ export const BlogPage = ({ onBack, onArticleClick }: BlogPageProps) => {
                   }`}>
                     {articles.filter(a => a.categories.includes(category)).length}
                   </span>
-              </button>
-            ))}
+                </button>
+              ))}
+              {extraCategories.length > 0 && (
+                <button
+                  onClick={() => { setShowAllTags(!showAllTags); setTagPage(1); }}
+                  className="flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium bg-accent/50 text-accent-foreground hover:bg-accent transition-colors"
+                >
+                  {showAllTags ? 'Ver menos' : `Ver mais (${extraCategories.length})`}
+                  {showAllTags ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+                </button>
+              )}
+            </div>
+
+            <AnimatePresence>
+              {showAllTags && extraCategories.length > 0 && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className="overflow-hidden"
+                >
+                  <div className="flex flex-wrap gap-3 pt-2">
+                    {paginatedExtraTags.map((category) => (
+                      <button
+                        key={category}
+                        onClick={() => handleCategoryClick(category)}
+                        className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                          selectedCategory === category 
+                            ? 'bg-primary text-primary-foreground' 
+                            : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
+                        }`}
+                      >
+                        <Tag className="w-3.5 h-3.5" />
+                        {category}
+                        <span className={`px-2 py-0.5 rounded-full text-xs ${
+                          selectedCategory === category ? 'bg-primary-foreground/20 text-primary-foreground' : 'bg-primary/20 text-primary'
+                        }`}>
+                          {articles.filter(a => a.categories.includes(category)).length}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                  {totalTagPages > 1 && (
+                    <div className="flex items-center justify-center gap-2 pt-3">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setTagPage(p => Math.max(1, p - 1))}
+                        disabled={tagPage === 1}
+                      >
+                        <ChevronLeft className="w-3.5 h-3.5" />
+                      </Button>
+                      <span className="text-xs text-muted-foreground">
+                        {tagPage} / {totalTagPages}
+                      </span>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setTagPage(p => Math.min(totalTagPages, p + 1))}
+                        disabled={tagPage === totalTagPages}
+                      >
+                        <ChevronRight className="w-3.5 h-3.5" />
+                      </Button>
+                    </div>
+                  )}
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </div>
       </section>
