@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import logoFullSrc from '@/assets/logo-full.png';
 
 const wrapText = (
   ctx: CanvasRenderingContext2D,
@@ -98,8 +99,16 @@ export const useInstagramShare = () => {
       canvas.width = 1080;
       canvas.height = 1920;
 
-      // Load image via proxy to avoid CORS
-      const img = await loadImageViaProxy(imageUrl);
+      // Load cover image via proxy and logo in parallel
+      const [img, logo] = await Promise.all([
+        loadImageViaProxy(imageUrl),
+        new Promise<HTMLImageElement>((resolve, reject) => {
+          const logoImg = new Image();
+          logoImg.onload = () => resolve(logoImg);
+          logoImg.onerror = reject;
+          logoImg.src = logoFullSrc;
+        }),
+      ]);
 
       // Navy background (brand primary)
       ctx.fillStyle = BRAND.navy;
@@ -108,6 +117,18 @@ export const useInstagramShare = () => {
       // Top accent bar (bronze)
       ctx.fillStyle = BRAND.bronze;
       ctx.fillRect(0, 0, canvas.width, 8);
+
+      // Draw logo centered at top
+      const logoMaxWidth = 320;
+      const logoMaxHeight = 100;
+      const logoAspect = logo.width / logo.height;
+      let logoW = logoMaxWidth;
+      let logoH = logoW / logoAspect;
+      if (logoH > logoMaxHeight) {
+        logoH = logoMaxHeight;
+        logoW = logoH * logoAspect;
+      }
+      ctx.drawImage(logo, (canvas.width - logoW) / 2, 60, logoW, logoH);
 
       // Draw image with rounded card effect area
       const cardMargin = 60;
@@ -170,14 +191,15 @@ export const useInstagramShare = () => {
       ctx.textAlign = 'center';
       wrapText(ctx, postTitle.toUpperCase(), 540, cardTop + cardHeight + 140, 900, 90);
 
-      // Bottom section: site name + bronze accent
-      ctx.fillStyle = BRAND.bronze;
-      ctx.font = `600 36px ${BRAND.fontFamily}`;
-      ctx.fillText('JOÃO SANTAROZA', 540, 1740);
+      // Bottom section: logo small + site URL
+      const bottomLogoH = 50;
+      const bottomLogoW = bottomLogoH * (logo.width / logo.height);
+      ctx.drawImage(logo, (canvas.width - bottomLogoW) / 2, 1720, bottomLogoW, bottomLogoH);
 
       ctx.fillStyle = BRAND.sand;
-      ctx.font = `400 28px ${BRAND.fontFamily}`;
-      ctx.fillText('ADVOCACIA', 540, 1785);
+      ctx.font = `400 26px ${BRAND.fontFamily}`;
+      ctx.textAlign = 'center';
+      ctx.fillText('joaosantarozaadvocacia.com.br', 540, 1800);
 
       // Bottom accent bar
       ctx.fillStyle = BRAND.bronze;
