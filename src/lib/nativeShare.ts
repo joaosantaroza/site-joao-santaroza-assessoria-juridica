@@ -1,3 +1,30 @@
+import { supabase } from "@/integrations/supabase/client";
+
+/**
+ * Fetches an image via the proxy edge function to bypass CORS.
+ */
+const fetchImageViaProxy = async (imageUrl: string): Promise<Blob> => {
+  const { data: { session } } = await supabase.auth.getSession();
+  const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+  const anonKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+
+  const response = await fetch(`${supabaseUrl}/functions/v1/proxy-image`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'apikey': anonKey,
+      ...(session?.access_token ? { 'Authorization': `Bearer ${session.access_token}` } : {}),
+    },
+    body: JSON.stringify({ url: imageUrl }),
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to fetch image via proxy');
+  }
+
+  return response.blob();
+};
+
 /**
  * Shares content using the native Web Share API when available (mobile),
  * with fallback to clipboard copy + redirect for desktop.
@@ -11,8 +38,7 @@ export const nativeShareWithImage = async (
   // Try native share with file (works on mobile)
   if (navigator.share && imageUrl) {
     try {
-      const response = await fetch(imageUrl);
-      const blob = await response.blob();
+      const blob = await fetchImageViaProxy(imageUrl);
       const file = new File([blob], "post-cover.jpg", { type: "image/jpeg" });
 
       // Check if sharing files is supported
