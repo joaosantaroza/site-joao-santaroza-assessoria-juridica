@@ -135,9 +135,14 @@ export const FloatingShareButton = ({
     },
     {
       id: 'instagram-stories',
-      label: 'Stories',
+      label: isSharing ? 'Gerando...' : 'Stories',
       onClick: handleInstagramStoriesShare,
-      icon: (
+      disabled: isSharing,
+      icon: isSharing ? (
+        <svg className="h-5 w-5 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <circle cx="12" cy="12" r="10" strokeDasharray="60" strokeDashoffset="20" />
+        </svg>
+      ) : (
         <svg viewBox="0 0 24 24" className="h-5 w-5 fill-current" aria-hidden="true">
           <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm0 2c5.514 0 10 4.486 10 10s-4.486 10-10 10S2 17.514 2 12 6.486 2 12 2zm0 1c-4.962 0-9 4.038-9 9s4.038 9 9 9 9-4.038 9-9-4.038-9-9-9zm0 2c3.86 0 7 3.14 7 7s-3.14 7-7 7-7-3.14-7-7 3.14-7 7-7z"/>
         </svg>
@@ -203,6 +208,7 @@ export const FloatingShareButton = ({
                   >
                     <Button
                       onClick={option.onClick}
+                      disabled={'disabled' in option ? option.disabled : false}
                       className={cn(
                         "h-12 px-4 rounded-full shadow-lg flex items-center gap-2 font-medium",
                         option.className
