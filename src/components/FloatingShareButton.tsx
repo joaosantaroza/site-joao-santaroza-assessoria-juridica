@@ -8,12 +8,14 @@ import { useToast } from "@/hooks/use-toast";
 interface FloatingShareButtonProps {
   url: string;
   title: string;
+  imageUrl?: string;
   showAfterScroll?: number; // pixels to scroll before showing
 }
 
 export const FloatingShareButton = ({ 
   url, 
   title, 
+  imageUrl,
   showAfterScroll = 300 
 }: FloatingShareButtonProps) => {
   const [isVisible, setIsVisible] = useState(false);
@@ -86,9 +88,28 @@ export const FloatingShareButton = ({
   const handleInstagramStoriesShare = async () => {
     setIsOpen(false);
     
-    // Try Web Share API first (most reliable on mobile)
-    if (navigator.share) {
+    // Try Web Share API with image (best experience for Stories)
+    if (navigator.share && navigator.canShare) {
       try {
+        // If we have an image URL, try to share with the image
+        if (imageUrl) {
+          const response = await fetch(imageUrl);
+          const blob = await response.blob();
+          const file = new File([blob], 'artigo.jpg', { type: blob.type || 'image/jpeg' });
+          
+          const shareData = {
+            title: title,
+            text: `${title}\n\n${url}`,
+            files: [file],
+          };
+          
+          if (navigator.canShare(shareData)) {
+            await navigator.share(shareData);
+            return;
+          }
+        }
+        
+        // Fallback to share without image
         await navigator.share({
           title: title,
           text: title,

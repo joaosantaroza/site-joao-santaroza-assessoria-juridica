@@ -517,6 +517,7 @@ export default function BlogArticle() {
               <SocialShareButtons 
                 url={typeof window !== 'undefined' ? window.location.href : ''}
                 title={article.title}
+                imageUrl={article.image}
                 className="justify-center"
               />
             </motion.div>
@@ -578,6 +579,7 @@ export default function BlogArticle() {
       <FloatingShareButton 
         url={typeof window !== 'undefined' ? window.location.href : ''}
         title={article?.title || ''}
+        imageUrl={article?.image}
         showAfterScroll={400}
       />
     </div>

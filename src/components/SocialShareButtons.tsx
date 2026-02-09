@@ -7,10 +7,11 @@ import { useToast } from "@/hooks/use-toast";
 interface SocialShareButtonsProps {
   url: string;
   title: string;
+  imageUrl?: string;
   className?: string;
 }
 
-export const SocialShareButtons = ({ url, title, className }: SocialShareButtonsProps) => {
+export const SocialShareButtons = ({ url, title, imageUrl, className }: SocialShareButtonsProps) => {
   const [copied, setCopied] = useState(false);
   const { toast } = useToast();
   const encodedUrl = encodeURIComponent(url);
@@ -58,9 +59,28 @@ export const SocialShareButtons = ({ url, title, className }: SocialShareButtons
   };
 
   const handleInstagramStoriesShare = async () => {
-    // Try Web Share API first (most reliable on mobile)
-    if (navigator.share) {
+    // Try Web Share API with image (best experience for Stories)
+    if (navigator.share && navigator.canShare) {
       try {
+        // If we have an image URL, try to share with the image
+        if (imageUrl) {
+          const response = await fetch(imageUrl);
+          const blob = await response.blob();
+          const file = new File([blob], 'artigo.jpg', { type: blob.type || 'image/jpeg' });
+          
+          const shareData = {
+            title: title,
+            text: `${title}\n\n${url}`,
+            files: [file],
+          };
+          
+          if (navigator.canShare(shareData)) {
+            await navigator.share(shareData);
+            return;
+          }
+        }
+        
+        // Fallback to share without image
         await navigator.share({
           title: title,
           text: title,
