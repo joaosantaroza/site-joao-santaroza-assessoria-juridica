@@ -43,17 +43,20 @@ export const SocialShareButtons = ({ url, title, className }: SocialShareButtons
     }
   };
 
-  const handleInstagramShare = () => {
-    // Instagram doesn't have a direct web share API, so we copy the link and guide the user
-    navigator.clipboard.writeText(`${title}\n\n${url}`).then(() => {
+  const handleInstagramShare = async () => {
+    // Copy text first, then open Instagram app/website
+    try {
+      await navigator.clipboard.writeText(`${title}\n\n${url}`);
       toast({
         title: "Texto copiado!",
-        description: "Cole no Instagram Stories ou Direct para compartilhar.",
+        description: "Abrindo Instagram... Cole o texto para compartilhar.",
       });
-    }).catch(() => {
-      // Fallback: open Instagram app/website
-      window.open('https://instagram.com', '_blank', 'noopener,noreferrer');
-    });
+    } catch (err) {
+      // Continue even if copy fails
+    }
+    
+    // Open Instagram - on mobile this will open the app if installed
+    window.open('https://instagram.com', '_blank', 'noopener,noreferrer');
   };
 
   return (
