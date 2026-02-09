@@ -23,8 +23,58 @@ export const SocialShareButtons = ({ url, title, imageUrl, className }: SocialSh
     x: `https://x.com/intent/tweet?text=${encodedTitle}&url=${encodedUrl}`,
   };
 
-  const handleShare = (platform: keyof typeof shareLinks) => {
+  const handleShare = (platform: 'whatsapp' | 'x') => {
     window.open(shareLinks[platform], '_blank', 'noopener,noreferrer,width=600,height=400');
+  };
+
+  const handleLinkedInShare = async () => {
+    // Step 1: Copy the link to clipboard
+    try {
+      await navigator.clipboard.writeText(url);
+    } catch (err) {
+      // Continue even if copy fails
+    }
+
+    // Step 2: Download the image if available
+    if (imageUrl) {
+      try {
+        const response = await fetch(imageUrl);
+        const blob = await response.blob();
+        const imageFileName = `linkedin-${Date.now()}.jpg`;
+        
+        const downloadUrl = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = downloadUrl;
+        link.download = imageFileName;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(downloadUrl);
+        
+        toast({
+          title: "Imagem baixada! Link copiado!",
+          description: "Abrindo LinkedIn... Crie um post com a imagem e cole o link.",
+          duration: 5000,
+        });
+      } catch (err) {
+        toast({
+          title: "Link copiado!",
+          description: "Abrindo LinkedIn... Cole o link no seu post.",
+          duration: 5000,
+        });
+      }
+    } else {
+      toast({
+        title: "Link copiado!",
+        description: "Abrindo LinkedIn... Cole o link no seu post.",
+        duration: 5000,
+      });
+    }
+
+    // Step 3: Open LinkedIn after a short delay
+    setTimeout(() => {
+      window.open('https://www.linkedin.com/feed/', '_blank', 'noopener,noreferrer');
+    }, 500);
   };
 
   const handleCopyLink = async () => {
@@ -185,7 +235,7 @@ export const SocialShareButtons = ({ url, title, imageUrl, className }: SocialSh
       <Button
         variant="outline"
         size="icon"
-        onClick={() => handleShare('linkedin')}
+        onClick={handleLinkedInShare}
         className="h-9 w-9 rounded-full bg-[#0A66C2]/10 border-[#0A66C2]/30 hover:bg-[#0A66C2] hover:text-white hover:border-[#0A66C2] transition-all"
         title="Compartilhar no LinkedIn"
       >
