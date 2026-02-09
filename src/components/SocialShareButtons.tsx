@@ -4,6 +4,7 @@ import { cn } from "@/lib/utils";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { nativeShareWithImage } from "@/lib/nativeShare";
+import { useInstagramShare } from "@/hooks/useInstagramShare";
 
 interface SocialShareButtonsProps {
   url: string;
@@ -15,6 +16,7 @@ interface SocialShareButtonsProps {
 export const SocialShareButtons = ({ url, title, imageUrl, className }: SocialShareButtonsProps) => {
   const [copied, setCopied] = useState(false);
   const { toast } = useToast();
+  const { shareToStories, isSharing } = useInstagramShare();
   const encodedUrl = encodeURIComponent(url);
   const encodedTitle = encodeURIComponent(title);
 
@@ -69,11 +71,12 @@ export const SocialShareButtons = ({ url, title, imageUrl, className }: SocialSh
   };
 
   const handleInstagramStoriesShare = async () => {
-    const result = await nativeShareWithImage(title, url, imageUrl, 'https://instagram.com');
+    if (!imageUrl) return;
+    const result = await shareToStories(title, imageUrl, url);
     if (result.method === 'fallback' && result.success) {
       toast({
-        title: "Link copiado!",
-        description: "Abrindo Instagram... Cole o link no sticker de link.",
+        title: "Imagem do Story baixada!",
+        description: "Abra o Instagram e use a imagem nos seus Stories. O link foi copiado!",
         duration: 5000,
       });
     }
