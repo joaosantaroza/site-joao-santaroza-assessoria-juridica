@@ -191,6 +191,7 @@ export const ArticlePage = ({ article, allArticles, onBack, onContact, onArticle
             <SocialShareButtons 
               url={typeof window !== 'undefined' ? window.location.href : ''}
               title={article.title}
+              imageUrl={article.image}
             />
           </motion.div>
 
@@ -419,6 +420,7 @@ export const ArticlePage = ({ article, allArticles, onBack, onContact, onArticle
             <SocialShareButtons 
               url={typeof window !== 'undefined' ? window.location.href : ''}
               title={article.title}
+              imageUrl={article.image}
               className="justify-center"
             />
           </motion.div>
@@ -472,6 +474,7 @@ export const ArticlePage = ({ article, allArticles, onBack, onContact, onArticle
       <FloatingShareButton 
         url={typeof window !== 'undefined' ? window.location.href : ''}
         title={article.title}
+        imageUrl={article.image}
         showAfterScroll={400}
       />
     </div>
