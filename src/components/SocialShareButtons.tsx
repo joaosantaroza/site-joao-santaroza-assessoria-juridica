@@ -59,53 +59,54 @@ export const SocialShareButtons = ({ url, title, imageUrl, className }: SocialSh
   };
 
   const handleInstagramStoriesShare = async () => {
-    // Try Web Share API with image (best experience for Stories)
-    if (navigator.share && navigator.canShare) {
-      try {
-        // If we have an image URL, try to share with the image
-        if (imageUrl) {
-          const response = await fetch(imageUrl);
-          const blob = await response.blob();
-          const file = new File([blob], 'artigo.jpg', { type: blob.type || 'image/jpeg' });
-          
-          const shareData = {
-            title: title,
-            text: `${title}\n\n${url}`,
-            files: [file],
-          };
-          
-          if (navigator.canShare(shareData)) {
-            await navigator.share(shareData);
-            return;
-          }
-        }
-        
-        // Fallback to share without image
-        await navigator.share({
-          title: title,
-          text: title,
-          url: url,
-        });
-        return;
-      } catch (err) {
-        // User cancelled or error, continue to fallback
-        if ((err as Error).name === 'AbortError') return;
-      }
-    }
-    
-    // Fallback: copy text and show instructions
+    // Step 1: Copy the link to clipboard
     try {
-      await navigator.clipboard.writeText(`${title}\n\n${url}`);
-      toast({
-        title: "Texto copiado!",
-        description: "Abra o Instagram, crie um Story e use o sticker de link para colar.",
-      });
+      await navigator.clipboard.writeText(url);
     } catch (err) {
+      // Continue even if copy fails
+    }
+
+    // Step 2: Download the image if available
+    if (imageUrl) {
+      try {
+        const response = await fetch(imageUrl);
+        const blob = await response.blob();
+        const imageFileName = `story-${Date.now()}.jpg`;
+        
+        // Create download link
+        const downloadUrl = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = downloadUrl;
+        link.download = imageFileName;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(downloadUrl);
+        
+        toast({
+          title: "Imagem baixada! Link copiado!",
+          description: "Abrindo Instagram... Use a imagem baixada e cole o link no sticker.",
+          duration: 5000,
+        });
+      } catch (err) {
+        toast({
+          title: "Link copiado!",
+          description: "Abrindo Instagram... Cole o link no sticker de link.",
+          duration: 5000,
+        });
+      }
+    } else {
       toast({
-        title: "Compartilhar no Instagram",
-        description: "Abra o Instagram, crie um Story e adicione o link manualmente.",
+        title: "Link copiado!",
+        description: "Abrindo Instagram... Cole o link no sticker de link.",
+        duration: 5000,
       });
     }
+
+    // Step 3: Open Instagram after a short delay
+    setTimeout(() => {
+      window.open('https://instagram.com', '_blank', 'noopener,noreferrer');
+    }, 500);
   };
 
   return (
