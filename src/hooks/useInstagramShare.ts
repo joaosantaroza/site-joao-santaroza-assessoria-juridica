@@ -59,6 +59,28 @@ const loadImageViaProxy = async (imageUrl: string): Promise<HTMLImageElement> =>
   });
 };
 
+// Brand colors from design system
+const BRAND = {
+  navy: '#041E42',
+  sand: '#EDE8DF',
+  bronze: '#B8945A',
+  white: '#FFFFFF',
+  fontFamily: 'Montserrat, Arial, sans-serif',
+};
+
+/**
+ * Preloads Montserrat font for Canvas rendering.
+ */
+const loadFont = async () => {
+  try {
+    const font = new FontFace('Montserrat', 'url(https://fonts.gstatic.com/s/montserrat/v29/JTUHjIg1_i6t8kCHKm4532VJOt5-QNFgpCtr6Hw5aXo.woff2)');
+    await font.load();
+    document.fonts.add(font);
+  } catch {
+    // Fallback to Arial if font fails to load
+  }
+};
+
 export const useInstagramShare = () => {
   const [isSharing, setIsSharing] = useState(false);
 
@@ -66,6 +88,9 @@ export const useInstagramShare = () => {
     setIsSharing(true);
 
     try {
+      // Load brand font
+      await loadFont();
+
       const canvas = document.createElement('canvas');
       const ctx = canvas.getContext('2d');
       if (!ctx) throw new Error('Canvas not supported');
@@ -76,42 +101,94 @@ export const useInstagramShare = () => {
       // Load image via proxy to avoid CORS
       const img = await loadImageViaProxy(imageUrl);
 
-      // Black background
-      ctx.fillStyle = '#000000';
+      // Navy background (brand primary)
+      ctx.fillStyle = BRAND.navy;
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      // Draw image centered
+      // Top accent bar (bronze)
+      ctx.fillStyle = BRAND.bronze;
+      ctx.fillRect(0, 0, canvas.width, 8);
+
+      // Draw image with rounded card effect area
+      const cardMargin = 60;
+      const cardTop = 200;
+      const cardWidth = canvas.width - cardMargin * 2;
       const aspectRatio = img.width / img.height;
-      const drawWidth = 1080;
-      const drawHeight = 1080 / aspectRatio;
-      const drawY = (1920 - drawHeight) / 2;
-      ctx.drawImage(img, 0, drawY, drawWidth, drawHeight);
+      const cardHeight = Math.min(cardWidth / aspectRatio, 900);
 
-      // Dark gradient overlay
-      const gradient = ctx.createLinearGradient(0, 0, 0, 1920);
-      gradient.addColorStop(0, 'rgba(0,0,0,0.8)');
-      gradient.addColorStop(0.5, 'rgba(0,0,0,0)');
-      gradient.addColorStop(1, 'rgba(0,0,0,0.9)');
+      // Save state before clipping
+      ctx.save();
+
+      // Card shadow
+      ctx.shadowColor = 'rgba(0,0,0,0.4)';
+      ctx.shadowBlur = 30;
+      ctx.shadowOffsetY = 10;
+
+      // Draw rounded rectangle clip for image
+      const radius = 24;
+      ctx.beginPath();
+      ctx.moveTo(cardMargin + radius, cardTop);
+      ctx.lineTo(cardMargin + cardWidth - radius, cardTop);
+      ctx.quadraticCurveTo(cardMargin + cardWidth, cardTop, cardMargin + cardWidth, cardTop + radius);
+      ctx.lineTo(cardMargin + cardWidth, cardTop + cardHeight - radius);
+      ctx.quadraticCurveTo(cardMargin + cardWidth, cardTop + cardHeight, cardMargin + cardWidth - radius, cardTop + cardHeight);
+      ctx.lineTo(cardMargin + radius, cardTop + cardHeight);
+      ctx.quadraticCurveTo(cardMargin, cardTop + cardHeight, cardMargin, cardTop + cardHeight - radius);
+      ctx.lineTo(cardMargin, cardTop + radius);
+      ctx.quadraticCurveTo(cardMargin, cardTop, cardMargin + radius, cardTop);
+      ctx.closePath();
+      ctx.clip();
+
+      // Draw image filling the card
+      const imgDrawWidth = cardWidth;
+      const imgDrawHeight = cardWidth / aspectRatio;
+      const imgOffsetY = cardTop + (cardHeight - imgDrawHeight) / 2;
+      ctx.drawImage(img, cardMargin, imgOffsetY, imgDrawWidth, imgDrawHeight);
+
+      // Reset clip and shadow
+      ctx.restore();
+      ctx.save();
+      ctx.shadowColor = 'transparent';
+      ctx.shadowBlur = 0;
+      ctx.shadowOffsetY = 0;
+
+      // Bottom gradient overlay for text readability
+      const gradient = ctx.createLinearGradient(0, canvas.height - 700, 0, canvas.height);
+      gradient.addColorStop(0, 'rgba(4,30,66,0)');
+      gradient.addColorStop(0.3, 'rgba(4,30,66,0.7)');
+      gradient.addColorStop(1, 'rgba(4,30,66,1)');
       ctx.fillStyle = gradient;
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillRect(0, canvas.height - 700, canvas.width, 700);
+
+      // Decorative bronze line before title
+      ctx.fillStyle = BRAND.bronze;
+      ctx.fillRect(canvas.width / 2 - 60, cardTop + cardHeight + 60, 120, 4);
 
       // Title text
-      ctx.fillStyle = '#FFFFFF';
-      ctx.font = 'bold 80px Arial';
+      ctx.fillStyle = BRAND.white;
+      ctx.font = `bold 72px ${BRAND.fontFamily}`;
       ctx.textAlign = 'center';
-      wrapText(ctx, postTitle, 540, 1400, 900, 100);
+      wrapText(ctx, postTitle.toUpperCase(), 540, cardTop + cardHeight + 140, 900, 90);
 
-      // Site name
-      ctx.font = '40px Arial';
-      ctx.fillStyle = '#C9A84C';
-      ctx.fillText('João Santaroza Advocacia', 540, 1700);
+      // Bottom section: site name + bronze accent
+      ctx.fillStyle = BRAND.bronze;
+      ctx.font = `600 36px ${BRAND.fontFamily}`;
+      ctx.fillText('JOÃO SANTAROZA', 540, 1740);
+
+      ctx.fillStyle = BRAND.sand;
+      ctx.font = `400 28px ${BRAND.fontFamily}`;
+      ctx.fillText('ADVOCACIA', 540, 1785);
+
+      // Bottom accent bar
+      ctx.fillStyle = BRAND.bronze;
+      ctx.fillRect(0, canvas.height - 8, canvas.width, 8);
 
       // Convert to blob
       const blob = await new Promise<Blob>((resolve, reject) =>
         canvas.toBlob(
           (b) => (b ? resolve(b) : reject(new Error('Failed to create blob'))),
           'image/jpeg',
-          0.9
+          0.95
         )
       );
       const file = new File([blob], 'story.jpg', { type: 'image/jpeg' });
