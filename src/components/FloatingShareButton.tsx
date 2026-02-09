@@ -67,14 +67,21 @@ export const FloatingShareButton = ({
     }
   };
 
-  const handleInstagramShare = () => {
-    navigator.clipboard.writeText(`${title}\n\n${url}`).then(() => {
+  const handleInstagramShare = async () => {
+    // Copy text first, then open Instagram app/website
+    try {
+      await navigator.clipboard.writeText(`${title}\n\n${url}`);
       toast({
         title: "Texto copiado!",
-        description: "Cole no Instagram Stories ou Direct para compartilhar.",
+        description: "Abrindo Instagram... Cole o texto para compartilhar.",
       });
-      setIsOpen(false);
-    });
+    } catch (err) {
+      // Continue even if copy fails
+    }
+    
+    setIsOpen(false);
+    // Open Instagram - on mobile this will open the app if installed
+    window.open('https://instagram.com', '_blank', 'noopener,noreferrer');
   };
 
   const shareOptions = [
