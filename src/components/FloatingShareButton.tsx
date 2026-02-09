@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
+import { nativeShareWithImage } from "@/lib/nativeShare";
 
 interface FloatingShareButtonProps {
   url: string;
@@ -51,54 +52,14 @@ export const FloatingShareButton = ({
 
   const handleLinkedInShare = async () => {
     setIsOpen(false);
-    
-    // Step 1: Copy the link to clipboard
-    try {
-      await navigator.clipboard.writeText(url);
-    } catch (err) {
-      // Continue even if copy fails
-    }
-
-    // Step 2: Download the image if available
-    if (imageUrl) {
-      try {
-        const response = await fetch(imageUrl);
-        const blob = await response.blob();
-        const imageFileName = `linkedin-${Date.now()}.jpg`;
-        
-        const downloadUrl = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = downloadUrl;
-        link.download = imageFileName;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(downloadUrl);
-        
-        toast({
-          title: "Imagem baixada! Link copiado!",
-          description: "Abrindo LinkedIn... Crie um post com a imagem e cole o link.",
-          duration: 5000,
-        });
-      } catch (err) {
-        toast({
-          title: "Link copiado!",
-          description: "Abrindo LinkedIn... Cole o link no seu post.",
-          duration: 5000,
-        });
-      }
-    } else {
+    const result = await nativeShareWithImage(title, url, imageUrl, 'https://www.linkedin.com/feed/');
+    if (result.method === 'fallback' && result.success) {
       toast({
         title: "Link copiado!",
         description: "Abrindo LinkedIn... Cole o link no seu post.",
         duration: 5000,
       });
     }
-
-    // Step 3: Open LinkedIn after a short delay
-    setTimeout(() => {
-      window.open('https://www.linkedin.com/feed/', '_blank', 'noopener,noreferrer');
-    }, 500);
   };
 
   const handleCopyLink = async () => {
@@ -123,71 +84,27 @@ export const FloatingShareButton = ({
   };
 
   const handleInstagramShare = async () => {
-    try {
-      await navigator.clipboard.writeText(`${title}\n\n${url}`);
-      toast({
-        title: "Texto copiado!",
-        description: "Abrindo Instagram... Cole o texto para compartilhar.",
-      });
-    } catch (err) {
-      // Continue even if copy fails
-    }
-    
     setIsOpen(false);
-    window.open('https://instagram.com', '_blank', 'noopener,noreferrer');
+    const result = await nativeShareWithImage(title, url, imageUrl, 'https://instagram.com');
+    if (result.method === 'fallback' && result.success) {
+      toast({
+        title: "Link copiado!",
+        description: "Abrindo Instagram... Cole o link para compartilhar.",
+        duration: 5000,
+      });
+    }
   };
 
   const handleInstagramStoriesShare = async () => {
     setIsOpen(false);
-    
-    // Step 1: Copy the link to clipboard
-    try {
-      await navigator.clipboard.writeText(url);
-    } catch (err) {
-      // Continue even if copy fails
-    }
-
-    // Step 2: Download the image if available
-    if (imageUrl) {
-      try {
-        const response = await fetch(imageUrl);
-        const blob = await response.blob();
-        const imageFileName = `story-${Date.now()}.jpg`;
-        
-        // Create download link
-        const downloadUrl = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = downloadUrl;
-        link.download = imageFileName;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(downloadUrl);
-        
-        toast({
-          title: "Imagem baixada! Link copiado!",
-          description: "Abrindo Instagram... Use a imagem baixada e cole o link no sticker.",
-          duration: 5000,
-        });
-      } catch (err) {
-        toast({
-          title: "Link copiado!",
-          description: "Abrindo Instagram... Cole o link no sticker de link.",
-          duration: 5000,
-        });
-      }
-    } else {
+    const result = await nativeShareWithImage(title, url, imageUrl, 'https://instagram.com');
+    if (result.method === 'fallback' && result.success) {
       toast({
         title: "Link copiado!",
         description: "Abrindo Instagram... Cole o link no sticker de link.",
         duration: 5000,
       });
     }
-
-    // Step 3: Open Instagram after a short delay
-    setTimeout(() => {
-      window.open('https://instagram.com', '_blank', 'noopener,noreferrer');
-    }, 500);
   };
 
   const shareOptions = [
