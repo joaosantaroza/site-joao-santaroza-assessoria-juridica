@@ -328,19 +328,10 @@ ${regionalExamples}
       ? 'Você é um especialista em Marketing Jurídico e SEO Local focado na região de Maringá e Norte do Paraná.'
       : 'Você é um especialista em Marketing Jurídico e redação de conteúdo jurídico para o Brasil.';
     
-    const officeContext = maringaMode
-      ? `CONTEXTO DO ESCRITÓRIO:
-- O escritório é do Dr. João Victor Santaroza, OAB/PR 81.381
-- Atua principalmente com isenção de IR por moléstia grave, direitos trabalhistas e previdenciários
-- Localizado em Maringá, Paraná, com atuação digital em todo Brasil
-- Foco regional: Maringá, Sarandi, Paiçandu, Marialva, Mandaguari, Norte do Paraná`
-      : `CONTEXTO DO ESCRITÓRIO:
-- O escritório é do Dr. João Victor Santaroza, OAB/PR 81.381
-- Atua principalmente com isenção de IR por moléstia grave, direitos trabalhistas e previdenciários
-- Atuação digital em todo Brasil`;
+    // Office context removed — articles must be impersonal per OAB compliance
     
     const systemPrompt = `${expertiseContext}
-Você atua como redator sênior para o escritório "João Santaroza Assessoria Jurídica".
+Você atua como redator sênior de conteúdo jurídico informativo.
 
 ${maringaModeInstructions}
 
@@ -399,7 +390,14 @@ REGRAS DE FORMATAÇÃO:
 - Use <strong> para termos importantes
 - O texto deve ter entre ${seoMode ? '1200 e 2000' : `${selectedLength.min} e ${selectedLength.max}`} palavras (tamanho ${selectedLength.label})
 ${includeFaq ? `- OBRIGATÓRIO: Inclua uma seção "Perguntas Frequentes" no final do artigo com 3-5 perguntas e respostas relevantes sobre o tema. Use <h2>Perguntas Frequentes</h2> seguido de <h3> para cada pergunta e <p> para as respostas.` : '- NÃO inclua seção de perguntas frequentes'}
-- Termine com um parágrafo convidando o leitor a esclarecer dúvidas ou acessar materiais educativos
+- Termine com um parágrafo genérico e neutro convidando o leitor a buscar ajuda especializada (ex: "Se você se encontra nessa situação, busque orientação de um advogado especializado para avaliar o seu caso.")
+
+PROIBIÇÃO DE AUTOPROMOÇÃO (OBRIGATÓRIO):
+- NUNCA mencione o nome de nenhum escritório, advogado ou marca específica no texto
+- NUNCA use frases como "nosso escritório pode ajudar", "entre em contato conosco", "fale com nossa equipe"
+- NUNCA inclua nomes como "João Santaroza", "Santaroza Assessoria" ou qualquer variação
+- O artigo deve ser 100% informativo e impessoal — sem autopromoção
+- No CTA final, use apenas frases genéricas como "busque um advogado especializado", "procure orientação jurídica qualificada"
 
 PROIBIÇÃO DE NÚMEROS DE CITAÇÃO (OBRIGATÓRIO):
 - NUNCA inclua números entre colchetes como [1], [2], [3] ou similares
@@ -407,8 +405,7 @@ PROIBIÇÃO DE NÚMEROS DE CITAÇÃO (OBRIGATÓRIO):
 - NÃO adicione notas de rodapé ou indicadores de fonte numerados
 - O texto deve ser puramente narrativo e fluido, sem marcadores de citação
 - Se precisar indicar uma fonte, mencione-a naturalmente no texto (ex: "segundo a CLT", "conforme o STF")
-
-${officeContext}`;
+`;
 
     const legalBasisUserInstruction = includeLegalBasis
       ? `3. Pode citar leis e artigos quando necessário, mas integre naturalmente ao texto (ex: "De acordo com a Lei X..." ou "A legislação prevê que...")`
