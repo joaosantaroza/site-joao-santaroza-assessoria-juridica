@@ -346,12 +346,38 @@ ${maringaModeInstructions}
 
 ${seoInstructions}
 
-ÉTICA JURÍDICA (PROVIMENTO 205/2021 OAB - OBRIGATÓRIO):
-- Seja 100% INFORMATIVO e EDUCATIVO
-- NUNCA use termos mercantis como "Ligue agora", "Contrate", "Melhor advogado", "preço promocional"
-- O objetivo é EDUCAR o leitor, não vender diretamente
-- Use CTAs suaves: "esclareça suas dúvidas", "saiba mais", "consulte um profissional"
-- Mantenha sobriedade e dignidade da advocacia
+ÉTICA JURÍDICA — CONFORMIDADE TOTAL COM PROVIMENTO 205/2021 OAB (OBRIGATÓRIO):
+
+PRINCÍPIOS FUNDAMENTAIS:
+- SOBRIEDADE: A publicidade não pode ter estética de varejo. Nada de apelos emocionais exagerados ou linguagem de vendas.
+- INFORMATIVIDADE: Todo conteúdo deve ter viés educativo. O advogado demonstra autoridade intelectual, não faz oferta comercial.
+- NÃO-MERCANTILIZAÇÃO: A advocacia é múnus público. Termos como "desconto", "promoção", "grátis", "ligue já", "contrate", "melhor advogado", "preço popular" são ESTRITAMENTE PROIBIDOS.
+- VERACIDADE: É proibido criar falsas expectativas. NUNCA prometa "causa ganha", "sucesso garantido", "indenização certa" ou use gatilhos de escassez ("vagas limitadas", "só até hoje").
+
+TERMOS E EXPRESSÕES PROIBIDOS:
+- Mercantis: "Ligue agora", "Contrate", "Consulta grátis", "Preço popular", "Promoção", "Desconto", "Garanta já"
+- Promessa de resultado: "Causa ganha", "Sucesso garantido", "Indenização certa", "Limpe seu nome agora"
+- Superlativos: "O melhor advogado", "O mais especializado", "Líder em", "Número 1"
+- Imperativos comerciais: "Contrate", "Ligue", "Compre" (substituir por "Entenda", "Saiba mais", "Conheça seus direitos")
+
+CASOS CONCRETOS E PROVA SOCIAL — PROIBIDO:
+- NUNCA divulgue casos concretos, mesmo anonimizados (ex: "Alvará expedido!", "Absolvição conseguida!")
+- NUNCA inclua depoimentos de clientes reais ou fictícios
+- A exposição de resultados serve como promessa implícita de resultado, o que é vedado pela OAB-SP (2025)
+
+CTAs PERMITIDOS (usar exclusivamente):
+- "Esclareça suas dúvidas com um especialista"
+- "Saiba mais sobre seus direitos"
+- "Consulte um profissional qualificado"
+- "Conheça seus direitos"
+- "Tire suas dúvidas"
+- "Agende uma orientação"
+
+IA E RESPONSABILIDADE EDITORIAL:
+- O advogado mantém responsabilidade integral pelo conteúdo gerado por IA
+- NUNCA invente leis, jurisprudências ou decisões judiciais — cite apenas o que é verificável
+- O conteúdo deve ter originalidade e pessoalidade, evitando textos genéricos e padronizados
+- A supervisão humana é obrigatória antes da publicação
 
 IMPORTANTE - ESTILO BLOG INFORMATIVO:
 - Escreva como um artigo de blog para INFORMAR e EDUCAR o leitor
