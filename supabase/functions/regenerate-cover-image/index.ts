@@ -6,7 +6,24 @@ const corsHeaders = {
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
 };
 
+// Helper to check if origin is allowed (including Lovable preview domains)
+const isAllowedOrigin = (origin: string | null): boolean => {
+  const o = origin?.trim();
+  if (!o) return false;
+  const allowed = [
+    'https://joaosantarozaadvocacia.com.br',
+    'https://www.joaosantarozaadvocacia.com.br',
+    'https://advise-flow-assist.lovable.app',
+  ];
+  if (allowed.includes(o)) return true;
+  if (/^https:\/\/.*\.lovable\.app$/.test(o)) return true;
+  if (o === 'http://localhost:8080' || o === 'http://localhost:5173') return true;
+  return false;
+};
+
 Deno.serve(async (req) => {
+  const origin = req.headers.get('origin');
+
   // Handle CORS preflight
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders });
@@ -21,6 +38,14 @@ Deno.serve(async (req) => {
   }
 
   try {
+    // Verify origin BEFORE processing to prevent credit abuse
+    if (!isAllowedOrigin(origin)) {
+      console.error("Blocked request from unauthorized origin:", origin);
+      return new Response(
+        JSON.stringify({ error: 'Acesso não autorizado.' }),
+        { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
     // Verify authorization header exists
     const authHeader = req.headers.get('Authorization');
     const apiKeyHeader = req.headers.get('apikey');
