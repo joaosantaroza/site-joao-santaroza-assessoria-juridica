@@ -83,6 +83,7 @@ export const useBlogArticles = () => {
           .from('blog_posts')
           .select('*')
           .eq('published', true)
+          .or('scheduled_at.is.null,scheduled_at.lte.' + new Date().toISOString())
           .order('created_at', { ascending: false });
 
         if (fetchError) {
