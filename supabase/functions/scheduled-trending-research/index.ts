@@ -21,6 +21,21 @@ Deno.serve(async (req) => {
     return new Response('ok', { headers: corsHeaders });
   }
 
+  // Authenticate: only allow requests with valid anon key or service role key
+  const authHeader = req.headers.get('Authorization');
+  const apiKeyHeader = req.headers.get('apikey');
+  const anonKey = Deno.env.get('SUPABASE_ANON_KEY');
+  const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+
+  const providedToken = authHeader?.replace('Bearer ', '') || apiKeyHeader;
+  if (!providedToken || (providedToken !== anonKey && providedToken !== serviceRoleKey)) {
+    console.error('[Scheduled Research] Unauthorized request blocked');
+    return new Response(
+      JSON.stringify({ error: 'Unauthorized' }),
+      { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    );
+  }
+
   try {
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
