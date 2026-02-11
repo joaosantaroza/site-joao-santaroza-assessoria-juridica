@@ -122,6 +122,7 @@ export interface BlogArticle {
   ebookPdfUrl?: string;
   ebookCoverUrl?: string;
   viewCount?: number;
+  pdfUrl?: string;
 }
 
 export const BLOG_ARTICLES: BlogArticle[] = [

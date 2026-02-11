@@ -82,6 +82,7 @@ export type Database = {
           has_ebook: boolean
           id: string
           image_url: string | null
+          pdf_url: string | null
           published: boolean
           read_time: string
           scheduled_at: string | null
@@ -103,6 +104,7 @@ export type Database = {
           has_ebook?: boolean
           id?: string
           image_url?: string | null
+          pdf_url?: string | null
           published?: boolean
           read_time?: string
           scheduled_at?: string | null
@@ -124,6 +126,7 @@ export type Database = {
           has_ebook?: boolean
           id?: string
           image_url?: string | null
+          pdf_url?: string | null
           published?: boolean
           read_time?: string
           scheduled_at?: string | null

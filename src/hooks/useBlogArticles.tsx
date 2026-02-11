@@ -21,6 +21,7 @@ interface DatabaseArticle {
   ebook_pdf_url?: string | null;
   ebook_cover_url?: string | null;
   view_count?: number;
+  pdf_url?: string | null;
 }
 
 // Transform database article to BlogArticle format
@@ -51,6 +52,7 @@ const transformArticle = (dbArticle: DatabaseArticle): BlogArticle => {
     ebookPdfUrl: dbArticle.ebook_pdf_url || undefined,
     ebookCoverUrl: dbArticle.ebook_cover_url || undefined,
     viewCount: dbArticle.view_count || 0,
+    pdfUrl: dbArticle.pdf_url || undefined,
   };
 };
 

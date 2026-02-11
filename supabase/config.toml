@@ -26,3 +26,6 @@ verify_jwt = false
 
 [functions.regenerate-cover-image]
 verify_jwt = false
+
+[functions.generate-article-pdf]
+verify_jwt = false
