@@ -223,6 +223,27 @@ export const ArticlePage = ({ article, allArticles, onBack, onContact, onArticle
             )}
           </motion.div>
 
+          {/* Auto-generated PDF download button */}
+          {article.pdfUrl && (
+            <motion.div
+              className="mt-8 flex justify-center"
+              initial={{ opacity: 0, y: 10 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.3 }}
+            >
+              <Button
+                onClick={() => window.open(article.pdfUrl, '_blank')}
+                variant="outline"
+                size="lg"
+                className="gap-2"
+              >
+                <Download className="w-5 h-5" />
+                Baixar artigo em PDF
+              </Button>
+            </motion.div>
+          )}
+
           {/* Internal Links - SEO Cluster Links */}
           <InternalLinks
             currentArticle={article}

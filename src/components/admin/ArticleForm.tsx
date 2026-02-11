@@ -810,6 +810,33 @@ export function ArticleForm({ onSuccess, editingArticle, onCancelEdit }: Article
     setIsPdfPreviewOpen(false);
   };
 
+  // Generate PDF in background (fire-and-forget)
+  const generateArticlePdf = async (articleId: string, slug: string, articleTitle: string, articleContent: string, articleExcerpt: string) => {
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const response = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/generate-article-pdf`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'apikey': import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+            'Authorization': `Bearer ${session?.access_token || import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+          },
+          body: JSON.stringify({ title: articleTitle, content: articleContent, excerpt: articleExcerpt, slug, articleId }),
+        }
+      );
+      if (response.ok) {
+        console.log('[PDF] Gerado com sucesso');
+        toast({ title: '📄 PDF gerado!', description: 'O PDF do artigo foi criado automaticamente.' });
+      } else {
+        console.error('[PDF] Erro:', await response.text());
+      }
+    } catch (err) {
+      console.error('[PDF] Erro ao gerar PDF:', err);
+    }
+  };
+
   const handleSave = async () => {
     if (!title.trim()) {
       toast({ title: 'Título obrigatório', variant: 'destructive' });
@@ -861,6 +888,8 @@ export function ArticleForm({ onSuccess, editingArticle, onCancelEdit }: Article
         ebook_cover_url: hasEbook ? ebookCoverUrl.trim() : null,
       };
 
+      let savedArticleId: string | null = null;
+
       if (editingArticle) {
         // Update existing article
         const { error } = await supabase
@@ -874,6 +903,8 @@ export function ArticleForm({ onSuccess, editingArticle, onCancelEdit }: Article
           }
           throw error;
         }
+
+        savedArticleId = editingArticle.id;
 
         toast({
           title: 'Artigo atualizado!',
@@ -894,6 +925,8 @@ export function ArticleForm({ onSuccess, editingArticle, onCancelEdit }: Article
           throw error;
         }
 
+        savedArticleId = newArticle?.id || null;
+
         // Link article to trending topic analytics if came from SEO mode
         if (approvedTopicTitle && newArticle?.id) {
           await supabase
@@ -909,6 +942,11 @@ export function ArticleForm({ onSuccess, editingArticle, onCancelEdit }: Article
             ? 'O artigo está disponível no site.' 
             : 'O rascunho foi salvo com sucesso.',
         });
+      }
+
+      // Generate PDF automatically in background
+      if (savedArticleId && content.trim()) {
+        generateArticlePdf(savedArticleId, slug, title.trim(), content.trim(), excerpt.trim());
       }
 
       resetForm();
