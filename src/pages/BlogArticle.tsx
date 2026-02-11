@@ -88,12 +88,32 @@ export default function BlogArticle() {
     
     // Check if content contains HTML tags
     const hasHtmlTags = /<[a-z][\s\S]*>/i.test(content);
+
+    // Remove duplicated title from the beginning of the content
+    if (hasHtmlTags && article?.title) {
+      const strip = (s: string) => s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]/g, '');
+      const titleStripped = strip(article.title);
+      
+      // Remove leading <article> tag
+      content = content.replace(/^\s*<article>\s*/i, '');
+      // Remove trailing </article> tag
+      content = content.replace(/\s*<\/article>\s*$/i, '');
+      
+      // Remove first h1/h2/h3 if it matches the title
+      const headingMatch = content.match(/^\s*<(h[1-3])[^>]*>([\s\S]*?)<\/\1>/i);
+      if (headingMatch) {
+        const headingText = headingMatch[2].replace(/<[^>]+>/g, '').trim();
+        if (strip(headingText) === titleStripped) {
+          content = content.replace(/^\s*<h[1-3][^>]*>[\s\S]*?<\/h[1-3]>\s*/i, '');
+        }
+      }
+    }
     
     return {
       isHtml: hasHtmlTags,
       processedContent: content
     };
-  }, [article?.content]);
+  }, [article?.content, article?.title]);
 
   // Breadcrumb items for JSON-LD structured data
   const breadcrumbItems: BreadcrumbItemType[] = useMemo(() => [
