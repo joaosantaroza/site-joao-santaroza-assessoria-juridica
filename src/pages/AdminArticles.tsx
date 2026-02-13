@@ -15,7 +15,7 @@ export default function AdminArticles() {
   const { isAdmin, isLoading } = useAuth();
   const [articleRefreshTrigger, setArticleRefreshTrigger] = useState(0);
   const [editingArticle, setEditingArticle] = useState<BlogPostEdit | null>(null);
-  const [publishedArticles, setPublishedArticles] = useState<{ id: string; title: string; excerpt: string; content: string; slug: string }[]>([]);
+  const [publishedArticles, setPublishedArticles] = useState<{ id: string; title: string; excerpt: string; content: string; slug: string; image_url?: string | null }[]>([]);
   const navigate = useNavigate();
 
   // Fetch published articles for social caption generator
@@ -23,7 +23,7 @@ export default function AdminArticles() {
     const fetchArticles = async () => {
       const { data } = await supabase
         .from('blog_posts')
-        .select('id, title, excerpt, content, slug')
+        .select('id, title, excerpt, content, slug, image_url')
         .eq('published', true)
         .order('created_at', { ascending: false });
       if (data) setPublishedArticles(data);
