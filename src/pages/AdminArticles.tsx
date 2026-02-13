@@ -1,11 +1,13 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
+import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Loader2, ShieldAlert, BarChart3 } from 'lucide-react';
+import { ArrowLeft, Loader2, ShieldAlert, BarChart3, Instagram } from 'lucide-react';
 import { ArticleForm, BlogPostEdit } from '@/components/admin/ArticleForm';
 import { ArticlesList } from '@/components/admin/ArticlesList';
 import { TrendingAnalytics } from '@/components/admin/TrendingAnalytics';
+import { SocialCaptionGenerator } from '@/components/admin/SocialCaptionGenerator';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
@@ -13,7 +15,21 @@ export default function AdminArticles() {
   const { isAdmin, isLoading } = useAuth();
   const [articleRefreshTrigger, setArticleRefreshTrigger] = useState(0);
   const [editingArticle, setEditingArticle] = useState<BlogPostEdit | null>(null);
+  const [publishedArticles, setPublishedArticles] = useState<{ id: string; title: string; excerpt: string; content: string; slug: string }[]>([]);
   const navigate = useNavigate();
+
+  // Fetch published articles for social caption generator
+  useEffect(() => {
+    const fetchArticles = async () => {
+      const { data } = await supabase
+        .from('blog_posts')
+        .select('id, title, excerpt, content, slug')
+        .eq('published', true)
+        .order('created_at', { ascending: false });
+      if (data) setPublishedArticles(data);
+    };
+    if (isAdmin) fetchArticles();
+  }, [isAdmin, articleRefreshTrigger]);
 
   const handleArticleSaved = () => {
     setArticleRefreshTrigger(prev => prev + 1);
@@ -77,6 +93,10 @@ export default function AdminArticles() {
             <TabsTrigger value="articles" className="gap-2 data-[state=active]:bg-accent data-[state=active]:text-accent-foreground">
               Criar & Gerenciar
             </TabsTrigger>
+            <TabsTrigger value="social" className="gap-2 data-[state=active]:bg-accent data-[state=active]:text-accent-foreground">
+              <Instagram className="h-4 w-4" />
+              Social Media
+            </TabsTrigger>
             <TabsTrigger value="analytics" className="gap-2 data-[state=active]:bg-accent data-[state=active]:text-accent-foreground">
               <BarChart3 className="h-4 w-4" />
               Analytics
@@ -93,6 +113,10 @@ export default function AdminArticles() {
               refreshTrigger={articleRefreshTrigger} 
               onEditArticle={handleEditArticle}
             />
+          </TabsContent>
+
+          <TabsContent value="social">
+            <SocialCaptionGenerator articles={publishedArticles} />
           </TabsContent>
 
           <TabsContent value="analytics">
