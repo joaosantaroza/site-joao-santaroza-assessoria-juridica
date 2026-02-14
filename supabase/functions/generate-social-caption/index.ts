@@ -117,16 +117,21 @@ serve(async (req) => {
     const systemPrompt = `Você é um especialista em marketing jurídico digital para Instagram, focado em conteúdo educativo e informativo para escritórios de advocacia no Brasil.
 
 ÉTICA JURÍDICA — CONFORMIDADE COM PROVIMENTO 205/2021 OAB:
-- Tom informativo e sóbrio, sem linguagem de vendas
-- NUNCA use: "ligue agora", "contrate", "consulta grátis", "melhor advogado", "causa ganha"
-- CTAs permitidos: "Salve este post", "Compartilhe com quem precisa", "Comente suas dúvidas", "Siga para mais conteúdo"
+De acordo com as normativas da OAB sobre publicidade jurídica digital (Provimento 205/2021), todo conteúdo deve seguir rigorosamente:
+- Tom informativo e sóbrio, sem linguagem de vendas ou captação de clientela
+- NUNCA use: "ligue agora", "contrate", "consulta grátis", "melhor advogado", "causa ganha", "garantimos resultado"
+- CTAs permitidos APENAS: "Salve este post", "Compartilhe com quem precisa", "Comente suas dúvidas", "Siga para mais conteúdo"
 - NUNCA mencione o nome do escritório, advogados ou marcas
+- O conteúdo deve ser meramente informativo e educativo, sem promessas de resultado
+- Não utilizar linguagem mercantilista ou comparativa com outros profissionais
 
-ESTILO:
+ESTILO OBRIGATÓRIO:
 - Linguagem simples e acessível (zero juridiquês)
-- Use emojis estrategicamente (não exagere)
-- Quebre o texto em linhas curtas para legibilidade no celular
-- Inclua hashtags relevantes no final`;
+- NUNCA use emojis, símbolos decorativos ou caracteres especiais (📌 ⚖️ ✅ 💡 👉 📲 ➡️ etc.)
+- NUNCA use asteriscos (*) para negrito ou ênfase
+- Texto limpo, fluido e natural, sem formatação especial
+- Quebre o texto em parágrafos curtos para legibilidade no celular
+- Inclua hashtags relevantes no final (sem emojis nas hashtags)`;
 
     let userPrompt: string;
 
@@ -151,6 +156,8 @@ REGRAS:
 - Último slide: CTA (salvar, compartilhar, seguir)
 - Cada slide deve ter texto curto (máx 50 palavras)
 - A legenda deve ter 150-300 palavras com hashtags
+- SEM emojis, asteriscos ou símbolos em nenhum lugar (slides e legenda)
+- Texto fluido e natural
 
 ARTIGO:
 Título: ${title}
@@ -169,7 +176,8 @@ FORMATO OBRIGATÓRIO (responda EXATAMENTE neste formato JSON):
 REGRAS:
 - A legenda deve ter entre 200-400 palavras
 - Comece com um gancho forte (pergunta, dado impactante ou frase curta)
-- Use emojis estrategicamente (📌 ⚖️ ✅ 💡 👉 📲)
+- SEM emojis, asteriscos ou símbolos decorativos em nenhum lugar
+- Texto limpo, fluido e natural
 - Quebre em parágrafos curtos (2-3 linhas)
 - Termine com CTA ("Salve este post!", "Compartilhe com quem precisa!")
 - Inclua 15-20 hashtags relevantes
