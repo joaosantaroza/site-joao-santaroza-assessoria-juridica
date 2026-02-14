@@ -93,7 +93,7 @@ serve(async (req) => {
       });
     }
 
-    const { title, excerpt, content, type = "caption" } = await req.json();
+    const { title, excerpt, content, type = "caption", rewriteTarget, currentHashtags } = await req.json();
 
     if (!title || !content) {
       return new Response(JSON.stringify({ error: "Título e conteúdo são obrigatórios." }), {
@@ -113,6 +113,7 @@ serve(async (req) => {
     }
 
     const isCarousel = type === "carousel";
+    const isRewrite = type === "rewrite";
 
     const systemPrompt = `Você é um especialista em marketing jurídico digital para Instagram, focado em conteúdo educativo e informativo para escritórios de advocacia no Brasil.
 
@@ -135,7 +136,35 @@ ESTILO OBRIGATÓRIO:
 
     let userPrompt: string;
 
-    if (isCarousel) {
+    if (isRewrite) {
+      userPrompt = `Reescreva a legenda abaixo para TOTAL CONFORMIDADE com o Provimento 205/2021 da OAB.
+
+FORMATO OBRIGATÓRIO (responda EXATAMENTE neste formato JSON):
+{
+  "legenda": "Texto reescrito da legenda",
+  "hashtags": ["#direito", "#advocacia", ...],
+  "gancho": "Primeira frase de gancho reescrita"
+}
+
+REVISÃO OBRIGATÓRIA:
+- Remova QUALQUER linguagem de vendas, captação de clientela ou autopromoção
+- Substitua CTAs comerciais por: "Salve este post", "Compartilhe com quem precisa", "Comente suas dúvidas"
+- Remova menções a escritórios, advogados ou marcas
+- Mantenha tom informativo e sóbrio
+- Remova promessas de resultado ("garantimos", "causa ganha", etc.)
+- Remova emojis, asteriscos e símbolos decorativos
+- Mantenha texto fluido, natural e em português claro
+- Mantenha o conteúdo informativo original, apenas ajuste o tom
+- Inclua 15-20 hashtags relevantes
+
+LEGENDA ATUAL:
+${truncatedContent}
+
+${currentHashtags?.length ? 'HASHTAGS ATUAIS: ' + currentHashtags.join(' ') : ''}
+
+ARTIGO DE REFERÊNCIA:
+Título: ${title}`;
+    } else if (isCarousel) {
       userPrompt = `Com base no artigo abaixo, crie um CARROSSEL para Instagram com 7-10 slides.
 
 FORMATO OBRIGATÓRIO (responda EXATAMENTE neste formato JSON):
