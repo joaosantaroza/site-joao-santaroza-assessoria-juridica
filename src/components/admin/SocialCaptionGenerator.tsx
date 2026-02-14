@@ -401,6 +401,24 @@ export function SocialCaptionGenerator({ articles }: SocialCaptionGeneratorProps
     }
   };
 
+  const handleDownloadImage = async (imageUrl: string, filename: string) => {
+    try {
+      const response = await fetch(imageUrl);
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      toast({ title: 'Imagem baixada!' });
+    } catch {
+      toast({ title: 'Erro ao baixar imagem', variant: 'destructive' });
+    }
+  };
+
   const buildCaptionExportText = () => {
     if (!captionResult || !selectedArticle) return '';
     return [
@@ -743,6 +761,18 @@ export function SocialCaptionGenerator({ articles }: SocialCaptionGeneratorProps
                   <p className="text-sm font-medium">Imagem personalizada</p>
                   <p className="text-xs text-muted-foreground">Clique ou arraste para substituir</p>
                 </div>
+                 <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 shrink-0"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleDownloadImage(customImageUrl, `capa-${selectedArticle?.slug || 'instagram'}.jpg`);
+                  }}
+                  title="Baixar imagem"
+                >
+                  <Download className="h-4 w-4" />
+                </Button>
                 <Button
                   variant="ghost"
                   size="icon"
@@ -1010,6 +1040,23 @@ export function SocialCaptionGenerator({ articles }: SocialCaptionGeneratorProps
                     )}
                   </Button>
 
+                  {/* Download all slide images */}
+                  {Object.keys(slideImages).length > 0 && (
+                    <Button
+                      variant="outline"
+                      className="w-full gap-2"
+                      onClick={() => {
+                        Object.entries(slideImages).forEach(([idx, url]) => {
+                          const slideNum = parseInt(idx) + 1;
+                          handleDownloadImage(url, `slide-${slideNum}-${selectedArticle?.slug || 'instagram'}.jpg`);
+                        });
+                      }}
+                    >
+                      <Download className="h-4 w-4" />
+                      Baixar Todas as Imagens ({Object.keys(slideImages).length})
+                    </Button>
+                  )}
+
                   {carouselResult.slides?.length > 0 && (
                     <div className="space-y-3">
                       <div className="flex items-center justify-between">
@@ -1122,6 +1169,20 @@ export function SocialCaptionGenerator({ articles }: SocialCaptionGeneratorProps
                                     <ArrowDown className="h-3 w-3" />
                                   </Button>
                                   <Pencil className={`h-3 w-3 ml-1 transition-colors ${isEditingThis ? 'text-primary' : 'text-muted-foreground/40'}`} />
+                                  {slideImages[i] && (
+                                    <Button
+                                      variant="ghost"
+                                      size="icon"
+                                      className="h-6 w-6 ml-0.5"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleDownloadImage(slideImages[i], `slide-${i + 1}-${selectedArticle?.slug || 'instagram'}.jpg`);
+                                      }}
+                                      title="Baixar imagem do slide"
+                                    >
+                                      <Download className="h-3 w-3" />
+                                    </Button>
+                                  )}
                                 </div>
                               </div>
 
