@@ -112,7 +112,7 @@ Deno.serve(async (req) => {
       );
     }
 
-    const { title, category, imageStyle = 'photographic', format = 'blog' } = await req.json();
+    const { title, category, imageStyle = 'photographic', format = 'blog', slideType } = await req.json();
 
     if (!title || typeof title !== 'string' || title.trim().length < 5) {
       return new Response(
@@ -158,13 +158,25 @@ Deno.serve(async (req) => {
 
     // Image prompt optimized for the chosen format
     const isSocial = format === 'social';
-    const formatInstruction = isSocial
-      ? 'Square 1:1 aspect ratio Instagram post image. Bold, eye-catching, designed for social media feed.'
-      : 'Wide 16:9 aspect ratio blog cover image.';
+    const isSlide = format === 'slide';
+    let formatInstruction: string;
+    let contextLabel: string;
 
-    const imagePrompt = `Professional, modern ${isSocial ? 'Instagram post' : 'blog header'} image for a Brazilian law firm article about: "${title}". 
+    if (isSlide) {
+      const slideLabel = slideType === 'capa' ? 'cover slide' : slideType === 'cta' ? 'call-to-action slide' : 'content slide';
+      formatInstruction = `Square 1:1 aspect ratio Instagram carousel ${slideLabel}. MANDATORY: Dark navy blue background (#041E42). Subtle bronze/gold (#B8945A) accent lines or geometric elements. Clean, minimal, professional design. The image is a background for text overlay — leave the center area relatively clean for readability.`;
+      contextLabel = `Instagram carousel ${slideLabel}`;
+    } else if (isSocial) {
+      formatInstruction = 'Square 1:1 aspect ratio Instagram post image. Bold, eye-catching, designed for social media feed.';
+      contextLabel = 'Instagram post';
+    } else {
+      formatInstruction = 'Wide 16:9 aspect ratio blog cover image.';
+      contextLabel = 'blog header';
+    }
+
+    const imagePrompt = `Professional, modern ${contextLabel} image for a Brazilian law firm article about: "${title}". 
 Art Style: ${selectedStyle}
-Design: Clean, professional, corporate design with subtle blue and gold accents. 
+Design: ${isSlide ? 'Dark navy blue (#041E42) background with bronze/gold (#B8945A) accents.' : 'Clean, professional, corporate design with subtle blue and gold accents.'} 
 Elements: ${categoryHint}. 
 Mood: Trustworthy, professional, accessible. 
 Format: ${formatInstruction} 
