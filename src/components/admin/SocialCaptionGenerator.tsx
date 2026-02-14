@@ -12,6 +12,7 @@ import { Input } from '@/components/ui/input';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { Loader2, Instagram, Copy, Check, Type, LayoutGrid, Sparkles, Eye, ChevronLeft, ChevronRight, Heart, MessageCircle, Send, Bookmark, Pencil, ImagePlus, X, CalendarIcon, Clock, Plus, Trash2, ArrowUp, ArrowDown, GripVertical, Download, Wand2, RefreshCw } from 'lucide-react';
@@ -800,25 +801,31 @@ export function SocialCaptionGenerator({ articles }: SocialCaptionGeneratorProps
           </div>
           <div className="grid grid-cols-3 gap-2 mt-2">
             {([
-              { style: 'abstract' as const, label: 'Abstrato' },
-              { style: 'photographic' as const, label: 'Fotográfico' },
-              { style: 'illustration' as const, label: 'Ilustração' },
-            ]).map(({ style, label }) => (
-              <Button
-                key={style}
-                variant="outline"
-                size="sm"
-                className="gap-1.5 text-xs"
-                disabled={isGeneratingImage || !selectedArticleId}
-                onClick={() => handleGenerateImage(style)}
-              >
-                {isGeneratingImage ? (
-                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                ) : (
-                  <Wand2 className="h-3.5 w-3.5" />
-                )}
-                {label}
-              </Button>
+              { style: 'abstract' as const, label: 'Abstrato', tooltip: 'Formas geométricas e gradientes com paleta corporativa' },
+              { style: 'photographic' as const, label: 'Fotográfico', tooltip: 'Imagem realista estilo foto profissional com tons sóbrios' },
+              { style: 'illustration' as const, label: 'Ilustração', tooltip: 'Desenho vetorial minimalista com paleta corporativa' },
+            ]).map(({ style, label, tooltip }) => (
+              <Tooltip key={style}>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="gap-1.5 text-xs"
+                    disabled={isGeneratingImage || !selectedArticleId}
+                    onClick={() => handleGenerateImage(style)}
+                  >
+                    {isGeneratingImage ? (
+                      <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                    ) : (
+                      <Wand2 className="h-3.5 w-3.5" />
+                    )}
+                    {label}
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="bottom" className="max-w-[200px] text-center">
+                  <p className="text-xs">{tooltip}</p>
+                </TooltipContent>
+              </Tooltip>
             ))}
           </div>
         </div>
@@ -1031,25 +1038,31 @@ export function SocialCaptionGenerator({ articles }: SocialCaptionGeneratorProps
                     <span className="text-xs font-medium text-muted-foreground">🎨 Gerar Imagens dos Slides</span>
                     <div className="grid grid-cols-3 gap-2">
                       {([
-                        { style: 'abstract' as const, label: 'Abstrato' },
-                        { style: 'photographic' as const, label: 'Fotográfico' },
-                        { style: 'illustration' as const, label: 'Ilustração' },
-                      ]).map(({ style, label }) => (
-                        <Button
-                          key={style}
-                          variant="outline"
-                          size="sm"
-                          className="gap-1.5 text-xs"
-                          disabled={isGeneratingSlideImages}
-                          onClick={() => handleGenerateSlideImages(style)}
-                        >
-                          {isGeneratingSlideImages ? (
-                            <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                          ) : (
-                            <Wand2 className="h-3.5 w-3.5" />
-                          )}
-                          {label}
-                        </Button>
+                        { style: 'abstract' as const, label: 'Abstrato', tooltip: 'Formas geométricas e gradientes com fundo navy e detalhes bronze' },
+                        { style: 'photographic' as const, label: 'Fotográfico', tooltip: 'Imagem realista estilo foto profissional com tons sóbrios' },
+                        { style: 'illustration' as const, label: 'Ilustração', tooltip: 'Desenho vetorial minimalista com paleta corporativa' },
+                      ]).map(({ style, label, tooltip }) => (
+                        <Tooltip key={style}>
+                          <TooltipTrigger asChild>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="gap-1.5 text-xs"
+                              disabled={isGeneratingSlideImages}
+                              onClick={() => handleGenerateSlideImages(style)}
+                            >
+                              {isGeneratingSlideImages ? (
+                                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                              ) : (
+                                <Wand2 className="h-3.5 w-3.5" />
+                              )}
+                              {label}
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent side="bottom" className="max-w-[200px] text-center">
+                            <p className="text-xs">{tooltip}</p>
+                          </TooltipContent>
+                        </Tooltip>
                       ))}
                     </div>
                   </div>
