@@ -134,7 +134,29 @@ export default function Admin() {
     setDeletingId(null);
   };
 
-  const handleExportCSV = () => {
+  const maskPII = (value: string, type: 'name' | 'phone' | 'email'): string => {
+    if (!value) return '';
+    switch (type) {
+      case 'name': {
+        const parts = value.trim().split(/\s+/);
+        return parts.map((p, i) => i === 0 ? p : p[0] + '***').join(' ');
+      }
+      case 'phone': {
+        const digits = value.replace(/\D/g, '');
+        if (digits.length <= 4) return '****';
+        return digits.slice(0, 2) + '*'.repeat(digits.length - 4) + digits.slice(-2);
+      }
+      case 'email': {
+        if (!value.includes('@')) return '***';
+        const [local, domain] = value.split('@');
+        return local[0] + '***@' + domain;
+      }
+      default:
+        return value;
+    }
+  };
+
+  const handleExportCSV = (masked = false) => {
     if (leads.length === 0) {
       toast({
         title: 'Nenhum dado',
@@ -144,26 +166,30 @@ export default function Admin() {
       return;
     }
 
-    const headers = ['Nome', 'Telefone', 'E-book', 'Data'];
+    const headers = masked
+      ? ['Nome (mascarado)', 'Telefone (mascarado)', 'E-book', 'Data']
+      : ['Nome', 'Telefone', 'E-book', 'Data'];
+
     const csvContent = [
       headers.join(','),
       ...leads.map(lead => [
-        `"${lead.name}"`,
-        `"${lead.phone}"`,
+        `"${masked ? maskPII(lead.name, 'name') : lead.name}"`,
+        `"${masked ? maskPII(lead.phone, 'phone') : lead.phone}"`,
         `"${lead.ebook_title}"`,
         `"${new Date(lead.created_at).toLocaleString('pt-BR')}"`
       ].join(','))
     ].join('\n');
 
+    const suffix = masked ? '-seguro' : '-completo';
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
-    link.download = `leads-ebooks-${new Date().toISOString().split('T')[0]}.csv`;
+    link.download = `leads-ebooks${suffix}-${new Date().toISOString().split('T')[0]}.csv`;
     link.click();
 
     toast({
-      title: 'Exportação concluída',
-      description: `${leads.length} leads exportados.`
+      title: masked ? 'Exportação segura concluída' : 'Exportação completa concluída',
+      description: `${leads.length} leads exportados${masked ? ' com PII mascarado' : ''}.`
     });
   };
 
@@ -354,9 +380,13 @@ export default function Admin() {
                       <RefreshCw className={`h-4 w-4 mr-2 ${isLoadingLeads ? 'animate-spin' : ''}`} />
                       Atualizar
                     </Button>
-                    <Button onClick={handleExportCSV} variant="outline" size="sm" disabled={leads.length === 0}>
+                    <Button onClick={() => handleExportCSV(true)} variant="outline" size="sm" disabled={leads.length === 0} title="Exporta com dados pessoais mascarados (seguro para compartilhar)">
                       <Download className="h-4 w-4 mr-2" />
-                      Exportar CSV
+                      Exportar Seguro
+                    </Button>
+                    <Button onClick={() => handleExportCSV(false)} variant="ghost" size="sm" disabled={leads.length === 0} title="Exporta com todos os dados pessoais visíveis">
+                      <Download className="h-4 w-4 mr-2" />
+                      Exportar Completo
                     </Button>
                   </div>
                 </div>
