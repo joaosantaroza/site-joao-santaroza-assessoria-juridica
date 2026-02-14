@@ -14,7 +14,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
-import { Loader2, Instagram, Copy, Check, Type, LayoutGrid, Sparkles, Eye, ChevronLeft, ChevronRight, Heart, MessageCircle, Send, Bookmark, Pencil, ImagePlus, X, CalendarIcon, Clock } from 'lucide-react';
+import { Loader2, Instagram, Copy, Check, Type, LayoutGrid, Sparkles, Eye, ChevronLeft, ChevronRight, Heart, MessageCircle, Send, Bookmark, Pencil, ImagePlus, X, CalendarIcon, Clock, Plus, Trash2, ArrowUp, ArrowDown, GripVertical } from 'lucide-react';
 
 interface SocialCaptionGeneratorProps {
   articles: { id: string; title: string; excerpt: string; content: string; slug: string; image_url?: string | null }[];
@@ -41,6 +41,7 @@ export function SocialCaptionGenerator({ articles }: SocialCaptionGeneratorProps
   const [showPreview, setShowPreview] = useState(false);
   const [previewSlideIndex, setPreviewSlideIndex] = useState(0);
   const [isEditing, setIsEditing] = useState(false);
+  const [editingSlideIndex, setEditingSlideIndex] = useState<number | null>(null);
   const [customImageUrl, setCustomImageUrl] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [scheduleDate, setScheduleDate] = useState<Date | undefined>(undefined);
@@ -699,55 +700,85 @@ export function SocialCaptionGenerator({ articles }: SocialCaptionGeneratorProps
 
               {carouselResult && (
                 <div className="space-y-4 animate-in fade-in-0 slide-in-from-bottom-4">
-                  {/* Preview + Edit toggle (mobile) */}
-                  <div className="flex gap-2 lg:hidden">
-                    <Button
-                      variant="outline"
-                      className="flex-1 gap-2"
-                      onClick={() => { setPreviewSlideIndex(0); setShowPreview(true); }}
-                    >
-                      <Eye className="h-4 w-4" />
-                      Preview
-                    </Button>
-                    <Button
-                      variant={isEditing ? "default" : "outline"}
-                      className="gap-2"
-                      onClick={() => setIsEditing(!isEditing)}
-                    >
-                      <Pencil className="h-4 w-4" />
-                      {isEditing ? 'Salvar' : 'Editar'}
-                    </Button>
-                  </div>
-
-                  {/* Desktop edit toggle */}
+                  {/* Preview button (mobile only) */}
                   <Button
-                    variant={isEditing ? "default" : "outline"}
-                    size="sm"
-                    className="gap-2 hidden lg:inline-flex"
-                    onClick={() => setIsEditing(!isEditing)}
+                    variant="outline"
+                    className="w-full gap-2 lg:hidden"
+                    onClick={() => { setPreviewSlideIndex(0); setShowPreview(true); }}
                   >
-                    <Pencil className="h-3.5 w-3.5" />
-                    {isEditing ? 'Concluir edição' : 'Editar slides'}
+                    <Eye className="h-4 w-4" />
+                    Preview no Instagram
                   </Button>
 
                   {carouselResult.slides?.length > 0 && (
                     <div className="space-y-3">
-                      <span className="text-xs font-medium text-muted-foreground">📱 Slides do Carrossel</span>
-                      <div className="grid gap-3">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-medium text-muted-foreground">📱 Slides do Carrossel ({carouselResult.slides.length})</span>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="h-7 text-xs gap-1"
+                          onClick={() => {
+                            const newSlide = {
+                              slide: carouselResult.slides.length + 1,
+                              type: 'conteudo',
+                              titulo: 'Novo slide',
+                              texto: 'Texto do slide',
+                            };
+                            setCarouselResult({
+                              ...carouselResult,
+                              slides: [...carouselResult.slides, newSlide],
+                            });
+                            const newIndex = carouselResult.slides.length;
+                            setEditingSlideIndex(newIndex);
+                            setPreviewSlideIndex(newIndex);
+                          }}
+                        >
+                          <Plus className="h-3 w-3" />
+                          Slide
+                        </Button>
+                      </div>
+                      <div className="grid gap-2">
                         {carouselResult.slides.map((slide, i) => {
+                          const isEditingThis = editingSlideIndex === i;
+                          const isSelected = i === previewSlideIndex;
+
                           const updateSlide = (field: string, value: string) => {
                             const newSlides = [...carouselResult.slides];
                             newSlides[i] = { ...newSlides[i], [field]: value };
                             setCarouselResult({ ...carouselResult, slides: newSlides });
                           };
 
+                          const moveSlide = (dir: -1 | 1) => {
+                            const newSlides = [...carouselResult.slides];
+                            const target = i + dir;
+                            if (target < 0 || target >= newSlides.length) return;
+                            [newSlides[i], newSlides[target]] = [newSlides[target], newSlides[i]];
+                            // Renumber
+                            newSlides.forEach((s, idx) => { s.slide = idx + 1; });
+                            setCarouselResult({ ...carouselResult, slides: newSlides });
+                            setPreviewSlideIndex(target);
+                            setEditingSlideIndex(isEditingThis ? target : editingSlideIndex);
+                          };
+
+                          const removeSlide = () => {
+                            if (carouselResult.slides.length <= 2) {
+                              toast({ title: 'Mínimo de 2 slides', variant: 'destructive' });
+                              return;
+                            }
+                            const newSlides = carouselResult.slides.filter((_, idx) => idx !== i);
+                            newSlides.forEach((s, idx) => { s.slide = idx + 1; });
+                            setCarouselResult({ ...carouselResult, slides: newSlides });
+                            setEditingSlideIndex(null);
+                            setPreviewSlideIndex(Math.min(previewSlideIndex, newSlides.length - 1));
+                          };
+
                           return (
                             <div
                               key={i}
-                              onClick={() => setPreviewSlideIndex(i)}
-                              className={`p-4 rounded-lg border cursor-pointer transition-all ${
-                                i === previewSlideIndex ? 'ring-2 ring-primary/50 ' : ''
-                              }${
+                              className={`rounded-lg border transition-all ${
+                                isSelected ? 'ring-2 ring-primary/50' : ''
+                              } ${
                                 slide.type === 'capa'
                                   ? 'bg-primary/5 border-primary/20'
                                   : slide.type === 'cta'
@@ -755,47 +786,99 @@ export function SocialCaptionGenerator({ articles }: SocialCaptionGeneratorProps
                                   : 'bg-muted/50 border-border'
                               }`}
                             >
-                              <div className="flex items-center justify-between mb-2">
-                                <div className="flex items-center gap-2">
-                                  <span className="text-xs font-bold bg-primary/10 text-primary px-2 py-0.5 rounded-full">
-                                    {slide.slide}
-                                  </span>
-                                  <span className="text-xs uppercase tracking-wider text-muted-foreground">
-                                    {slide.type === 'capa' ? '🎯 Capa' : slide.type === 'cta' ? '📲 CTA' : '📄 Conteúdo'}
-                                  </span>
+                              {/* Slide header — always visible, click to select & toggle edit */}
+                              <div
+                                className="flex items-center gap-2 px-3 py-2 cursor-pointer"
+                                onClick={() => {
+                                  setPreviewSlideIndex(i);
+                                  setEditingSlideIndex(isEditingThis ? null : i);
+                                }}
+                              >
+                                <GripVertical className="h-3.5 w-3.5 text-muted-foreground/40 shrink-0" />
+                                <span className="text-xs font-bold bg-primary/10 text-primary px-2 py-0.5 rounded-full shrink-0">
+                                  {slide.slide}
+                                </span>
+                                <span className="text-xs uppercase tracking-wider text-muted-foreground shrink-0">
+                                  {slide.type === 'capa' ? '🎯' : slide.type === 'cta' ? '📲' : '📄'}
+                                </span>
+                                <span className="text-sm font-medium truncate flex-1">{slide.titulo}</span>
+                                <div className="flex items-center gap-0.5 shrink-0">
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-6 w-6"
+                                    onClick={(e) => { e.stopPropagation(); moveSlide(-1); }}
+                                    disabled={i === 0}
+                                  >
+                                    <ArrowUp className="h-3 w-3" />
+                                  </Button>
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-6 w-6"
+                                    onClick={(e) => { e.stopPropagation(); moveSlide(1); }}
+                                    disabled={i === carouselResult.slides.length - 1}
+                                  >
+                                    <ArrowDown className="h-3 w-3" />
+                                  </Button>
+                                  <Pencil className={`h-3 w-3 ml-1 transition-colors ${isEditingThis ? 'text-primary' : 'text-muted-foreground/40'}`} />
                                 </div>
-                                <CopyButton
-                                  text={`${slide.titulo}\n${slide.subtitulo || slide.texto || ''}`}
-                                  field={`slide-${i}`}
-                                />
                               </div>
-                              {isEditing ? (
-                                <div className="space-y-2" onClick={(e) => e.stopPropagation()}>
+
+                              {/* Inline edit panel — expands when this slide is being edited */}
+                              {isEditingThis && (
+                                <div className="px-3 pb-3 space-y-2 animate-in slide-in-from-top-2 fade-in-0 duration-200" onClick={(e) => e.stopPropagation()}>
+                                  <div className="flex gap-2">
+                                    <Select
+                                      value={slide.type}
+                                      onValueChange={(val) => updateSlide('type', val)}
+                                    >
+                                      <SelectTrigger className="w-[130px] h-8 text-xs">
+                                        <SelectValue />
+                                      </SelectTrigger>
+                                      <SelectContent>
+                                        <SelectItem value="capa">🎯 Capa</SelectItem>
+                                        <SelectItem value="conteudo">📄 Conteúdo</SelectItem>
+                                        <SelectItem value="cta">📲 CTA</SelectItem>
+                                      </SelectContent>
+                                    </Select>
+                                    <div className="flex-1" />
+                                    <CopyButton
+                                      text={`${slide.titulo}\n${slide.subtitulo || slide.texto || ''}`}
+                                      field={`slide-${i}`}
+                                    />
+                                    <Button
+                                      variant="ghost"
+                                      size="icon"
+                                      className="h-8 w-8 text-destructive/60 hover:text-destructive"
+                                      onClick={removeSlide}
+                                    >
+                                      <Trash2 className="h-3.5 w-3.5" />
+                                    </Button>
+                                  </div>
                                   <Input
                                     value={slide.titulo}
                                     onChange={(e) => updateSlide('titulo', e.target.value)}
                                     className="text-sm font-semibold"
                                     placeholder="Título do slide"
+                                    autoFocus
                                   />
-                                  {(slide.subtitulo !== undefined || slide.texto !== undefined) && (
-                                    <Textarea
-                                      value={slide.subtitulo || slide.texto || ''}
-                                      onChange={(e) => updateSlide(slide.subtitulo !== undefined ? 'subtitulo' : 'texto', e.target.value)}
-                                      className="text-sm min-h-[60px]"
-                                      placeholder="Texto do slide"
-                                    />
-                                  )}
+                                  <Textarea
+                                    value={slide.subtitulo || slide.texto || ''}
+                                    onChange={(e) => updateSlide(slide.subtitulo !== undefined ? 'subtitulo' : 'texto', e.target.value)}
+                                    className="text-sm min-h-[60px]"
+                                    placeholder="Texto do slide"
+                                  />
                                 </div>
-                              ) : (
-                                <>
-                                  <h4 className="font-semibold text-sm mb-1">{slide.titulo}</h4>
-                                  {slide.subtitulo && (
-                                    <p className="text-sm text-muted-foreground">{slide.subtitulo}</p>
-                                  )}
-                                  {slide.texto && (
-                                    <p className="text-sm text-muted-foreground">{slide.texto}</p>
-                                  )}
-                                </>
+                              )}
+
+                              {/* Collapsed view — show text preview when not editing */}
+                              {!isEditingThis && (slide.subtitulo || slide.texto) && (
+                                <div className="px-3 pb-2">
+                                  <p className="text-xs text-muted-foreground line-clamp-2">
+                                    {slide.subtitulo || slide.texto}
+                                  </p>
+                                </div>
                               )}
                             </div>
                           );
