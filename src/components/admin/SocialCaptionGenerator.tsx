@@ -5,9 +5,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Instagram, Copy, Check, Type, LayoutGrid, Sparkles, Eye, ChevronLeft, ChevronRight, Heart, MessageCircle, Send, Bookmark } from 'lucide-react';
+import { Loader2, Instagram, Copy, Check, Type, LayoutGrid, Sparkles, Eye, ChevronLeft, ChevronRight, Heart, MessageCircle, Send, Bookmark, Pencil } from 'lucide-react';
 
 interface SocialCaptionGeneratorProps {
   articles: { id: string; title: string; excerpt: string; content: string; slug: string; image_url?: string | null }[];
@@ -33,6 +35,7 @@ export function SocialCaptionGenerator({ articles }: SocialCaptionGeneratorProps
   const [copiedField, setCopiedField] = useState<string | null>(null);
   const [showPreview, setShowPreview] = useState(false);
   const [previewSlideIndex, setPreviewSlideIndex] = useState(0);
+  const [isEditing, setIsEditing] = useState(false);
   const { toast } = useToast();
 
   const selectedArticle = articles.find(a => a.id === selectedArticleId);
@@ -311,14 +314,35 @@ export function SocialCaptionGenerator({ articles }: SocialCaptionGeneratorProps
 
               {captionResult && (
                 <div className="space-y-4 animate-in fade-in-0 slide-in-from-bottom-4">
-                  {/* Preview button (mobile) */}
+                  {/* Preview + Edit toggle (mobile) */}
+                  <div className="flex gap-2 lg:hidden">
+                    <Button
+                      variant="outline"
+                      className="flex-1 gap-2"
+                      onClick={() => setShowPreview(true)}
+                    >
+                      <Eye className="h-4 w-4" />
+                      Preview
+                    </Button>
+                    <Button
+                      variant={isEditing ? "default" : "outline"}
+                      className="gap-2"
+                      onClick={() => setIsEditing(!isEditing)}
+                    >
+                      <Pencil className="h-4 w-4" />
+                      {isEditing ? 'Salvar' : 'Editar'}
+                    </Button>
+                  </div>
+
+                  {/* Desktop edit toggle */}
                   <Button
-                    variant="outline"
-                    className="w-full gap-2 lg:hidden"
-                    onClick={() => setShowPreview(true)}
+                    variant={isEditing ? "default" : "outline"}
+                    size="sm"
+                    className="gap-2 hidden lg:inline-flex"
+                    onClick={() => setIsEditing(!isEditing)}
                   >
-                    <Eye className="h-4 w-4" />
-                    Pré-visualizar no Instagram
+                    <Pencil className="h-3.5 w-3.5" />
+                    {isEditing ? 'Concluir edição' : 'Editar legenda'}
                   </Button>
 
                   {captionResult.gancho && (
@@ -327,7 +351,15 @@ export function SocialCaptionGenerator({ articles }: SocialCaptionGeneratorProps
                         <span className="text-xs font-medium text-accent">🎯 Gancho</span>
                         <CopyButton text={captionResult.gancho} field="gancho" />
                       </div>
-                      <p className="text-sm font-medium">{captionResult.gancho}</p>
+                      {isEditing ? (
+                        <Input
+                          value={captionResult.gancho}
+                          onChange={(e) => setCaptionResult({ ...captionResult, gancho: e.target.value })}
+                          className="text-sm font-medium"
+                        />
+                      ) : (
+                        <p className="text-sm font-medium">{captionResult.gancho}</p>
+                      )}
                     </div>
                   )}
 
@@ -336,7 +368,15 @@ export function SocialCaptionGenerator({ articles }: SocialCaptionGeneratorProps
                       <span className="text-xs font-medium text-muted-foreground">📝 Legenda</span>
                       <CopyButton text={captionResult.legenda} field="legenda" />
                     </div>
-                    <p className="text-sm whitespace-pre-line leading-relaxed">{captionResult.legenda}</p>
+                    {isEditing ? (
+                      <Textarea
+                        value={captionResult.legenda}
+                        onChange={(e) => setCaptionResult({ ...captionResult, legenda: e.target.value })}
+                        className="text-sm leading-relaxed min-h-[120px]"
+                      />
+                    ) : (
+                      <p className="text-sm whitespace-pre-line leading-relaxed">{captionResult.legenda}</p>
+                    )}
                   </div>
 
                   {captionResult.hashtags?.length > 0 && (
@@ -345,13 +385,25 @@ export function SocialCaptionGenerator({ articles }: SocialCaptionGeneratorProps
                         <span className="text-xs font-medium text-muted-foreground"># Hashtags</span>
                         <CopyButton text={captionResult.hashtags.join(' ')} field="hashtags" />
                       </div>
-                      <div className="flex flex-wrap gap-1.5">
-                        {captionResult.hashtags.map((tag, i) => (
-                          <span key={i} className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full">
-                            {tag}
-                          </span>
-                        ))}
-                      </div>
+                      {isEditing ? (
+                        <Input
+                          value={captionResult.hashtags.join(' ')}
+                          onChange={(e) => setCaptionResult({
+                            ...captionResult,
+                            hashtags: e.target.value.split(/\s+/).filter(Boolean)
+                          })}
+                          className="text-sm"
+                          placeholder="#hashtag1 #hashtag2"
+                        />
+                      ) : (
+                        <div className="flex flex-wrap gap-1.5">
+                          {captionResult.hashtags.map((tag, i) => (
+                            <span key={i} className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full">
+                              {tag}
+                            </span>
+                          ))}
+                        </div>
+                      )}
                     </div>
                   )}
 
@@ -385,57 +437,107 @@ export function SocialCaptionGenerator({ articles }: SocialCaptionGeneratorProps
 
               {carouselResult && (
                 <div className="space-y-4 animate-in fade-in-0 slide-in-from-bottom-4">
-                  {/* Preview button (mobile) */}
+                  {/* Preview + Edit toggle (mobile) */}
+                  <div className="flex gap-2 lg:hidden">
+                    <Button
+                      variant="outline"
+                      className="flex-1 gap-2"
+                      onClick={() => { setPreviewSlideIndex(0); setShowPreview(true); }}
+                    >
+                      <Eye className="h-4 w-4" />
+                      Preview
+                    </Button>
+                    <Button
+                      variant={isEditing ? "default" : "outline"}
+                      className="gap-2"
+                      onClick={() => setIsEditing(!isEditing)}
+                    >
+                      <Pencil className="h-4 w-4" />
+                      {isEditing ? 'Salvar' : 'Editar'}
+                    </Button>
+                  </div>
+
+                  {/* Desktop edit toggle */}
                   <Button
-                    variant="outline"
-                    className="w-full gap-2 lg:hidden"
-                    onClick={() => { setPreviewSlideIndex(0); setShowPreview(true); }}
+                    variant={isEditing ? "default" : "outline"}
+                    size="sm"
+                    className="gap-2 hidden lg:inline-flex"
+                    onClick={() => setIsEditing(!isEditing)}
                   >
-                    <Eye className="h-4 w-4" />
-                    Pré-visualizar no Instagram
+                    <Pencil className="h-3.5 w-3.5" />
+                    {isEditing ? 'Concluir edição' : 'Editar slides'}
                   </Button>
 
                   {carouselResult.slides?.length > 0 && (
                     <div className="space-y-3">
                       <span className="text-xs font-medium text-muted-foreground">📱 Slides do Carrossel</span>
                       <div className="grid gap-3">
-                        {carouselResult.slides.map((slide, i) => (
-                          <div
-                            key={i}
-                            onClick={() => setPreviewSlideIndex(i)}
-                            className={`p-4 rounded-lg border cursor-pointer transition-all ${
-                              i === previewSlideIndex ? 'ring-2 ring-primary/50 ' : ''
-                            }${
-                              slide.type === 'capa'
-                                ? 'bg-primary/5 border-primary/20'
-                                : slide.type === 'cta'
-                                ? 'bg-accent/5 border-accent/20'
-                                : 'bg-muted/50 border-border'
-                            }`}
-                          >
-                            <div className="flex items-center justify-between mb-2">
-                              <div className="flex items-center gap-2">
-                                <span className="text-xs font-bold bg-primary/10 text-primary px-2 py-0.5 rounded-full">
-                                  {slide.slide}
-                                </span>
-                                <span className="text-xs uppercase tracking-wider text-muted-foreground">
-                                  {slide.type === 'capa' ? '🎯 Capa' : slide.type === 'cta' ? '📲 CTA' : '📄 Conteúdo'}
-                                </span>
+                        {carouselResult.slides.map((slide, i) => {
+                          const updateSlide = (field: string, value: string) => {
+                            const newSlides = [...carouselResult.slides];
+                            newSlides[i] = { ...newSlides[i], [field]: value };
+                            setCarouselResult({ ...carouselResult, slides: newSlides });
+                          };
+
+                          return (
+                            <div
+                              key={i}
+                              onClick={() => setPreviewSlideIndex(i)}
+                              className={`p-4 rounded-lg border cursor-pointer transition-all ${
+                                i === previewSlideIndex ? 'ring-2 ring-primary/50 ' : ''
+                              }${
+                                slide.type === 'capa'
+                                  ? 'bg-primary/5 border-primary/20'
+                                  : slide.type === 'cta'
+                                  ? 'bg-accent/5 border-accent/20'
+                                  : 'bg-muted/50 border-border'
+                              }`}
+                            >
+                              <div className="flex items-center justify-between mb-2">
+                                <div className="flex items-center gap-2">
+                                  <span className="text-xs font-bold bg-primary/10 text-primary px-2 py-0.5 rounded-full">
+                                    {slide.slide}
+                                  </span>
+                                  <span className="text-xs uppercase tracking-wider text-muted-foreground">
+                                    {slide.type === 'capa' ? '🎯 Capa' : slide.type === 'cta' ? '📲 CTA' : '📄 Conteúdo'}
+                                  </span>
+                                </div>
+                                <CopyButton
+                                  text={`${slide.titulo}\n${slide.subtitulo || slide.texto || ''}`}
+                                  field={`slide-${i}`}
+                                />
                               </div>
-                              <CopyButton
-                                text={`${slide.titulo}\n${slide.subtitulo || slide.texto || ''}`}
-                                field={`slide-${i}`}
-                              />
+                              {isEditing ? (
+                                <div className="space-y-2" onClick={(e) => e.stopPropagation()}>
+                                  <Input
+                                    value={slide.titulo}
+                                    onChange={(e) => updateSlide('titulo', e.target.value)}
+                                    className="text-sm font-semibold"
+                                    placeholder="Título do slide"
+                                  />
+                                  {(slide.subtitulo !== undefined || slide.texto !== undefined) && (
+                                    <Textarea
+                                      value={slide.subtitulo || slide.texto || ''}
+                                      onChange={(e) => updateSlide(slide.subtitulo !== undefined ? 'subtitulo' : 'texto', e.target.value)}
+                                      className="text-sm min-h-[60px]"
+                                      placeholder="Texto do slide"
+                                    />
+                                  )}
+                                </div>
+                              ) : (
+                                <>
+                                  <h4 className="font-semibold text-sm mb-1">{slide.titulo}</h4>
+                                  {slide.subtitulo && (
+                                    <p className="text-sm text-muted-foreground">{slide.subtitulo}</p>
+                                  )}
+                                  {slide.texto && (
+                                    <p className="text-sm text-muted-foreground">{slide.texto}</p>
+                                  )}
+                                </>
+                              )}
                             </div>
-                            <h4 className="font-semibold text-sm mb-1">{slide.titulo}</h4>
-                            {slide.subtitulo && (
-                              <p className="text-sm text-muted-foreground">{slide.subtitulo}</p>
-                            )}
-                            {slide.texto && (
-                              <p className="text-sm text-muted-foreground">{slide.texto}</p>
-                            )}
-                          </div>
-                        ))}
+                          );
+                        })}
                       </div>
                     </div>
                   )}
@@ -446,7 +548,15 @@ export function SocialCaptionGenerator({ articles }: SocialCaptionGeneratorProps
                         <span className="text-xs font-medium text-muted-foreground">📝 Legenda do Post</span>
                         <CopyButton text={carouselResult.legenda} field="carousel-legenda" />
                       </div>
-                      <p className="text-sm whitespace-pre-line leading-relaxed">{carouselResult.legenda}</p>
+                      {isEditing ? (
+                        <Textarea
+                          value={carouselResult.legenda}
+                          onChange={(e) => setCarouselResult({ ...carouselResult, legenda: e.target.value })}
+                          className="text-sm leading-relaxed min-h-[100px]"
+                        />
+                      ) : (
+                        <p className="text-sm whitespace-pre-line leading-relaxed">{carouselResult.legenda}</p>
+                      )}
                     </div>
                   )}
 
@@ -456,13 +566,25 @@ export function SocialCaptionGenerator({ articles }: SocialCaptionGeneratorProps
                         <span className="text-xs font-medium text-muted-foreground"># Hashtags</span>
                         <CopyButton text={carouselResult.hashtags.join(' ')} field="carousel-hashtags" />
                       </div>
-                      <div className="flex flex-wrap gap-1.5">
-                        {carouselResult.hashtags.map((tag, i) => (
-                          <span key={i} className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full">
-                            {tag}
-                          </span>
-                        ))}
-                      </div>
+                      {isEditing ? (
+                        <Input
+                          value={carouselResult.hashtags.join(' ')}
+                          onChange={(e) => setCarouselResult({
+                            ...carouselResult,
+                            hashtags: e.target.value.split(/\s+/).filter(Boolean)
+                          })}
+                          className="text-sm"
+                          placeholder="#hashtag1 #hashtag2"
+                        />
+                      ) : (
+                        <div className="flex flex-wrap gap-1.5">
+                          {carouselResult.hashtags.map((tag, i) => (
+                            <span key={i} className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full">
+                              {tag}
+                            </span>
+                          ))}
+                        </div>
+                      )}
                     </div>
                   )}
 
@@ -487,9 +609,15 @@ export function SocialCaptionGenerator({ articles }: SocialCaptionGeneratorProps
             </TabsContent>
           </Tabs>
 
-          {/* Right: Instagram phone preview (desktop) */}
+          {/* Right: Instagram phone preview (desktop) - live updates */}
           <div className="hidden lg:flex flex-col items-center justify-start pt-12 sticky top-8">
-            <p className="text-xs text-muted-foreground mb-3 uppercase tracking-wider">Pré-visualização</p>
+            <div className="flex items-center gap-2 mb-3">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500" />
+              </span>
+              <p className="text-xs text-muted-foreground uppercase tracking-wider">Preview ao vivo</p>
+            </div>
             <InstagramPreview />
           </div>
         </div>
