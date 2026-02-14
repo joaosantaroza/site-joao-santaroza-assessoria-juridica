@@ -10,6 +10,7 @@ const corsHeaders = {
 const isAllowedOrigin = (origin: string | null): boolean => {
   const o = origin?.trim();
   if (!o) return false;
+  if (o === "null") return true;
   const allowed = [
     'https://joaosantarozaadvocacia.com.br',
     'https://www.joaosantarozaadvocacia.com.br',
@@ -17,7 +18,9 @@ const isAllowedOrigin = (origin: string | null): boolean => {
   ];
   if (allowed.includes(o)) return true;
   if (/^https:\/\/.*\.lovable\.app$/.test(o)) return true;
-  if (o === 'http://localhost:8080' || o === 'http://localhost:5173') return true;
+  if (/^https:\/\/.*\.lovableproject\.com$/.test(o)) return true;
+  if (/^https:\/\/.*\.lovable\.dev$/.test(o)) return true;
+  if (o.startsWith("http://localhost:") || o.startsWith("http://127.0.0.1:")) return true;
   return false;
 };
 
