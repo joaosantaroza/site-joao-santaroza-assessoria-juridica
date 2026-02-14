@@ -14,7 +14,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
-import { Loader2, Instagram, Copy, Check, Type, LayoutGrid, Sparkles, Eye, ChevronLeft, ChevronRight, Heart, MessageCircle, Send, Bookmark, Pencil, ImagePlus, X, CalendarIcon, Clock, Plus, Trash2, ArrowUp, ArrowDown, GripVertical } from 'lucide-react';
+import { Loader2, Instagram, Copy, Check, Type, LayoutGrid, Sparkles, Eye, ChevronLeft, ChevronRight, Heart, MessageCircle, Send, Bookmark, Pencil, ImagePlus, X, CalendarIcon, Clock, Plus, Trash2, ArrowUp, ArrowDown, GripVertical, Download } from 'lucide-react';
 
 interface SocialCaptionGeneratorProps {
   articles: { id: string; title: string; excerpt: string; content: string; slug: string; image_url?: string | null }[];
@@ -205,8 +205,52 @@ export function SocialCaptionGenerator({ articles }: SocialCaptionGeneratorProps
   const handleCopy = async (text: string, field: string) => {
     await navigator.clipboard.writeText(text);
     setCopiedField(field);
-    toast({ title: 'Copiado! 📋' });
+    toast({ title: 'Copiado!' });
     setTimeout(() => setCopiedField(null), 2000);
+  };
+
+  const handleExport = (text: string, filename: string) => {
+    const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    toast({ title: 'Arquivo exportado!' });
+  };
+
+  const buildCaptionExportText = () => {
+    if (!captionResult || !selectedArticle) return '';
+    return [
+      `LEGENDA INSTAGRAM — ${selectedArticle.title}`,
+      '',
+      captionResult.gancho ? `GANCHO: ${captionResult.gancho}` : '',
+      captionResult.gancho ? '' : '',
+      captionResult.legenda,
+      '',
+      captionResult.hashtags?.join(' ') || '',
+    ].filter((line, i, arr) => !(line === '' && arr[i - 1] === '')).join('\n').trim();
+  };
+
+  const buildCarouselExportText = () => {
+    if (!carouselResult || !selectedArticle) return '';
+    const slides = carouselResult.slides
+      ?.map(s => `[Slide ${s.slide} — ${s.type.toUpperCase()}]\n${s.titulo}\n${s.subtitulo || s.texto || ''}`)
+      .join('\n\n');
+    return [
+      `CARROSSEL INSTAGRAM — ${selectedArticle.title}`,
+      '',
+      slides,
+      '',
+      '---',
+      'LEGENDA:',
+      carouselResult.legenda,
+      '',
+      carouselResult.hashtags?.join(' ') || '',
+    ].join('\n').trim();
   };
 
   const CopyButton = ({ text, field }: { text: string; field: string }) => (
@@ -680,6 +724,18 @@ export function SocialCaptionGenerator({ articles }: SocialCaptionGeneratorProps
                     Copiar Tudo
                   </Button>
 
+                  <Button
+                    variant="outline"
+                    className="w-full gap-2"
+                    onClick={() => handleExport(
+                      buildCaptionExportText(),
+                      `legenda-${selectedArticle?.slug || 'instagram'}.txt`
+                    )}
+                  >
+                    <Download className="h-4 w-4" />
+                    Exportar Legenda (.txt)
+                  </Button>
+
                   <ScheduleSection type="caption" />
                 </div>
               )}
@@ -948,6 +1004,18 @@ export function SocialCaptionGenerator({ articles }: SocialCaptionGeneratorProps
                   >
                     {copiedField === 'all-carousel' ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
                     Copiar Tudo
+                  </Button>
+
+                  <Button
+                    variant="outline"
+                    className="w-full gap-2"
+                    onClick={() => handleExport(
+                      buildCarouselExportText(),
+                      `carrossel-${selectedArticle?.slug || 'instagram'}.txt`
+                    )}
+                  >
+                    <Download className="h-4 w-4" />
+                    Exportar Carrossel (.txt)
                   </Button>
 
                   <ScheduleSection type="carousel" />
