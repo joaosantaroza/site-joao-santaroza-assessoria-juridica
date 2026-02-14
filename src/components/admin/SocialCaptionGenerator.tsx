@@ -46,6 +46,7 @@ export function SocialCaptionGenerator({ articles }: SocialCaptionGeneratorProps
   const [scheduleDate, setScheduleDate] = useState<Date | undefined>(undefined);
   const [scheduleTime, setScheduleTime] = useState('10:00');
   const [isSaving, setIsSaving] = useState(false);
+  const [showDesktopPreview, setShowDesktopPreview] = useState(true);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
@@ -530,8 +531,21 @@ export function SocialCaptionGenerator({ articles }: SocialCaptionGeneratorProps
           </div>
         </div>
 
+        {/* Preview toggle (desktop) */}
+        <div className="hidden lg:flex justify-end">
+          <Button
+            variant="outline"
+            size="sm"
+            className="gap-2 text-xs"
+            onClick={() => setShowDesktopPreview(!showDesktopPreview)}
+          >
+            <Eye className="h-3.5 w-3.5" />
+            {showDesktopPreview ? 'Ocultar preview' : 'Mostrar preview'}
+          </Button>
+        </div>
+
         {/* Main layout: Controls + Preview side by side on desktop */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className={`grid grid-cols-1 ${showDesktopPreview ? 'lg:grid-cols-2' : ''} gap-6`}>
           {/* Left: Generation controls & results */}
           <Tabs defaultValue="caption" className="space-y-4">
             <TabsList className="bg-muted/50 border border-border w-full">
@@ -859,17 +873,19 @@ export function SocialCaptionGenerator({ articles }: SocialCaptionGeneratorProps
             </TabsContent>
           </Tabs>
 
-          {/* Right: Instagram phone preview (desktop) - live updates */}
-          <div className="hidden lg:flex flex-col items-center justify-start pt-12 sticky top-8">
-            <div className="flex items-center gap-2 mb-3">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500" />
-              </span>
-              <p className="text-xs text-muted-foreground uppercase tracking-wider">Preview ao vivo</p>
+          {/* Right: Instagram phone preview (desktop) - toggle */}
+          {showDesktopPreview && (
+            <div className="hidden lg:flex flex-col items-center justify-start pt-12 sticky top-8 animate-in slide-in-from-right-4 fade-in-0">
+              <div className="flex items-center gap-2 mb-3">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500" />
+                </span>
+                <p className="text-xs text-muted-foreground uppercase tracking-wider">Preview ao vivo</p>
+              </div>
+              <InstagramPreview />
             </div>
-            <InstagramPreview />
-          </div>
+          )}
         </div>
       </CardContent>
 
