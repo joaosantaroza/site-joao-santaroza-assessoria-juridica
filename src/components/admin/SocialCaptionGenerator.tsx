@@ -14,7 +14,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
-import { Loader2, Instagram, Copy, Check, Type, LayoutGrid, Sparkles, Eye, ChevronLeft, ChevronRight, Heart, MessageCircle, Send, Bookmark, Pencil, ImagePlus, X, CalendarIcon, Clock, Plus, Trash2, ArrowUp, ArrowDown, GripVertical, Download } from 'lucide-react';
+import { Loader2, Instagram, Copy, Check, Type, LayoutGrid, Sparkles, Eye, ChevronLeft, ChevronRight, Heart, MessageCircle, Send, Bookmark, Pencil, ImagePlus, X, CalendarIcon, Clock, Plus, Trash2, ArrowUp, ArrowDown, GripVertical, Download, Wand2 } from 'lucide-react';
 
 interface SocialCaptionGeneratorProps {
   articles: { id: string; title: string; excerpt: string; content: string; slug: string; image_url?: string | null }[];
@@ -48,6 +48,7 @@ export function SocialCaptionGenerator({ articles }: SocialCaptionGeneratorProps
   const [scheduleTime, setScheduleTime] = useState('10:00');
   const [isSaving, setIsSaving] = useState(false);
   const [showDesktopPreview, setShowDesktopPreview] = useState(true);
+  const [isGeneratingImage, setIsGeneratingImage] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
@@ -220,6 +221,58 @@ export function SocialCaptionGenerator({ articles }: SocialCaptionGeneratorProps
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
     toast({ title: 'Arquivo exportado!' });
+  };
+
+  const handleGenerateImage = async () => {
+    if (!selectedArticle) {
+      toast({ title: 'Selecione um artigo primeiro', variant: 'destructive' });
+      return;
+    }
+
+    setIsGeneratingImage(true);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+
+      const response = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/regenerate-cover-image`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'apikey': import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+            'Authorization': `Bearer ${session?.access_token || import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+          },
+          body: JSON.stringify({
+            title: selectedArticle.title,
+            category: [],
+            imageStyle: 'abstract',
+            format: 'social',
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        const err = await response.json();
+        throw new Error(err.error || 'Erro ao gerar imagem');
+      }
+
+      const data = await response.json();
+      if (data.data?.coverImageUrl) {
+        setCustomImageUrl(data.data.coverImageUrl);
+        toast({ title: 'Imagem gerada com sucesso!' });
+      } else {
+        throw new Error('Nenhuma imagem retornada');
+      }
+    } catch (error) {
+      console.error('Error generating image:', error);
+      toast({
+        title: 'Erro ao gerar imagem',
+        description: error instanceof Error ? error.message : 'Tente novamente.',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsGeneratingImage(false);
+    }
   };
 
   const buildCaptionExportText = () => {
@@ -574,6 +627,18 @@ export function SocialCaptionGenerator({ articles }: SocialCaptionGeneratorProps
               </div>
             )}
           </div>
+          <Button
+            variant="outline"
+            className="w-full gap-2 mt-2"
+            disabled={isGeneratingImage || !selectedArticleId}
+            onClick={handleGenerateImage}
+          >
+            {isGeneratingImage ? (
+              <><Loader2 className="h-4 w-4 animate-spin" /> Gerando imagem...</>
+            ) : (
+              <><Wand2 className="h-4 w-4" /> Gerar Imagem com IA</>
+            )}
+          </Button>
         </div>
 
         {/* Preview toggle (desktop) */}
