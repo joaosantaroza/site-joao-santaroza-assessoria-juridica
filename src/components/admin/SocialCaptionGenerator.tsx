@@ -278,7 +278,7 @@ export function SocialCaptionGenerator({ articles }: SocialCaptionGeneratorProps
     }
   };
 
-  const handleGenerateSlideImages = async () => {
+  const handleGenerateSlideImages = async (style: 'abstract' | 'photographic' | 'illustration' = 'abstract') => {
     if (!carouselResult?.slides?.length || !selectedArticle) {
       toast({ title: 'Gere o carrossel primeiro', variant: 'destructive' });
       return;
@@ -306,7 +306,7 @@ export function SocialCaptionGenerator({ articles }: SocialCaptionGeneratorProps
             body: JSON.stringify({
               title: `${slide.titulo}${slide.subtitulo ? ' - ' + slide.subtitulo : slide.texto ? ' - ' + slide.texto : ''}`,
               category: [],
-              imageStyle: 'abstract',
+              imageStyle: style,
               format: 'slide',
               slideType: slide.type,
             }),
@@ -1026,19 +1026,33 @@ export function SocialCaptionGenerator({ articles }: SocialCaptionGeneratorProps
                     Preview no Instagram
                   </Button>
 
-                  {/* Generate slide images */}
-                  <Button
-                    variant="outline"
-                    className="w-full gap-2 border-primary/30"
-                    disabled={isGeneratingSlideImages}
-                    onClick={handleGenerateSlideImages}
-                  >
-                    {isGeneratingSlideImages ? (
-                      <><Loader2 className="h-4 w-4 animate-spin" /> Gerando imagens dos slides...</>
-                    ) : (
-                      <><Wand2 className="h-4 w-4" /> Gerar Imagens dos Slides (Navy)</>
-                    )}
-                  </Button>
+                  {/* Generate slide images - 3 style options */}
+                  <div className="space-y-1.5">
+                    <span className="text-xs font-medium text-muted-foreground">🎨 Gerar Imagens dos Slides</span>
+                    <div className="grid grid-cols-3 gap-2">
+                      {([
+                        { style: 'abstract' as const, label: 'Abstrato' },
+                        { style: 'photographic' as const, label: 'Fotográfico' },
+                        { style: 'illustration' as const, label: 'Ilustração' },
+                      ]).map(({ style, label }) => (
+                        <Button
+                          key={style}
+                          variant="outline"
+                          size="sm"
+                          className="gap-1.5 text-xs"
+                          disabled={isGeneratingSlideImages}
+                          onClick={() => handleGenerateSlideImages(style)}
+                        >
+                          {isGeneratingSlideImages ? (
+                            <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                          ) : (
+                            <Wand2 className="h-3.5 w-3.5" />
+                          )}
+                          {label}
+                        </Button>
+                      ))}
+                    </div>
+                  </div>
 
                   {/* Download all slide images */}
                   {Object.keys(slideImages).length > 0 && (
