@@ -14,7 +14,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
-import { Loader2, Instagram, Copy, Check, Type, LayoutGrid, Sparkles, Eye, ChevronLeft, ChevronRight, Heart, MessageCircle, Send, Bookmark, Pencil, ImagePlus, X, CalendarIcon, Clock, Plus, Trash2, ArrowUp, ArrowDown, GripVertical, Download, Wand2 } from 'lucide-react';
+import { Loader2, Instagram, Copy, Check, Type, LayoutGrid, Sparkles, Eye, ChevronLeft, ChevronRight, Heart, MessageCircle, Send, Bookmark, Pencil, ImagePlus, X, CalendarIcon, Clock, Plus, Trash2, ArrowUp, ArrowDown, GripVertical, Download, Wand2, RefreshCw } from 'lucide-react';
 
 interface SocialCaptionGeneratorProps {
   articles: { id: string; title: string; excerpt: string; content: string; slug: string; image_url?: string | null }[];
@@ -49,6 +49,7 @@ export function SocialCaptionGenerator({ articles }: SocialCaptionGeneratorProps
   const [isSaving, setIsSaving] = useState(false);
   const [showDesktopPreview, setShowDesktopPreview] = useState(true);
   const [isGeneratingImage, setIsGeneratingImage] = useState(false);
+  const [isRewriting, setIsRewriting] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
@@ -272,6 +273,72 @@ export function SocialCaptionGenerator({ articles }: SocialCaptionGeneratorProps
       });
     } finally {
       setIsGeneratingImage(false);
+    }
+  };
+  const handleRewriteOAB = async (target: 'caption' | 'carousel') => {
+    const currentText = target === 'caption' ? captionResult?.legenda : carouselResult?.legenda;
+    if (!currentText) {
+      toast({ title: 'Gere o conteúdo primeiro', variant: 'destructive' });
+      return;
+    }
+
+    setIsRewriting(true);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+
+      const response = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/generate-social-caption`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'apikey': import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+            'Authorization': `Bearer ${session?.access_token || import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+          },
+          body: JSON.stringify({
+            title: selectedArticle?.title || '',
+            excerpt: selectedArticle?.excerpt || '',
+            content: currentText,
+            type: 'rewrite',
+            rewriteTarget: target,
+            currentHashtags: target === 'caption' ? captionResult?.hashtags : carouselResult?.hashtags,
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        const err = await response.json();
+        throw new Error(err.error || 'Erro ao reescrever');
+      }
+
+      const data = await response.json();
+      const result = data.result;
+
+      if (target === 'caption' && captionResult) {
+        setCaptionResult({
+          ...captionResult,
+          legenda: result.legenda || captionResult.legenda,
+          hashtags: result.hashtags || captionResult.hashtags,
+          gancho: result.gancho || captionResult.gancho,
+        });
+      } else if (target === 'carousel' && carouselResult) {
+        setCarouselResult({
+          ...carouselResult,
+          legenda: result.legenda || carouselResult.legenda,
+          hashtags: result.hashtags || carouselResult.hashtags,
+        });
+      }
+
+      toast({ title: 'Legenda reescrita com tom OAB!' });
+    } catch (error) {
+      console.error('Error rewriting caption:', error);
+      toast({
+        title: 'Erro ao reescrever',
+        description: error instanceof Error ? error.message : 'Tente novamente.',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsRewriting(false);
     }
   };
 
@@ -801,6 +868,19 @@ export function SocialCaptionGenerator({ articles }: SocialCaptionGeneratorProps
                     Exportar Legenda (.txt)
                   </Button>
 
+                  <Button
+                    variant="outline"
+                    className="w-full gap-2 border-accent text-accent hover:bg-accent/10"
+                    disabled={isRewriting}
+                    onClick={() => handleRewriteOAB('caption')}
+                  >
+                    {isRewriting ? (
+                      <><Loader2 className="h-4 w-4 animate-spin" /> Reescrevendo...</>
+                    ) : (
+                      <><RefreshCw className="h-4 w-4" /> Reescrever Tom OAB</>
+                    )}
+                  </Button>
+
                   <ScheduleSection type="caption" />
                 </div>
               )}
@@ -1081,6 +1161,19 @@ export function SocialCaptionGenerator({ articles }: SocialCaptionGeneratorProps
                   >
                     <Download className="h-4 w-4" />
                     Exportar Carrossel (.txt)
+                  </Button>
+
+                  <Button
+                    variant="outline"
+                    className="w-full gap-2 border-accent text-accent hover:bg-accent/10"
+                    disabled={isRewriting}
+                    onClick={() => handleRewriteOAB('carousel')}
+                  >
+                    {isRewriting ? (
+                      <><Loader2 className="h-4 w-4 animate-spin" /> Reescrevendo...</>
+                    ) : (
+                      <><RefreshCw className="h-4 w-4" /> Reescrever Tom OAB</>
+                    )}
                   </Button>
 
                   <ScheduleSection type="carousel" />
