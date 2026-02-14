@@ -50,6 +50,8 @@ export function SocialCaptionGenerator({ articles }: SocialCaptionGeneratorProps
   const [showDesktopPreview, setShowDesktopPreview] = useState(true);
   const [isGeneratingImage, setIsGeneratingImage] = useState(false);
   const [isRewriting, setIsRewriting] = useState(false);
+  const [isGeneratingSlideImages, setIsGeneratingSlideImages] = useState(false);
+  const [slideImages, setSlideImages] = useState<Record<number, string>>({});
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
@@ -224,7 +226,7 @@ export function SocialCaptionGenerator({ articles }: SocialCaptionGeneratorProps
     toast({ title: 'Arquivo exportado!' });
   };
 
-  const handleGenerateImage = async () => {
+  const handleGenerateImage = async (style: 'abstract' | 'photographic' | 'illustration') => {
     if (!selectedArticle) {
       toast({ title: 'Selecione um artigo primeiro', variant: 'destructive' });
       return;
@@ -246,7 +248,7 @@ export function SocialCaptionGenerator({ articles }: SocialCaptionGeneratorProps
           body: JSON.stringify({
             title: selectedArticle.title,
             category: [],
-            imageStyle: 'abstract',
+            imageStyle: style,
             format: 'social',
           }),
         }
@@ -273,6 +275,63 @@ export function SocialCaptionGenerator({ articles }: SocialCaptionGeneratorProps
       });
     } finally {
       setIsGeneratingImage(false);
+    }
+  };
+
+  const handleGenerateSlideImages = async () => {
+    if (!carouselResult?.slides?.length || !selectedArticle) {
+      toast({ title: 'Gere o carrossel primeiro', variant: 'destructive' });
+      return;
+    }
+
+    setIsGeneratingSlideImages(true);
+    const newImages: Record<number, string> = {};
+
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+
+      for (let i = 0; i < carouselResult.slides.length; i++) {
+        const slide = carouselResult.slides[i];
+        toast({ title: `Gerando slide ${i + 1} de ${carouselResult.slides.length}...` });
+
+        const response = await fetch(
+          `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/regenerate-cover-image`,
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'apikey': import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+              'Authorization': `Bearer ${session?.access_token || import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+            },
+            body: JSON.stringify({
+              title: `${slide.titulo}${slide.subtitulo ? ' - ' + slide.subtitulo : slide.texto ? ' - ' + slide.texto : ''}`,
+              category: [],
+              imageStyle: 'abstract',
+              format: 'slide',
+              slideType: slide.type,
+            }),
+          }
+        );
+
+        if (response.ok) {
+          const data = await response.json();
+          if (data.data?.coverImageUrl) {
+            newImages[i] = data.data.coverImageUrl;
+          }
+        }
+      }
+
+      setSlideImages(newImages);
+      toast({ title: `${Object.keys(newImages).length} imagens de slides geradas!` });
+    } catch (error) {
+      console.error('Error generating slide images:', error);
+      toast({
+        title: 'Erro ao gerar imagens dos slides',
+        description: error instanceof Error ? error.message : 'Tente novamente.',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsGeneratingSlideImages(false);
     }
   };
   const handleRewriteOAB = async (target: 'caption' | 'carousel') => {
@@ -504,27 +563,42 @@ export function SocialCaptionGenerator({ articles }: SocialCaptionGeneratorProps
               <>
                 {/* Carousel slide content */}
                 <div className={`absolute inset-0 flex flex-col items-center justify-center p-6 text-center ${
-                  currentSlide.type === 'capa'
+                  slideImages[previewSlideIndex]
+                    ? ''
+                    : currentSlide.type === 'capa'
                     ? 'bg-gradient-to-br from-primary to-primary/80'
                     : currentSlide.type === 'cta'
                     ? 'bg-gradient-to-br from-accent to-accent/80'
                     : 'bg-gradient-to-br from-muted to-muted/80'
-                }`}>
-                  {currentSlide.type === 'capa' && (
-                    <span className="text-[10px] uppercase tracking-widest text-primary-foreground/60 mb-2">Deslize →</span>
+                }`}
+                  style={slideImages[previewSlideIndex] ? {
+                    backgroundImage: `url(${slideImages[previewSlideIndex]})`,
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
+                  } : undefined}
+                >
+                  {slideImages[previewSlideIndex] && (
+                    <div className="absolute inset-0 bg-black/40" />
                   )}
-                  <h3 className={`font-bold leading-tight mb-2 ${
-                    currentSlide.type === 'capa' ? 'text-lg text-primary-foreground' : 'text-base text-foreground'
-                  }`}>
-                    {currentSlide.titulo}
-                  </h3>
-                  {(currentSlide.subtitulo || currentSlide.texto) && (
-                    <p className={`text-sm leading-snug ${
-                      currentSlide.type === 'capa' ? 'text-primary-foreground/80' : 'text-muted-foreground'
+                  <div className="relative z-10">
+                    {currentSlide.type === 'capa' && (
+                      <span className="text-[10px] uppercase tracking-widest text-white/60 mb-2 block">Deslize →</span>
+                    )}
+                    <h3 className={`font-bold leading-tight mb-2 ${
+                      slideImages[previewSlideIndex] ? 'text-lg text-white' :
+                      currentSlide.type === 'capa' ? 'text-lg text-primary-foreground' : 'text-base text-foreground'
                     }`}>
-                      {currentSlide.subtitulo || currentSlide.texto}
-                    </p>
-                  )}
+                      {currentSlide.titulo}
+                    </h3>
+                    {(currentSlide.subtitulo || currentSlide.texto) && (
+                      <p className={`text-sm leading-snug ${
+                        slideImages[previewSlideIndex] ? 'text-white/80' :
+                        currentSlide.type === 'capa' ? 'text-primary-foreground/80' : 'text-muted-foreground'
+                      }`}>
+                        {currentSlide.subtitulo || currentSlide.texto}
+                      </p>
+                    )}
+                  </div>
                 </div>
 
                 {/* Carousel navigation */}
@@ -694,18 +768,29 @@ export function SocialCaptionGenerator({ articles }: SocialCaptionGeneratorProps
               </div>
             )}
           </div>
-          <Button
-            variant="outline"
-            className="w-full gap-2 mt-2"
-            disabled={isGeneratingImage || !selectedArticleId}
-            onClick={handleGenerateImage}
-          >
-            {isGeneratingImage ? (
-              <><Loader2 className="h-4 w-4 animate-spin" /> Gerando imagem...</>
-            ) : (
-              <><Wand2 className="h-4 w-4" /> Gerar Imagem com IA</>
-            )}
-          </Button>
+          <div className="grid grid-cols-3 gap-2 mt-2">
+            {([
+              { style: 'abstract' as const, label: 'Abstrato' },
+              { style: 'photographic' as const, label: 'Fotográfico' },
+              { style: 'illustration' as const, label: 'Ilustração' },
+            ]).map(({ style, label }) => (
+              <Button
+                key={style}
+                variant="outline"
+                size="sm"
+                className="gap-1.5 text-xs"
+                disabled={isGeneratingImage || !selectedArticleId}
+                onClick={() => handleGenerateImage(style)}
+              >
+                {isGeneratingImage ? (
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                ) : (
+                  <Wand2 className="h-3.5 w-3.5" />
+                )}
+                {label}
+              </Button>
+            ))}
+          </div>
         </div>
 
         {/* Preview toggle (desktop) */}
@@ -909,6 +994,20 @@ export function SocialCaptionGenerator({ articles }: SocialCaptionGeneratorProps
                   >
                     <Eye className="h-4 w-4" />
                     Preview no Instagram
+                  </Button>
+
+                  {/* Generate slide images */}
+                  <Button
+                    variant="outline"
+                    className="w-full gap-2 border-primary/30"
+                    disabled={isGeneratingSlideImages}
+                    onClick={handleGenerateSlideImages}
+                  >
+                    {isGeneratingSlideImages ? (
+                      <><Loader2 className="h-4 w-4 animate-spin" /> Gerando imagens dos slides...</>
+                    ) : (
+                      <><Wand2 className="h-4 w-4" /> Gerar Imagens dos Slides (Navy)</>
+                    )}
                   </Button>
 
                   {carouselResult.slides?.length > 0 && (
