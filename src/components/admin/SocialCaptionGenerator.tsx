@@ -1,4 +1,6 @@
 import { useState, useRef, useCallback } from 'react';
+import { format, addDays, setHours, setMinutes } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -7,9 +9,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
+import { Calendar } from '@/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Instagram, Copy, Check, Type, LayoutGrid, Sparkles, Eye, ChevronLeft, ChevronRight, Heart, MessageCircle, Send, Bookmark, Pencil, ImagePlus, X } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { Loader2, Instagram, Copy, Check, Type, LayoutGrid, Sparkles, Eye, ChevronLeft, ChevronRight, Heart, MessageCircle, Send, Bookmark, Pencil, ImagePlus, X, CalendarIcon, Clock } from 'lucide-react';
 
 interface SocialCaptionGeneratorProps {
   articles: { id: string; title: string; excerpt: string; content: string; slug: string; image_url?: string | null }[];
@@ -38,8 +43,71 @@ export function SocialCaptionGenerator({ articles }: SocialCaptionGeneratorProps
   const [isEditing, setIsEditing] = useState(false);
   const [customImageUrl, setCustomImageUrl] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [scheduleDate, setScheduleDate] = useState<Date | undefined>(undefined);
+  const [scheduleTime, setScheduleTime] = useState('10:00');
+  const [isSaving, setIsSaving] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
+
+  const selectedArticle = articles.find(a => a.id === selectedArticleId);
+
+  // Suggest best posting times
+  const suggestedTimes = (() => {
+    const base = new Date();
+    return [
+      { label: 'Amanhã 10h', date: setMinutes(setHours(addDays(base, 1), 10), 0) },
+      { label: 'Amanhã 18h', date: setMinutes(setHours(addDays(base, 1), 18), 0) },
+      { label: 'Em 3 dias 10h', date: setMinutes(setHours(addDays(base, 3), 10), 0) },
+      { label: 'Em 1 semana 10h', date: setMinutes(setHours(addDays(base, 7), 10), 0) },
+    ];
+  })();
+
+  const handleSchedulePost = async (type: 'caption' | 'carousel') => {
+    const content = type === 'caption' ? captionResult : carouselResult;
+    if (!content || !scheduleDate || !selectedArticle) {
+      toast({ title: 'Preencha todos os campos', variant: 'destructive' });
+      return;
+    }
+
+    const [hours, minutes] = scheduleTime.split(':').map(Number);
+    const scheduledAt = setMinutes(setHours(scheduleDate, hours), minutes);
+
+    if (scheduledAt <= new Date()) {
+      toast({ title: 'A data deve ser no futuro', variant: 'destructive' });
+      return;
+    }
+
+    setIsSaving(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Não autenticado');
+
+      const { error } = await supabase.from('social_posts').insert({
+        article_id: selectedArticle.id,
+        article_title: selectedArticle.title,
+        post_type: type,
+        content: content as any,
+        custom_image_url: customImageUrl,
+        scheduled_at: scheduledAt.toISOString(),
+        created_by: user.id,
+      });
+
+      if (error) throw error;
+
+      toast({ title: 'Post agendado com sucesso! 📅' });
+      setScheduleDate(undefined);
+      setScheduleTime('10:00');
+    } catch (error) {
+      console.error('Error scheduling post:', error);
+      toast({
+        title: 'Erro ao agendar',
+        description: error instanceof Error ? error.message : 'Tente novamente.',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   const handleImageFile = useCallback((file: File) => {
     if (!file.type.startsWith('image/')) {
@@ -72,7 +140,7 @@ export function SocialCaptionGenerator({ articles }: SocialCaptionGeneratorProps
     setIsDragging(false);
   }, []);
 
-  const selectedArticle = articles.find(a => a.id === selectedArticleId);
+  // selectedArticle defined above
 
   const handleGenerate = async (type: 'caption' | 'carousel') => {
     if (!selectedArticle) {
@@ -149,6 +217,89 @@ export function SocialCaptionGenerator({ articles }: SocialCaptionGeneratorProps
       {copiedField === field ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
       {copiedField === field ? 'Copiado' : 'Copiar'}
     </Button>
+  );
+
+  const ScheduleSection = ({ type }: { type: 'caption' | 'carousel' }) => (
+    <div className="p-4 rounded-lg border border-dashed border-primary/30 bg-primary/5 space-y-3">
+      <div className="flex items-center gap-2 text-sm font-medium">
+        <CalendarIcon className="h-4 w-4 text-primary" />
+        Agendar publicação
+      </div>
+
+      {/* Suggested times */}
+      <div className="flex flex-wrap gap-2">
+        {suggestedTimes.map((suggestion, i) => (
+          <Button
+            key={i}
+            variant="outline"
+            size="sm"
+            className={cn(
+              "text-xs h-7",
+              scheduleDate && scheduleTime === format(suggestion.date, 'HH:mm') &&
+              format(scheduleDate, 'yyyy-MM-dd') === format(suggestion.date, 'yyyy-MM-dd')
+                ? 'bg-primary text-primary-foreground'
+                : ''
+            )}
+            onClick={() => {
+              setScheduleDate(suggestion.date);
+              setScheduleTime(format(suggestion.date, 'HH:mm'));
+            }}
+          >
+            {suggestion.label}
+          </Button>
+        ))}
+      </div>
+
+      {/* Custom date/time */}
+      <div className="flex gap-2">
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button
+              variant="outline"
+              className={cn(
+                "flex-1 justify-start text-left text-sm font-normal",
+                !scheduleDate && "text-muted-foreground"
+              )}
+            >
+              <CalendarIcon className="mr-2 h-4 w-4" />
+              {scheduleDate ? format(scheduleDate, "dd/MM/yyyy", { locale: ptBR }) : "Data"}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-auto p-0" align="start">
+            <Calendar
+              mode="single"
+              selected={scheduleDate}
+              onSelect={setScheduleDate}
+              disabled={(date) => date < new Date()}
+              initialFocus
+              className={cn("p-3 pointer-events-auto")}
+            />
+          </PopoverContent>
+        </Popover>
+
+        <div className="relative">
+          <Clock className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            type="time"
+            value={scheduleTime}
+            onChange={(e) => setScheduleTime(e.target.value)}
+            className="w-[120px] pl-9 text-sm"
+          />
+        </div>
+      </div>
+
+      <Button
+        className="w-full gap-2"
+        disabled={!scheduleDate || isSaving}
+        onClick={() => handleSchedulePost(type)}
+      >
+        {isSaving ? (
+          <><Loader2 className="h-4 w-4 animate-spin" /> Agendando...</>
+        ) : (
+          <><CalendarIcon className="h-4 w-4" /> Agendar Post</>
+        )}
+      </Button>
+    </div>
   );
 
   const hasResult = captionResult || carouselResult;
@@ -513,6 +664,8 @@ export function SocialCaptionGenerator({ articles }: SocialCaptionGeneratorProps
                     {copiedField === 'all-caption' ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
                     Copiar Tudo
                   </Button>
+
+                  <ScheduleSection type="caption" />
                 </div>
               )}
             </TabsContent>
@@ -699,6 +852,8 @@ export function SocialCaptionGenerator({ articles }: SocialCaptionGeneratorProps
                     {copiedField === 'all-carousel' ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
                     Copiar Tudo
                   </Button>
+
+                  <ScheduleSection type="carousel" />
                 </div>
               )}
             </TabsContent>

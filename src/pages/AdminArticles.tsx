@@ -8,6 +8,7 @@ import { ArticleForm, BlogPostEdit } from '@/components/admin/ArticleForm';
 import { ArticlesList } from '@/components/admin/ArticlesList';
 import { TrendingAnalytics } from '@/components/admin/TrendingAnalytics';
 import { SocialCaptionGenerator } from '@/components/admin/SocialCaptionGenerator';
+import { ScheduledPostsQueue } from '@/components/admin/ScheduledPostsQueue';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
@@ -115,8 +116,9 @@ export default function AdminArticles() {
             />
           </TabsContent>
 
-          <TabsContent value="social">
+          <TabsContent value="social" className="space-y-6">
             <SocialCaptionGenerator articles={publishedArticles} />
+            <ScheduledPostsQueue />
           </TabsContent>
 
           <TabsContent value="analytics">
