@@ -194,6 +194,56 @@ export type Database = {
         }
         Relationships: []
       }
+      social_posts: {
+        Row: {
+          article_id: string | null
+          article_title: string
+          content: Json
+          created_at: string
+          created_by: string
+          custom_image_url: string | null
+          id: string
+          post_type: string
+          scheduled_at: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          article_id?: string | null
+          article_title: string
+          content: Json
+          created_at?: string
+          created_by: string
+          custom_image_url?: string | null
+          id?: string
+          post_type: string
+          scheduled_at: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          article_id?: string | null
+          article_title?: string
+          content?: Json
+          created_at?: string
+          created_by?: string
+          custom_image_url?: string | null
+          id?: string
+          post_type?: string
+          scheduled_at?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "social_posts_article_id_fkey"
+            columns: ["article_id"]
+            isOneToOne: false
+            referencedRelation: "blog_posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       trending_topic_analytics: {
         Row: {
           approved_at: string
