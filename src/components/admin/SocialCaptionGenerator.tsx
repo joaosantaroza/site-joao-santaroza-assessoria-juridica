@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -9,7 +9,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Instagram, Copy, Check, Type, LayoutGrid, Sparkles, Eye, ChevronLeft, ChevronRight, Heart, MessageCircle, Send, Bookmark, Pencil } from 'lucide-react';
+import { Loader2, Instagram, Copy, Check, Type, LayoutGrid, Sparkles, Eye, ChevronLeft, ChevronRight, Heart, MessageCircle, Send, Bookmark, Pencil, ImagePlus, X } from 'lucide-react';
 
 interface SocialCaptionGeneratorProps {
   articles: { id: string; title: string; excerpt: string; content: string; slug: string; image_url?: string | null }[];
@@ -36,7 +36,41 @@ export function SocialCaptionGenerator({ articles }: SocialCaptionGeneratorProps
   const [showPreview, setShowPreview] = useState(false);
   const [previewSlideIndex, setPreviewSlideIndex] = useState(0);
   const [isEditing, setIsEditing] = useState(false);
+  const [customImageUrl, setCustomImageUrl] = useState<string | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
+
+  const handleImageFile = useCallback((file: File) => {
+    if (!file.type.startsWith('image/')) {
+      toast({ title: 'Apenas imagens são aceitas', variant: 'destructive' });
+      return;
+    }
+    if (file.size > 10 * 1024 * 1024) {
+      toast({ title: 'Imagem muito grande (máx. 10MB)', variant: 'destructive' });
+      return;
+    }
+    const url = URL.createObjectURL(file);
+    setCustomImageUrl(url);
+    toast({ title: 'Imagem de capa atualizada! 🖼️' });
+  }, [toast]);
+
+  const handleDrop = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+    const file = e.dataTransfer.files[0];
+    if (file) handleImageFile(file);
+  }, [handleImageFile]);
+
+  const handleDragOver = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+  }, []);
+
+  const handleDragLeave = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+  }, []);
 
   const selectedArticle = articles.find(a => a.id === selectedArticleId);
 
@@ -198,8 +232,8 @@ export function SocialCaptionGenerator({ articles }: SocialCaptionGeneratorProps
                   </>
                 )}
               </>
-            ) : selectedArticle?.image_url ? (
-              <img src={selectedArticle.image_url} alt="" className="w-full h-full object-cover" />
+            ) : (customImageUrl || selectedArticle?.image_url) ? (
+              <img src={customImageUrl || selectedArticle?.image_url || ''} alt="" className="w-full h-full object-cover" />
             ) : (
               <div className="text-center p-6">
                 <Instagram className="h-10 w-10 mx-auto mb-2 text-muted-foreground/40" />
@@ -282,6 +316,67 @@ export function SocialCaptionGenerator({ articles }: SocialCaptionGeneratorProps
               ))}
             </SelectContent>
           </Select>
+        </div>
+
+        {/* Cover image drop zone */}
+        <div className="space-y-2">
+          <Label>Imagem de capa (opcional)</Label>
+          <div
+            onDrop={handleDrop}
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onClick={() => fileInputRef.current?.click()}
+            className={`relative border-2 border-dashed rounded-lg p-4 text-center cursor-pointer transition-all ${
+              isDragging
+                ? 'border-primary bg-primary/5 scale-[1.01]'
+                : customImageUrl
+                ? 'border-border bg-muted/30'
+                : 'border-muted-foreground/25 hover:border-primary/50 hover:bg-muted/20'
+            }`}
+          >
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) handleImageFile(file);
+                e.target.value = '';
+              }}
+            />
+            {customImageUrl ? (
+              <div className="flex items-center gap-3">
+                <img src={customImageUrl} alt="Capa personalizada" className="h-16 w-16 rounded-md object-cover" />
+                <div className="flex-1 text-left">
+                  <p className="text-sm font-medium">Imagem personalizada</p>
+                  <p className="text-xs text-muted-foreground">Clique ou arraste para substituir</p>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 shrink-0"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    URL.revokeObjectURL(customImageUrl);
+                    setCustomImageUrl(null);
+                  }}
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
+            ) : (
+              <div className="py-2">
+                <ImagePlus className="h-8 w-8 mx-auto mb-2 text-muted-foreground/50" />
+                <p className="text-sm text-muted-foreground">
+                  Arraste uma imagem ou clique para selecionar
+                </p>
+                <p className="text-xs text-muted-foreground/60 mt-1">
+                  Substitui a capa do artigo no preview
+                </p>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Main layout: Controls + Preview side by side on desktop */}
