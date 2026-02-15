@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
+import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from '@/hooks/use-toast';
 import { 
   Loader2, 
@@ -59,8 +60,51 @@ export function ArticlesList({ refreshTrigger, onEditArticle }: ArticlesListProp
   const [isLoading, setIsLoading] = useState(true);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [togglingId, setTogglingId] = useState<string | null>(null);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [isDownloadingBatch, setIsDownloadingBatch] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
+
+  const postsWithPdf = posts.filter(p => p.pdf_url);
+  const selectedPosts = posts.filter(p => selectedIds.has(p.id));
+  const selectedWithPdf = selectedPosts.filter(p => p.pdf_url);
+
+  const toggleSelect = useCallback((id: string) => {
+    setSelectedIds(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }, []);
+
+  const toggleSelectAll = useCallback(() => {
+    if (selectedIds.size === postsWithPdf.length && postsWithPdf.length > 0) {
+      setSelectedIds(new Set());
+    } else {
+      setSelectedIds(new Set(postsWithPdf.map(p => p.id)));
+    }
+  }, [postsWithPdf, selectedIds]);
+
+  const handleBatchDownload = async () => {
+    if (selectedWithPdf.length === 0) return;
+    setIsDownloadingBatch(true);
+    toast({ title: `Baixando ${selectedWithPdf.length} PDFs...` });
+    for (let i = 0; i < selectedWithPdf.length; i++) {
+      const post = selectedWithPdf[i];
+      const a = document.createElement('a');
+      a.href = post.pdf_url!;
+      a.download = `${post.slug}.pdf`;
+      a.target = '_blank';
+      a.click();
+      if (i < selectedWithPdf.length - 1) {
+        await new Promise(r => setTimeout(r, 400));
+      }
+    }
+    setIsDownloadingBatch(false);
+    setSelectedIds(new Set());
+    toast({ title: `${selectedWithPdf.length} PDFs baixados!` });
+  };
 
   const fetchPosts = async () => {
     setIsLoading(true);
@@ -192,10 +236,45 @@ export function ArticlesList({ refreshTrigger, onEditArticle }: ArticlesListProp
             </p>
           </div>
         ) : (
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto space-y-3">
+            {/* Batch action bar */}
+            {selectedIds.size > 0 && (
+              <div className="flex items-center gap-3 p-3 rounded-lg border border-accent/30 bg-accent/5 animate-in fade-in-0 slide-in-from-top-2">
+                <span className="text-sm font-medium">
+                  {selectedIds.size} selecionado{selectedIds.size > 1 ? 's' : ''}
+                </span>
+                <div className="flex-1" />
+                {selectedWithPdf.length > 0 && (
+                  <Button
+                    size="sm"
+                    className="gap-2"
+                    onClick={handleBatchDownload}
+                    disabled={isDownloadingBatch}
+                  >
+                    {isDownloadingBatch ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <Download className="h-4 w-4" />
+                    )}
+                    Baixar {selectedWithPdf.length} PDF{selectedWithPdf.length > 1 ? 's' : ''}
+                  </Button>
+                )}
+                <Button variant="ghost" size="sm" onClick={() => setSelectedIds(new Set())}>
+                  Limpar
+                </Button>
+              </div>
+            )}
             <Table>
               <TableHeader>
                 <TableRow>
+                  <TableHead className="w-[40px]">
+                    <Checkbox
+                      checked={postsWithPdf.length > 0 && selectedIds.size === postsWithPdf.length}
+                      onCheckedChange={toggleSelectAll}
+                      aria-label="Selecionar todos com PDF"
+                      disabled={postsWithPdf.length === 0}
+                    />
+                  </TableHead>
                   <TableHead>Título</TableHead>
                   <TableHead>Categoria</TableHead>
                   <TableHead className="hidden md:table-cell">Status</TableHead>
@@ -205,7 +284,15 @@ export function ArticlesList({ refreshTrigger, onEditArticle }: ArticlesListProp
               </TableHeader>
               <TableBody>
                 {posts.map((post) => (
-                  <TableRow key={post.id}>
+                  <TableRow key={post.id} className={selectedIds.has(post.id) ? 'bg-accent/5' : ''}>
+                    <TableCell>
+                      <Checkbox
+                        checked={selectedIds.has(post.id)}
+                        onCheckedChange={() => toggleSelect(post.id)}
+                        disabled={!post.pdf_url}
+                        aria-label={`Selecionar ${post.title}`}
+                      />
+                    </TableCell>
                     <TableCell>
                       <div className="max-w-xs">
                         <p className="font-medium truncate">{post.title}</p>
