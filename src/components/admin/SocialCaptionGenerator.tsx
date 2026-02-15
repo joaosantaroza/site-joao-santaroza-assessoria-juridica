@@ -1223,20 +1223,15 @@ export function SocialCaptionGenerator({ articles }: SocialCaptionGeneratorProps
                     </div>
                   </div>
 
-                  {/* Download all slides as branded images */}
-                  <Button
-                    variant="default"
-                    className="w-full gap-2"
-                    onClick={downloadAllSlides}
-                  >
-                    <Download className="h-4 w-4" />
-                    Baixar Todos os Slides como Imagem ({carouselResult.slides.length})
-                  </Button>
-
                   {carouselResult.slides?.length > 0 && (
-                    <div className="space-y-3">
+                    <div className="space-y-4">
+                      {/* Gallery header */}
                       <div className="flex items-center justify-between">
-                        <span className="text-xs font-medium text-muted-foreground">📱 Slides do Carrossel ({carouselResult.slides.length})</span>
+                        <div className="flex items-center gap-2">
+                          <div className="w-1 h-5 rounded-full" style={{ background: 'linear-gradient(180deg, #B8945A, #D4A855)' }} />
+                          <span className="text-sm font-semibold">Galeria de Slides</span>
+                          <span className="text-xs text-muted-foreground">({carouselResult.slides.length})</span>
+                        </div>
                         <Button
                           variant="outline"
                           size="sm"
@@ -1262,7 +1257,7 @@ export function SocialCaptionGenerator({ articles }: SocialCaptionGeneratorProps
                         </Button>
                       </div>
 
-                      {/* Visual slide grid */}
+                      {/* Visual slide gallery grid */}
                       <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                         {carouselResult.slides.map((slide, i) => {
                           const isEditingThis = editingSlideIndex === i;
@@ -1299,12 +1294,14 @@ export function SocialCaptionGenerator({ articles }: SocialCaptionGeneratorProps
                           };
 
                           return (
-                            <div key={i} className="space-y-1">
-                              {/* Visual slide thumbnail */}
+                            <div key={i} className="flex flex-col gap-1.5">
+                              {/* Branded slide thumbnail */}
                               <div
                                 className={cn(
-                                  "relative aspect-square rounded-xl overflow-hidden cursor-pointer transition-all group border-2",
-                                  isSelected ? "border-primary ring-2 ring-primary/30 scale-[1.02]" : "border-transparent hover:border-primary/40"
+                                  "relative aspect-square rounded-xl overflow-hidden cursor-pointer transition-all duration-200 group shadow-md hover:shadow-xl",
+                                  isSelected
+                                    ? "ring-2 ring-[#B8945A] ring-offset-2 ring-offset-background scale-[1.03]"
+                                    : "hover:scale-[1.02]"
                                 )}
                                 onClick={() => {
                                   setPreviewSlideIndex(i);
@@ -1316,88 +1313,99 @@ export function SocialCaptionGenerator({ articles }: SocialCaptionGeneratorProps
                                   backgroundPosition: 'center',
                                 } : {
                                   background: slide.type === 'capa'
-                                    ? 'linear-gradient(135deg, #041E42 0%, #062B5A 50%, #041E42 100%)'
+                                    ? 'linear-gradient(145deg, #041E42 0%, #062B5A 40%, #041E42 100%)'
                                     : slide.type === 'cta'
-                                    ? 'linear-gradient(135deg, #B8945A 0%, #D4A855 50%, #B8945A 100%)'
-                                    : 'linear-gradient(135deg, #041E42 0%, #0A3A6B 100%)',
+                                    ? 'linear-gradient(145deg, #0A3A6B 0%, #041E42 50%, #062B5A 100%)'
+                                    : 'linear-gradient(145deg, #041E42 0%, #0A3A6B 100%)',
                                 }}
                               >
-                                {/* Overlay for images */}
-                                {hasImage && <div className="absolute inset-0 bg-[#041E42]/60" />}
+                                {/* Dark overlay for readability on images */}
+                                {hasImage && <div className="absolute inset-0 bg-[#041E42]/65" />}
 
-                                {/* Top accent bar */}
-                                <div className="absolute top-0 left-0 right-0 h-1" style={{ background: 'linear-gradient(90deg, #B8945A, #D4A855)' }} />
+                                {/* Top bronze accent line */}
+                                <div className="absolute top-0 left-0 right-0 h-[3px] z-10" style={{ background: 'linear-gradient(90deg, #B8945A, #D4A855, #B8945A)' }} />
 
-                                {/* Slide number badge */}
-                                <div className="absolute top-2 left-2 z-10 px-2 py-0.5 rounded-full text-[10px] font-bold" style={{ background: '#B8945A', color: '#041E42' }}>
+                                {/* Slide number pill */}
+                                <div
+                                  className="absolute top-2.5 left-2.5 z-10 flex items-center justify-center w-6 h-6 rounded-full text-[10px] font-bold shadow-sm"
+                                  style={{ background: '#B8945A', color: '#041E42' }}
+                                >
                                   {slide.slide}
                                 </div>
 
-                                {/* Type badge */}
-                                <div className="absolute top-2 right-2 z-10 text-[9px] font-semibold uppercase tracking-wider" style={{ color: '#B8945A99' }}>
-                                  {slide.type === 'capa' ? 'CAPA' : slide.type === 'cta' ? 'CTA' : ''}
-                                </div>
+                                {/* Type label top-right */}
+                                {slide.type !== 'conteudo' && (
+                                  <div
+                                    className="absolute top-2.5 right-2.5 z-10 px-1.5 py-0.5 rounded text-[8px] font-bold uppercase tracking-widest"
+                                    style={{ background: '#B8945A22', color: '#B8945A', border: '1px solid #B8945A33' }}
+                                  >
+                                    {slide.type === 'capa' ? 'CAPA' : 'CTA'}
+                                  </div>
+                                )}
 
-                                {/* Content */}
-                                <div className="absolute inset-0 flex flex-col items-center justify-center p-4 z-10 text-center">
-                                  <h4 className={cn(
-                                    "font-bold leading-tight line-clamp-3 text-xs sm:text-sm",
-                                    slide.type === 'capa' ? 'text-[#B8945A]' : 'text-white'
-                                  )}>
+                                {/* Centered content */}
+                                <div className="absolute inset-0 flex flex-col items-center justify-center px-4 py-8 z-10 text-center">
+                                  <h4
+                                    className="font-bold leading-tight line-clamp-3 text-[11px] sm:text-sm"
+                                    style={{ color: slide.type === 'capa' ? '#B8945A' : '#FFFFFF', fontFamily: 'Montserrat, sans-serif' }}
+                                  >
                                     {slide.titulo}
                                   </h4>
                                   {(slide.subtitulo || slide.texto) && (
-                                    <p className="text-[10px] sm:text-xs mt-1 line-clamp-2 text-[#EDE8DF]/70">
+                                    <p
+                                      className="text-[9px] sm:text-[11px] mt-1.5 line-clamp-2 leading-snug"
+                                      style={{ color: '#EDE8DFaa' }}
+                                    >
                                       {slide.subtitulo || slide.texto}
                                     </p>
                                   )}
                                 </div>
 
-                                {/* Hover actions overlay */}
-                                <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 z-20">
-                                  <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    className="h-8 w-8 text-white hover:bg-white/20"
-                                    onClick={(e) => { e.stopPropagation(); downloadSlideAsImage(slide, i, slideImages[i]); }}
-                                    title="Baixar slide"
-                                  >
-                                    <Download className="h-4 w-4" />
-                                  </Button>
-                                  <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    className="h-8 w-8 text-white hover:bg-white/20"
-                                    onClick={(e) => { e.stopPropagation(); setEditingSlideIndex(isEditingThis ? null : i); setPreviewSlideIndex(i); }}
-                                    title="Editar slide"
-                                  >
-                                    <Pencil className="h-4 w-4" />
-                                  </Button>
+                                {/* Hover actions */}
+                                <div className="absolute inset-0 bg-[#041E42]/80 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-all duration-200 flex items-center justify-center gap-1.5 z-20">
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <Button variant="ghost" size="icon" className="h-7 w-7 text-white hover:bg-white/20 rounded-lg"
+                                        onClick={(e) => { e.stopPropagation(); downloadSlideAsImage(slide, i, slideImages[i]); }}>
+                                        <Download className="h-3.5 w-3.5" />
+                                      </Button>
+                                    </TooltipTrigger>
+                                    <TooltipContent side="bottom"><p className="text-xs">Baixar PNG</p></TooltipContent>
+                                  </Tooltip>
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <Button variant="ghost" size="icon" className="h-7 w-7 text-white hover:bg-white/20 rounded-lg"
+                                        onClick={(e) => { e.stopPropagation(); setEditingSlideIndex(isEditingThis ? null : i); setPreviewSlideIndex(i); }}>
+                                        <Pencil className="h-3.5 w-3.5" />
+                                      </Button>
+                                    </TooltipTrigger>
+                                    <TooltipContent side="bottom"><p className="text-xs">Editar</p></TooltipContent>
+                                  </Tooltip>
                                   {i > 0 && (
-                                    <Button variant="ghost" size="icon" className="h-8 w-8 text-white hover:bg-white/20"
+                                    <Button variant="ghost" size="icon" className="h-7 w-7 text-white hover:bg-white/20 rounded-lg"
                                       onClick={(e) => { e.stopPropagation(); moveSlide(-1); }}>
-                                      <ArrowUp className="h-4 w-4" />
+                                      <ArrowUp className="h-3.5 w-3.5" />
                                     </Button>
                                   )}
                                   {i < carouselResult.slides.length - 1 && (
-                                    <Button variant="ghost" size="icon" className="h-8 w-8 text-white hover:bg-white/20"
+                                    <Button variant="ghost" size="icon" className="h-7 w-7 text-white hover:bg-white/20 rounded-lg"
                                       onClick={(e) => { e.stopPropagation(); moveSlide(1); }}>
-                                      <ArrowDown className="h-4 w-4" />
+                                      <ArrowDown className="h-3.5 w-3.5" />
                                     </Button>
                                   )}
                                 </div>
 
-                                {/* Bottom accent */}
-                                <div className="absolute bottom-0 left-0 right-0 h-1" style={{ background: '#B8945A' }} />
+                                {/* Bottom bronze accent */}
+                                <div className="absolute bottom-0 left-0 right-0 h-[3px] z-10" style={{ background: '#B8945A' }} />
 
                                 {/* Corner decorations */}
-                                <div className="absolute top-[6px] left-[6px] w-3 h-3 border-t border-l border-[#B8945A]/30" />
-                                <div className="absolute bottom-[6px] right-[6px] w-3 h-3 border-b border-r border-[#B8945A]/30" />
+                                <div className="absolute top-[8px] left-[8px] w-2.5 h-2.5 border-t border-l z-[5]" style={{ borderColor: '#B8945A44' }} />
+                                <div className="absolute bottom-[8px] right-[8px] w-2.5 h-2.5 border-b border-r z-[5]" style={{ borderColor: '#B8945A44' }} />
                               </div>
 
-                              {/* Editing panel below card */}
+                              {/* Editing panel */}
                               {isEditingThis && (
-                                <div className="col-span-full p-3 rounded-lg border border-primary/20 bg-card space-y-2 animate-in fade-in-0 slide-in-from-top-2" onClick={(e) => e.stopPropagation()}>
+                                <div className="p-3 rounded-lg border border-[#B8945A]/20 bg-card space-y-2 animate-in fade-in-0 slide-in-from-top-2 shadow-sm" onClick={(e) => e.stopPropagation()}>
                                   <div className="flex gap-2 items-center">
                                     <Select value={slide.type} onValueChange={(val) => updateSlide('type', val)}>
                                       <SelectTrigger className="w-[130px] h-8 text-xs">
@@ -1423,6 +1431,16 @@ export function SocialCaptionGenerator({ articles }: SocialCaptionGeneratorProps
                           );
                         })}
                       </div>
+
+                      {/* Export all slides button — prominent */}
+                      <Button
+                        className="w-full gap-2 h-11 text-sm font-semibold shadow-md"
+                        style={{ background: 'linear-gradient(135deg, #041E42, #0A3A6B)', color: '#EDE8DF' }}
+                        onClick={downloadAllSlides}
+                      >
+                        <Download className="h-4.5 w-4.5" />
+                        Exportar Todos os Slides como PNG ({carouselResult.slides.length})
+                      </Button>
                     </div>
                   )}
 
