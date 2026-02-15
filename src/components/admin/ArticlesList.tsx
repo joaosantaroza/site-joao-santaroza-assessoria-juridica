@@ -17,7 +17,8 @@ import {
   FileText,
   Calendar,
   Pencil,
-  Clock
+  Clock,
+  Download
 } from 'lucide-react';
 import {
   AlertDialog,
@@ -45,6 +46,7 @@ interface BlogPost {
   scheduled_at: string | null;
   created_at: string;
   updated_at: string;
+  pdf_url: string | null;
 }
 
 interface ArticlesListProps {
@@ -287,7 +289,22 @@ export function ArticlesList({ refreshTrigger, onEditArticle }: ArticlesListProp
                             <Eye className="h-4 w-4 text-accent" />
                           )}
                         </Button>
-                        
+                        {post.pdf_url && (
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => {
+                              const a = document.createElement('a');
+                              a.href = post.pdf_url!;
+                              a.download = `${post.slug}.pdf`;
+                              a.target = '_blank';
+                              a.click();
+                            }}
+                            title="Baixar PDF"
+                          >
+                            <Download className="h-4 w-4 text-accent" />
+                          </Button>
+                        )}
                         <AlertDialog>
                           <AlertDialogTrigger asChild>
                             <Button 
