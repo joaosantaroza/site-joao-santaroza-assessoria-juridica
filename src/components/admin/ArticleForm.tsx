@@ -37,7 +37,8 @@ import {
   HelpCircle,
   TrendingUp,
   Target,
-  MapPin
+  MapPin,
+  Download
 } from 'lucide-react';
 import { TagInput } from '@/components/ui/tag-input';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
@@ -141,6 +142,8 @@ export function ArticleForm({ onSuccess, editingArticle, onCancelEdit }: Article
   const [ebookCoverUrl, setEbookCoverUrl] = useState('');
   const [isUploadingPdf, setIsUploadingPdf] = useState(false);
   const [isUploadingCover, setIsUploadingCover] = useState(false);
+  const [generatedPdfUrl, setGeneratedPdfUrl] = useState<string | null>(null);
+  const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
   
   const fileInputRef = useRef<HTMLInputElement>(null);
   const pdfInputRef = useRef<HTMLInputElement>(null);
@@ -812,6 +815,8 @@ export function ArticleForm({ onSuccess, editingArticle, onCancelEdit }: Article
 
   // Generate PDF in background (fire-and-forget)
   const generateArticlePdf = async (articleId: string, slug: string, articleTitle: string, articleContent: string, articleExcerpt: string) => {
+    setIsGeneratingPdf(true);
+    setGeneratedPdfUrl(null);
     try {
       const { data: { session } } = await supabase.auth.getSession();
       const response = await fetch(
@@ -827,13 +832,21 @@ export function ArticleForm({ onSuccess, editingArticle, onCancelEdit }: Article
         }
       );
       if (response.ok) {
+        const data = await response.json();
+        const pdfUrl = data?.pdf_url || null;
+        if (pdfUrl) {
+          setGeneratedPdfUrl(pdfUrl);
+        }
         console.log('[PDF] Gerado com sucesso');
         toast({ title: '📄 PDF gerado!', description: 'O PDF do artigo foi criado automaticamente.' });
       } else {
         console.error('[PDF] Erro:', await response.text());
+        toast({ title: 'Erro ao gerar PDF', variant: 'destructive' });
       }
     } catch (err) {
       console.error('[PDF] Erro ao gerar PDF:', err);
+    } finally {
+      setIsGeneratingPdf(false);
     }
   };
 
@@ -2082,6 +2095,59 @@ export function ArticleForm({ onSuccess, editingArticle, onCancelEdit }: Article
             )}
           </Button>
         </div>
+
+        {/* PDF Generation Status / Download */}
+        {(isGeneratingPdf || generatedPdfUrl) && (
+          <div className={cn(
+            "flex items-center gap-3 p-4 rounded-lg border animate-in fade-in-0 slide-in-from-bottom-2",
+            isGeneratingPdf
+              ? "bg-muted/50 border-border"
+              : "border-accent/30 bg-accent/5"
+          )}>
+            {isGeneratingPdf ? (
+              <>
+                <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+                <div className="flex-1">
+                  <p className="text-sm font-medium">Gerando PDF do artigo...</p>
+                  <p className="text-xs text-muted-foreground">Isso pode levar alguns segundos</p>
+                </div>
+              </>
+            ) : generatedPdfUrl ? (
+              <>
+                <div className="h-10 w-10 rounded-lg bg-accent/10 flex items-center justify-center shrink-0">
+                  <FileDown className="h-5 w-5 text-accent" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-semibold">PDF gerado com sucesso!</p>
+                  <p className="text-xs text-muted-foreground truncate">{generatedPdfUrl.split('/').pop()}</p>
+                </div>
+                <Button
+                  variant="default"
+                  size="sm"
+                  className="gap-2 shrink-0"
+                  onClick={() => {
+                    const a = document.createElement('a');
+                    a.href = generatedPdfUrl;
+                    a.download = '';
+                    a.target = '_blank';
+                    a.click();
+                  }}
+                >
+                  <Download className="h-4 w-4" />
+                  Baixar PDF
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 shrink-0"
+                  onClick={() => setGeneratedPdfUrl(null)}
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              </>
+            ) : null}
+          </div>
+        )}
 
         {/* Preview Modal */}
         <ArticlePreviewModal
