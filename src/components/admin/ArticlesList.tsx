@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
 import { 
   Loader2, 
@@ -19,7 +20,8 @@ import {
   Calendar,
   Pencil,
   Clock,
-  Download
+  Download,
+  ExternalLink
 } from 'lucide-react';
 import {
   AlertDialog,
@@ -62,6 +64,8 @@ export function ArticlesList({ refreshTrigger, onEditArticle }: ArticlesListProp
   const [togglingId, setTogglingId] = useState<string | null>(null);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [isDownloadingBatch, setIsDownloadingBatch] = useState(false);
+  const [pdfViewerUrl, setPdfViewerUrl] = useState<string | null>(null);
+  const [pdfViewerTitle, setPdfViewerTitle] = useState('');
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -377,20 +381,33 @@ export function ArticlesList({ refreshTrigger, onEditArticle }: ArticlesListProp
                           )}
                         </Button>
                         {post.pdf_url && (
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => {
-                              const a = document.createElement('a');
-                              a.href = post.pdf_url!;
-                              a.download = `${post.slug}.pdf`;
-                              a.target = '_blank';
-                              a.click();
-                            }}
-                            title="Baixar PDF"
-                          >
-                            <Download className="h-4 w-4 text-accent" />
-                          </Button>
+                          <>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => {
+                                setPdfViewerUrl(post.pdf_url!);
+                                setPdfViewerTitle(post.title);
+                              }}
+                              title="Visualizar PDF"
+                            >
+                              <FileText className="h-4 w-4 text-accent" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => {
+                                const a = document.createElement('a');
+                                a.href = post.pdf_url!;
+                                a.download = `${post.slug}.pdf`;
+                                a.target = '_blank';
+                                a.click();
+                              }}
+                              title="Baixar PDF"
+                            >
+                              <Download className="h-4 w-4 text-muted-foreground" />
+                            </Button>
+                          </>
                         )}
                         <AlertDialog>
                           <AlertDialogTrigger asChild>
@@ -429,6 +446,50 @@ export function ArticlesList({ refreshTrigger, onEditArticle }: ArticlesListProp
             </Table>
           </div>
         )}
+
+        {/* PDF Viewer Modal */}
+        <Dialog open={!!pdfViewerUrl} onOpenChange={(open) => { if (!open) setPdfViewerUrl(null); }}>
+          <DialogContent className="max-w-4xl h-[85vh] flex flex-col p-0">
+            <DialogHeader className="px-6 pt-6 pb-2 flex-shrink-0">
+              <DialogTitle className="flex items-center justify-between pr-8">
+                <span className="truncate">{pdfViewerTitle}</span>
+                <div className="flex items-center gap-2 flex-shrink-0">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="gap-1.5"
+                    onClick={() => {
+                      const a = document.createElement('a');
+                      a.href = pdfViewerUrl!;
+                      a.download = `${pdfViewerTitle}.pdf`;
+                      a.target = '_blank';
+                      a.click();
+                    }}
+                  >
+                    <Download className="h-3.5 w-3.5" />
+                    Baixar
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="gap-1.5"
+                    onClick={() => window.open(pdfViewerUrl!, '_blank')}
+                  >
+                    <ExternalLink className="h-3.5 w-3.5" />
+                    Abrir
+                  </Button>
+                </div>
+              </DialogTitle>
+            </DialogHeader>
+            <div className="flex-1 px-6 pb-6 min-h-0">
+              <iframe
+                src={pdfViewerUrl || ''}
+                className="w-full h-full rounded-lg border border-border"
+                title={`PDF: ${pdfViewerTitle}`}
+              />
+            </div>
+          </DialogContent>
+        </Dialog>
       </CardContent>
     </Card>
   );
