@@ -420,6 +420,162 @@ export function SocialCaptionGenerator({ articles }: SocialCaptionGeneratorProps
     }
   };
 
+  const downloadSlideAsImage = (slide: CarouselResult['slides'][0], index: number, bgImageUrl?: string) => {
+    const SIZE = 1080;
+    const canvas = document.createElement('canvas');
+    canvas.width = SIZE;
+    canvas.height = SIZE;
+    const ctx = canvas.getContext('2d')!;
+
+    const NAVY = '#041E42';
+    const BRONZE = '#B8945A';
+    const SAND = '#EDE8DF';
+    const WHITE = '#FFFFFF';
+
+    const drawContent = () => {
+      // Overlay for bg images
+      if (bgImageUrl) {
+        ctx.fillStyle = 'rgba(4, 30, 66, 0.75)';
+        ctx.fillRect(0, 0, SIZE, SIZE);
+      }
+
+      // Top accent line
+      const grad = ctx.createLinearGradient(0, 0, SIZE, 0);
+      grad.addColorStop(0, BRONZE);
+      grad.addColorStop(1, '#D4A855');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, SIZE, 6);
+
+      // Bottom accent line
+      ctx.fillStyle = BRONZE;
+      ctx.fillRect(0, SIZE - 6, SIZE, 6);
+
+      // Slide number badge
+      ctx.fillStyle = BRONZE;
+      ctx.beginPath();
+      ctx.roundRect(60, 60, 70, 36, 18);
+      ctx.fill();
+      ctx.fillStyle = NAVY;
+      ctx.font = 'bold 18px Montserrat, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(`${index + 1}/${carouselResult?.slides?.length || 0}`, 95, 84);
+
+      // Type label
+      const typeLabel = slide.type === 'capa' ? 'CAPA' : slide.type === 'cta' ? 'CTA' : 'CONTEÚDO';
+      ctx.fillStyle = BRONZE + '99';
+      ctx.font = '600 14px Montserrat, sans-serif';
+      ctx.textAlign = 'right';
+      ctx.fillText(typeLabel, SIZE - 60, 84);
+
+      // Title
+      ctx.fillStyle = slide.type === 'capa' ? BRONZE : WHITE;
+      ctx.font = `bold ${slide.type === 'capa' ? 52 : 44}px Montserrat, sans-serif`;
+      ctx.textAlign = 'center';
+      wrapText(ctx, slide.titulo, SIZE / 2, slide.type === 'capa' ? SIZE / 2 - 40 : SIZE / 2 - 60, SIZE - 140, slide.type === 'capa' ? 64 : 54);
+
+      // Subtitle/text
+      const subText = slide.subtitulo || slide.texto || '';
+      if (subText) {
+        ctx.fillStyle = SAND + 'CC';
+        ctx.font = `400 ${slide.type === 'capa' ? 26 : 24}px Montserrat, sans-serif`;
+        const titleLines = getWrappedLines(ctx, slide.titulo, SIZE - 140);
+        const titleHeight = titleLines.length * (slide.type === 'capa' ? 64 : 54);
+        const startY = (slide.type === 'capa' ? SIZE / 2 - 40 : SIZE / 2 - 60) + titleHeight + 30;
+        wrapText(ctx, subText, SIZE / 2, startY, SIZE - 160, 34);
+      }
+
+      // Decorative corners
+      ctx.strokeStyle = BRONZE + '40';
+      ctx.lineWidth = 2;
+      const cornerSize = 40;
+      // Top-left
+      ctx.beginPath();
+      ctx.moveTo(40, 40 + cornerSize); ctx.lineTo(40, 40); ctx.lineTo(40 + cornerSize, 40);
+      ctx.stroke();
+      // Bottom-right
+      ctx.beginPath();
+      ctx.moveTo(SIZE - 40, SIZE - 40 - cornerSize); ctx.lineTo(SIZE - 40, SIZE - 40); ctx.lineTo(SIZE - 40 - cornerSize, SIZE - 40);
+      ctx.stroke();
+
+      // Download
+      canvas.toBlob((blob) => {
+        if (!blob) return;
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `slide-${index + 1}-${selectedArticle?.slug || 'instagram'}.png`;
+        a.click();
+        URL.revokeObjectURL(url);
+      }, 'image/png');
+    };
+
+    if (bgImageUrl) {
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.onload = () => {
+        ctx.drawImage(img, 0, 0, SIZE, SIZE);
+        drawContent();
+      };
+      img.onerror = () => {
+        ctx.fillStyle = NAVY;
+        ctx.fillRect(0, 0, SIZE, SIZE);
+        drawContent();
+      };
+      img.src = bgImageUrl;
+    } else {
+      // Gradient background
+      const bgGrad = ctx.createLinearGradient(0, 0, SIZE, SIZE);
+      bgGrad.addColorStop(0, NAVY);
+      bgGrad.addColorStop(0.5, '#062B5A');
+      bgGrad.addColorStop(1, NAVY);
+      ctx.fillStyle = bgGrad;
+      ctx.fillRect(0, 0, SIZE, SIZE);
+
+      // Subtle pattern
+      ctx.globalAlpha = 0.03;
+      for (let x = 0; x < SIZE; x += 60) {
+        for (let y = 0; y < SIZE; y += 60) {
+          ctx.fillStyle = WHITE;
+          ctx.fillRect(x, y, 1, 1);
+        }
+      }
+      ctx.globalAlpha = 1;
+      drawContent();
+    }
+  };
+
+  const wrapText = (ctx: CanvasRenderingContext2D, text: string, x: number, y: number, maxWidth: number, lineHeight: number) => {
+    const lines = getWrappedLines(ctx, text, maxWidth);
+    lines.forEach((line, i) => {
+      ctx.fillText(line, x, y + i * lineHeight);
+    });
+  };
+
+  const getWrappedLines = (ctx: CanvasRenderingContext2D, text: string, maxWidth: number): string[] => {
+    const words = text.split(' ');
+    const lines: string[] = [];
+    let currentLine = '';
+    for (const word of words) {
+      const testLine = currentLine ? `${currentLine} ${word}` : word;
+      if (ctx.measureText(testLine).width > maxWidth && currentLine) {
+        lines.push(currentLine);
+        currentLine = word;
+      } else {
+        currentLine = testLine;
+      }
+    }
+    if (currentLine) lines.push(currentLine);
+    return lines;
+  };
+
+  const downloadAllSlides = () => {
+    if (!carouselResult?.slides?.length) return;
+    carouselResult.slides.forEach((slide, i) => {
+      setTimeout(() => downloadSlideAsImage(slide, i, slideImages[i]), i * 300);
+    });
+    toast({ title: `Baixando ${carouselResult.slides.length} slides...` });
+  };
+
   const buildCaptionExportText = () => {
     if (!captionResult || !selectedArticle) return '';
     return [
@@ -1067,22 +1223,15 @@ export function SocialCaptionGenerator({ articles }: SocialCaptionGeneratorProps
                     </div>
                   </div>
 
-                  {/* Download all slide images */}
-                  {Object.keys(slideImages).length > 0 && (
-                    <Button
-                      variant="outline"
-                      className="w-full gap-2"
-                      onClick={() => {
-                        Object.entries(slideImages).forEach(([idx, url]) => {
-                          const slideNum = parseInt(idx) + 1;
-                          handleDownloadImage(url, `slide-${slideNum}-${selectedArticle?.slug || 'instagram'}.jpg`);
-                        });
-                      }}
-                    >
-                      <Download className="h-4 w-4" />
-                      Baixar Todas as Imagens ({Object.keys(slideImages).length})
-                    </Button>
-                  )}
+                  {/* Download all slides as branded images */}
+                  <Button
+                    variant="default"
+                    className="w-full gap-2"
+                    onClick={downloadAllSlides}
+                  >
+                    <Download className="h-4 w-4" />
+                    Baixar Todos os Slides como Imagem ({carouselResult.slides.length})
+                  </Button>
 
                   {carouselResult.slides?.length > 0 && (
                     <div className="space-y-3">
@@ -1112,10 +1261,13 @@ export function SocialCaptionGenerator({ articles }: SocialCaptionGeneratorProps
                           Slide
                         </Button>
                       </div>
-                      <div className="grid gap-2">
+
+                      {/* Visual slide grid */}
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                         {carouselResult.slides.map((slide, i) => {
                           const isEditingThis = editingSlideIndex === i;
                           const isSelected = i === previewSlideIndex;
+                          const hasImage = !!slideImages[i];
 
                           const updateSlide = (field: string, value: string) => {
                             const newSlides = [...carouselResult.slides];
@@ -1128,7 +1280,6 @@ export function SocialCaptionGenerator({ articles }: SocialCaptionGeneratorProps
                             const target = i + dir;
                             if (target < 0 || target >= newSlides.length) return;
                             [newSlides[i], newSlides[target]] = [newSlides[target], newSlides[i]];
-                            // Renumber
                             newSlides.forEach((s, idx) => { s.slide = idx + 1; });
                             setCarouselResult({ ...carouselResult, slides: newSlides });
                             setPreviewSlideIndex(target);
@@ -1148,79 +1299,107 @@ export function SocialCaptionGenerator({ articles }: SocialCaptionGeneratorProps
                           };
 
                           return (
-                            <div
-                              key={i}
-                              className={`rounded-lg border transition-all ${
-                                isSelected ? 'ring-2 ring-primary/50' : ''
-                              } ${
-                                slide.type === 'capa'
-                                  ? 'bg-primary/5 border-primary/20'
-                                  : slide.type === 'cta'
-                                  ? 'bg-accent/5 border-accent/20'
-                                  : 'bg-muted/50 border-border'
-                              }`}
-                            >
-                              {/* Slide header — always visible, click to select & toggle edit */}
+                            <div key={i} className="space-y-1">
+                              {/* Visual slide thumbnail */}
                               <div
-                                className="flex items-center gap-2 px-3 py-2 cursor-pointer"
+                                className={cn(
+                                  "relative aspect-square rounded-xl overflow-hidden cursor-pointer transition-all group border-2",
+                                  isSelected ? "border-primary ring-2 ring-primary/30 scale-[1.02]" : "border-transparent hover:border-primary/40"
+                                )}
                                 onClick={() => {
                                   setPreviewSlideIndex(i);
                                   setEditingSlideIndex(isEditingThis ? null : i);
                                 }}
+                                style={hasImage ? {
+                                  backgroundImage: `url(${slideImages[i]})`,
+                                  backgroundSize: 'cover',
+                                  backgroundPosition: 'center',
+                                } : {
+                                  background: slide.type === 'capa'
+                                    ? 'linear-gradient(135deg, #041E42 0%, #062B5A 50%, #041E42 100%)'
+                                    : slide.type === 'cta'
+                                    ? 'linear-gradient(135deg, #B8945A 0%, #D4A855 50%, #B8945A 100%)'
+                                    : 'linear-gradient(135deg, #041E42 0%, #0A3A6B 100%)',
+                                }}
                               >
-                                <GripVertical className="h-3.5 w-3.5 text-muted-foreground/40 shrink-0" />
-                                <span className="text-xs font-bold bg-primary/10 text-primary px-2 py-0.5 rounded-full shrink-0">
+                                {/* Overlay for images */}
+                                {hasImage && <div className="absolute inset-0 bg-[#041E42]/60" />}
+
+                                {/* Top accent bar */}
+                                <div className="absolute top-0 left-0 right-0 h-1" style={{ background: 'linear-gradient(90deg, #B8945A, #D4A855)' }} />
+
+                                {/* Slide number badge */}
+                                <div className="absolute top-2 left-2 z-10 px-2 py-0.5 rounded-full text-[10px] font-bold" style={{ background: '#B8945A', color: '#041E42' }}>
                                   {slide.slide}
-                                </span>
-                                <span className="text-xs uppercase tracking-wider text-muted-foreground shrink-0">
-                                  {slide.type === 'capa' ? '🎯' : slide.type === 'cta' ? '📲' : '📄'}
-                                </span>
-                                <span className="text-sm font-medium truncate flex-1">{slide.titulo}</span>
-                                <div className="flex items-center gap-0.5 shrink-0">
+                                </div>
+
+                                {/* Type badge */}
+                                <div className="absolute top-2 right-2 z-10 text-[9px] font-semibold uppercase tracking-wider" style={{ color: '#B8945A99' }}>
+                                  {slide.type === 'capa' ? 'CAPA' : slide.type === 'cta' ? 'CTA' : ''}
+                                </div>
+
+                                {/* Content */}
+                                <div className="absolute inset-0 flex flex-col items-center justify-center p-4 z-10 text-center">
+                                  <h4 className={cn(
+                                    "font-bold leading-tight line-clamp-3 text-xs sm:text-sm",
+                                    slide.type === 'capa' ? 'text-[#B8945A]' : 'text-white'
+                                  )}>
+                                    {slide.titulo}
+                                  </h4>
+                                  {(slide.subtitulo || slide.texto) && (
+                                    <p className="text-[10px] sm:text-xs mt-1 line-clamp-2 text-[#EDE8DF]/70">
+                                      {slide.subtitulo || slide.texto}
+                                    </p>
+                                  )}
+                                </div>
+
+                                {/* Hover actions overlay */}
+                                <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 z-20">
                                   <Button
                                     variant="ghost"
                                     size="icon"
-                                    className="h-6 w-6"
-                                    onClick={(e) => { e.stopPropagation(); moveSlide(-1); }}
-                                    disabled={i === 0}
+                                    className="h-8 w-8 text-white hover:bg-white/20"
+                                    onClick={(e) => { e.stopPropagation(); downloadSlideAsImage(slide, i, slideImages[i]); }}
+                                    title="Baixar slide"
                                   >
-                                    <ArrowUp className="h-3 w-3" />
+                                    <Download className="h-4 w-4" />
                                   </Button>
                                   <Button
                                     variant="ghost"
                                     size="icon"
-                                    className="h-6 w-6"
-                                    onClick={(e) => { e.stopPropagation(); moveSlide(1); }}
-                                    disabled={i === carouselResult.slides.length - 1}
+                                    className="h-8 w-8 text-white hover:bg-white/20"
+                                    onClick={(e) => { e.stopPropagation(); setEditingSlideIndex(isEditingThis ? null : i); setPreviewSlideIndex(i); }}
+                                    title="Editar slide"
                                   >
-                                    <ArrowDown className="h-3 w-3" />
+                                    <Pencil className="h-4 w-4" />
                                   </Button>
-                                  <Pencil className={`h-3 w-3 ml-1 transition-colors ${isEditingThis ? 'text-primary' : 'text-muted-foreground/40'}`} />
-                                  {slideImages[i] && (
-                                    <Button
-                                      variant="ghost"
-                                      size="icon"
-                                      className="h-6 w-6 ml-0.5"
-                                      onClick={(e) => {
-                                        e.stopPropagation();
-                                        handleDownloadImage(slideImages[i], `slide-${i + 1}-${selectedArticle?.slug || 'instagram'}.jpg`);
-                                      }}
-                                      title="Baixar imagem do slide"
-                                    >
-                                      <Download className="h-3 w-3" />
+                                  {i > 0 && (
+                                    <Button variant="ghost" size="icon" className="h-8 w-8 text-white hover:bg-white/20"
+                                      onClick={(e) => { e.stopPropagation(); moveSlide(-1); }}>
+                                      <ArrowUp className="h-4 w-4" />
+                                    </Button>
+                                  )}
+                                  {i < carouselResult.slides.length - 1 && (
+                                    <Button variant="ghost" size="icon" className="h-8 w-8 text-white hover:bg-white/20"
+                                      onClick={(e) => { e.stopPropagation(); moveSlide(1); }}>
+                                      <ArrowDown className="h-4 w-4" />
                                     </Button>
                                   )}
                                 </div>
+
+                                {/* Bottom accent */}
+                                <div className="absolute bottom-0 left-0 right-0 h-1" style={{ background: '#B8945A' }} />
+
+                                {/* Corner decorations */}
+                                <div className="absolute top-[6px] left-[6px] w-3 h-3 border-t border-l border-[#B8945A]/30" />
+                                <div className="absolute bottom-[6px] right-[6px] w-3 h-3 border-b border-r border-[#B8945A]/30" />
                               </div>
 
-                              {/* Inline edit panel — expands when this slide is being edited */}
+                              {/* Editing panel below card */}
                               {isEditingThis && (
-                                <div className="px-3 pb-3 space-y-2 animate-in slide-in-from-top-2 fade-in-0 duration-200" onClick={(e) => e.stopPropagation()}>
-                                  <div className="flex gap-2">
-                                    <Select
-                                      value={slide.type}
-                                      onValueChange={(val) => updateSlide('type', val)}
-                                    >
+                                <div className="col-span-full p-3 rounded-lg border border-primary/20 bg-card space-y-2 animate-in fade-in-0 slide-in-from-top-2" onClick={(e) => e.stopPropagation()}>
+                                  <div className="flex gap-2 items-center">
+                                    <Select value={slide.type} onValueChange={(val) => updateSlide('type', val)}>
                                       <SelectTrigger className="w-[130px] h-8 text-xs">
                                         <SelectValue />
                                       </SelectTrigger>
@@ -1231,41 +1410,13 @@ export function SocialCaptionGenerator({ articles }: SocialCaptionGeneratorProps
                                       </SelectContent>
                                     </Select>
                                     <div className="flex-1" />
-                                    <CopyButton
-                                      text={`${slide.titulo}\n${slide.subtitulo || slide.texto || ''}`}
-                                      field={`slide-${i}`}
-                                    />
-                                    <Button
-                                      variant="ghost"
-                                      size="icon"
-                                      className="h-8 w-8 text-destructive/60 hover:text-destructive"
-                                      onClick={removeSlide}
-                                    >
+                                    <CopyButton text={`${slide.titulo}\n${slide.subtitulo || slide.texto || ''}`} field={`slide-${i}`} />
+                                    <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive/60 hover:text-destructive" onClick={removeSlide}>
                                       <Trash2 className="h-3.5 w-3.5" />
                                     </Button>
                                   </div>
-                                  <Input
-                                    value={slide.titulo}
-                                    onChange={(e) => updateSlide('titulo', e.target.value)}
-                                    className="text-sm font-semibold"
-                                    placeholder="Título do slide"
-                                    autoFocus
-                                  />
-                                  <Textarea
-                                    value={slide.subtitulo || slide.texto || ''}
-                                    onChange={(e) => updateSlide(slide.subtitulo !== undefined ? 'subtitulo' : 'texto', e.target.value)}
-                                    className="text-sm min-h-[60px]"
-                                    placeholder="Texto do slide"
-                                  />
-                                </div>
-                              )}
-
-                              {/* Collapsed view — show text preview when not editing */}
-                              {!isEditingThis && (slide.subtitulo || slide.texto) && (
-                                <div className="px-3 pb-2">
-                                  <p className="text-xs text-muted-foreground line-clamp-2">
-                                    {slide.subtitulo || slide.texto}
-                                  </p>
+                                  <Input value={slide.titulo} onChange={(e) => updateSlide('titulo', e.target.value)} className="text-sm font-semibold" placeholder="Título do slide" autoFocus />
+                                  <Textarea value={slide.subtitulo || slide.texto || ''} onChange={(e) => updateSlide(slide.subtitulo !== undefined ? 'subtitulo' : 'texto', e.target.value)} className="text-sm min-h-[60px]" placeholder="Texto do slide" />
                                 </div>
                               )}
                             </div>
