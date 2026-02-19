@@ -691,9 +691,10 @@ export function ArticleForm({ onSuccess, editingArticle, onCancelEdit }: Article
       // Use pdf.js to extract text from PDF
       const arrayBuffer = await file.arrayBuffer();
       
-      // Dynamic import of pdfjs-dist
+      // Dynamic import of pdfjs-dist with Vite-compatible worker
       const pdfjsLib = await import('pdfjs-dist');
-      pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
+      const workerModule = await import('pdfjs-dist/build/pdf.worker.mjs?url');
+      pdfjsLib.GlobalWorkerOptions.workerSrc = workerModule.default;
       
       const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
       let fullText = '';
