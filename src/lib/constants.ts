@@ -587,5 +587,210 @@ export const BLOG_ARTICLES: BlogArticle[] = [
 
       <p class="text-xl font-semibold text-center text-primary">Precisa de orientação sobre gestão de ponto e segurança trabalhista? Agende uma consulta.</p>
     `
+  },
+  {
+    id: 'recuperacao-conta-instagram',
+    title: 'Conta do Instagram Hackeada? Saiba Como Recuperar Judicialmente',
+    excerpt: 'Teve sua conta do Instagram invadida ou bloqueada? Conheça os caminhos jurídicos para recuperar seu perfil, seus seguidores e buscar indenização.',
+    categories: ['Direito Digital', 'Recuperação de Contas'],
+    date: '10 Fev 2026',
+    readTime: '7 min',
+    image: 'https://images.unsplash.com/photo-1611262588024-d12430b98920?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+    content: `
+      <p class="text-xl font-medium mb-8 text-justify">A invasão de contas do Instagram é um problema crescente no Brasil, afetando tanto perfis pessoais quanto comerciais. Quando os canais de atendimento da plataforma falham, a via judicial se torna o caminho mais eficaz para <strong>recuperar o acesso ao perfil e responsabilizar a empresa</strong>.</p>
+
+      <h2>Por que as contas são hackeadas?</h2>
+      <p class="text-justify">Os ataques mais comuns ocorrem através de:</p>
+      <ul>
+        <li><strong>Phishing</strong> – links falsos que simulam páginas do Instagram para capturar login e senha</li>
+        <li><strong>Engenharia social</strong> – golpistas se passam por suporte técnico ou amigos</li>
+        <li><strong>SIM Swap</strong> – clonagem do chip do celular para interceptar códigos de verificação</li>
+        <li><strong>Vazamento de dados</strong> – senhas expostas em bases de dados comprometidas</li>
+      </ul>
+
+      <h2>O que fazer imediatamente</h2>
+      <p class="text-justify">Ao perceber a invasão, algumas medidas urgentes devem ser tomadas:</p>
+      <ol>
+        <li><strong>Registre um Boletim de Ocorrência</strong> – pode ser feito online na delegacia virtual do seu estado</li>
+        <li><strong>Tente a recuperação pela plataforma</strong> – utilize o formulário oficial de conta comprometida</li>
+        <li><strong>Documente tudo</strong> – prints das tentativas de recuperação, e-mails recebidos e publicações feitas pelo invasor</li>
+        <li><strong>Avise seus contatos</strong> – para evitar que caiam em golpes aplicados pelo hacker</li>
+      </ol>
+
+      <h2>Quando a via judicial é necessária?</h2>
+      <p class="text-justify">A ação judicial se torna o caminho indicado quando:</p>
+      <ul>
+        <li>A plataforma não responde às solicitações de recuperação</li>
+        <li>O suporte nega o pedido sem justificativa adequada</li>
+        <li>A conta tem valor comercial significativo (influenciadores, empresas)</li>
+        <li>Houve prejuízo financeiro decorrente da invasão</li>
+      </ul>
+
+      <h2>O que pode ser pleiteado judicialmente</h2>
+      <p class="text-justify">Na ação contra a Meta (empresa controladora do Instagram), é possível requerer:</p>
+      <ul>
+        <li><strong>Tutela de urgência</strong> – ordem judicial para recuperação imediata da conta</li>
+        <li><strong>Obrigação de fazer</strong> – restabelecimento do acesso com todos os dados e seguidores</li>
+        <li><strong>Indenização por danos morais</strong> – pelo transtorno e exposição indevida</li>
+        <li><strong>Indenização por danos materiais</strong> – lucros cessantes para contas comerciais</li>
+      </ul>
+
+      <h2>O Marco Civil da Internet e a responsabilidade da plataforma</h2>
+      <p class="text-justify">O Marco Civil da Internet (Lei 12.965/2014) e o Código de Defesa do Consumidor fundamentam a responsabilidade da Meta pela segurança das contas dos usuários. Os tribunais brasileiros têm reconhecido que a <strong>falha na proteção dos dados e na recuperação tempestiva configura defeito na prestação do serviço</strong>.</p>
+
+      <h2>Documentos necessários para a ação</h2>
+      <ul>
+        <li>Boletim de Ocorrência</li>
+        <li>Prints da conta antes e depois da invasão</li>
+        <li>Comprovantes de tentativa de recuperação junto à plataforma</li>
+        <li>Provas do valor comercial da conta (contratos, faturamento)</li>
+        <li>E-mails trocados com o suporte da Meta</li>
+      </ul>
+
+      <p class="text-xl font-semibold text-center text-primary">Busque orientação jurídica especializada para recuperar sua conta e seus direitos.</p>
+    `
+  },
+  {
+    id: 'recuperacao-conta-facebook',
+    title: 'Facebook Hackeado ou Desativado? Conheça Seus Direitos para Recuperar a Conta',
+    excerpt: 'Conta do Facebook invadida, clonada ou desativada sem motivo? Entenda como a Justiça pode obrigar a Meta a devolver seu acesso e indenizar os danos.',
+    categories: ['Direito Digital', 'Recuperação de Contas'],
+    date: '12 Fev 2026',
+    readTime: '7 min',
+    image: 'https://images.unsplash.com/photo-1585559604959-6388fe69c92a?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+    content: `
+      <p class="text-xl font-medium mb-8 text-justify">Ter o Facebook hackeado ou desativado sem aviso é uma situação que causa enorme transtorno, especialmente para quem utiliza a plataforma como ferramenta de trabalho, comunicação ou gestão de páginas comerciais. Quando os canais internos da Meta não resolvem, <strong>a Justiça brasileira oferece mecanismos eficazes para a recuperação</strong>.</p>
+
+      <h2>Principais situações que geram perda de acesso</h2>
+      <p class="text-justify">A perda de acesso ao Facebook pode ocorrer por diferentes motivos:</p>
+      <ul>
+        <li><strong>Invasão por hackers</strong> – alteração de e-mail e senha por terceiros mal-intencionados</li>
+        <li><strong>Clonagem de perfil</strong> – criação de conta falsa usando seus dados e fotos</li>
+        <li><strong>Desativação unilateral</strong> – a Meta desativa a conta alegando violação de termos de uso</li>
+        <li><strong>Bloqueio por denúncias falsas</strong> – concorrentes ou desafetos reportam a conta indevidamente</li>
+      </ul>
+
+      <h2>Impactos da perda de acesso</h2>
+      <p class="text-justify">A perda da conta pode gerar consequências sérias:</p>
+      <ul>
+        <li>Perda de contatos pessoais e profissionais acumulados por anos</li>
+        <li>Impossibilidade de gerenciar páginas comerciais e campanhas de anúncios</li>
+        <li>Exposição a golpes aplicados pelo invasor em nome da vítima</li>
+        <li>Danos à reputação pessoal e profissional</li>
+      </ul>
+
+      <h2>O caminho judicial para recuperação</h2>
+      <p class="text-justify">A ação judicial contra a Meta Platforms Inc. pode ser proposta com base no <strong>Código de Defesa do Consumidor</strong> e no <strong>Marco Civil da Internet</strong>. O processo normalmente segue estas etapas:</p>
+      <ol>
+        <li><strong>Pedido de tutela de urgência</strong> – solicita-se ao juiz uma ordem imediata para que a Meta restabeleça o acesso</li>
+        <li><strong>Citação da Meta</strong> – a empresa é notificada e deve cumprir a decisão sob pena de multa diária</li>
+        <li><strong>Instrução processual</strong> – apresentação de provas e argumentos</li>
+        <li><strong>Sentença</strong> – decisão final sobre recuperação e eventuais indenizações</li>
+      </ol>
+
+      <h2>Indenizações cabíveis</h2>
+      <p class="text-justify">Além da recuperação da conta, é possível pleitear:</p>
+      <ul>
+        <li><strong>Danos morais</strong> – pelo constrangimento, angústia e violação da privacidade</li>
+        <li><strong>Danos materiais</strong> – prejuízos financeiros comprovados (perda de clientes, contratos, vendas)</li>
+        <li><strong>Lucros cessantes</strong> – receita que deixou de ser gerada durante o período sem acesso</li>
+      </ul>
+
+      <h2>Provas importantes para o processo</h2>
+      <ul>
+        <li>Boletim de Ocorrência registrado</li>
+        <li>Prints da conta e das tentativas de recuperação</li>
+        <li>E-mails do Facebook/Meta sobre a desativação ou invasão</li>
+        <li>Comprovantes de atividade comercial vinculada à conta</li>
+        <li>Testemunhos de pessoas que foram abordadas pelo invasor</li>
+      </ul>
+
+      <h2>Prevenção: como proteger sua conta</h2>
+      <ul>
+        <li>Ative a <strong>autenticação em dois fatores</strong> por aplicativo (não por SMS)</li>
+        <li>Use senhas fortes e exclusivas para cada plataforma</li>
+        <li>Desconfie de links recebidos por mensagem, mesmo de conhecidos</li>
+        <li>Revise periodicamente os dispositivos conectados à sua conta</li>
+      </ul>
+
+      <p class="text-xl font-semibold text-center text-primary">Não conseguiu recuperar sua conta? Busque orientação jurídica para garantir seus direitos.</p>
+    `
+  },
+  {
+    id: 'recuperacao-conta-mercadolivre',
+    title: 'Conta do Mercado Livre Bloqueada? Saiba Como Reverter e Recuperar Seu Saldo',
+    excerpt: 'Teve sua conta suspensa ou bloqueada no Mercado Livre? Entenda os motivos mais comuns, como recorrer e quando a via judicial é o caminho para liberar seu dinheiro.',
+    categories: ['Direito Digital', 'Recuperação de Contas', 'Direito do Consumidor'],
+    date: '14 Fev 2026',
+    readTime: '8 min',
+    image: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+    content: `
+      <p class="text-xl font-medium mb-8 text-justify">O Mercado Livre se tornou uma das principais plataformas de comércio eletrônico do Brasil, e para muitos vendedores representa a principal fonte de renda. Quando uma conta é bloqueada ou suspensa, os impactos financeiros podem ser devastadores, especialmente quando há <strong>saldo retido no Mercado Pago</strong>.</p>
+
+      <h2>Motivos mais comuns para bloqueio</h2>
+      <p class="text-justify">A plataforma pode bloquear ou suspender contas por diversos motivos, nem sempre justificados:</p>
+      <ul>
+        <li><strong>Suspeita de fraude</strong> – algoritmos automáticos podem classificar operações legítimas como suspeitas</li>
+        <li><strong>Denúncias de compradores</strong> – reclamações excessivas, mesmo que infundadas</li>
+        <li><strong>Violação de termos de uso</strong> – venda de produtos restritos ou uso de múltiplas contas</li>
+        <li><strong>Problemas de documentação</strong> – inconsistências nos dados cadastrais</li>
+        <li><strong>Conta hackeada</strong> – terceiros utilizam a conta para aplicar golpes</li>
+      </ul>
+
+      <h2>Os prejuízos do bloqueio indevido</h2>
+      <p class="text-justify">O bloqueio de uma conta ativa pode gerar consequências graves:</p>
+      <ul>
+        <li><strong>Saldo retido no Mercado Pago</strong> – valores de vendas já realizadas ficam inacessíveis</li>
+        <li><strong>Perda de reputação</strong> – anos de avaliações positivas e histórico de vendas</li>
+        <li><strong>Impossibilidade de operar</strong> – perda de clientes e fluxo de caixa</li>
+        <li><strong>Estoque parado</strong> – produtos em fulfillment sem possibilidade de retirada imediata</li>
+      </ul>
+
+      <h2>Passo a passo para tentar a recuperação</h2>
+      <ol>
+        <li><strong>Verifique o motivo do bloqueio</strong> – acesse os e-mails e notificações da plataforma</li>
+        <li><strong>Envie a documentação solicitada</strong> – responda prontamente a qualquer pedido do Mercado Livre</li>
+        <li><strong>Registre reclamação no SAC</strong> – formalize o pedido de desbloqueio</li>
+        <li><strong>Use o Reclame Aqui e Consumidor.gov</strong> – pressão por canais externos pode acelerar a resposta</li>
+        <li><strong>Documente tudo</strong> – salve prints de todas as interações e tentativas</li>
+      </ol>
+
+      <h2>Quando recorrer à Justiça</h2>
+      <p class="text-justify">A via judicial é recomendada quando:</p>
+      <ul>
+        <li>A plataforma não responde ou nega o desbloqueio sem justificativa clara</li>
+        <li>Há valores significativos retidos no Mercado Pago</li>
+        <li>O bloqueio é indevido e causa prejuízos financeiros comprovados</li>
+        <li>A conta foi hackeada e a plataforma não colabora na recuperação</li>
+      </ul>
+
+      <h2>O que pode ser pleiteado na Justiça</h2>
+      <ul>
+        <li><strong>Tutela de urgência</strong> – desbloqueio imediato da conta e liberação dos valores retidos</li>
+        <li><strong>Obrigação de fazer</strong> – restabelecimento completo do acesso e da reputação</li>
+        <li><strong>Danos materiais</strong> – ressarcimento dos lucros cessantes durante o período de bloqueio</li>
+        <li><strong>Danos morais</strong> – pelo transtorno causado pela retenção indevida de valores e perda da atividade comercial</li>
+      </ul>
+
+      <h2>Base legal para a ação</h2>
+      <p class="text-justify">As ações se fundamentam principalmente no:</p>
+      <ul>
+        <li><strong>Código de Defesa do Consumidor</strong> – a relação entre vendedor e plataforma é considerada relação de consumo</li>
+        <li><strong>Marco Civil da Internet</strong> – direito à explicação sobre decisões automatizadas</li>
+        <li><strong>Código Civil</strong> – vedação ao enriquecimento sem causa (retenção indevida de valores)</li>
+      </ul>
+
+      <h2>Documentos necessários</h2>
+      <ul>
+        <li>Comprovante de cadastro na plataforma</li>
+        <li>Histórico de vendas e faturamento</li>
+        <li>Prints do painel mostrando o bloqueio e saldo retido</li>
+        <li>E-mails e notificações recebidos do Mercado Livre</li>
+        <li>Comprovantes de tentativas de contato com o suporte</li>
+        <li>Notas fiscais dos produtos vendidos (se aplicável)</li>
+      </ul>
+
+      <p class="text-xl font-semibold text-center text-primary">Teve sua conta bloqueada indevidamente? Busque orientação jurídica para recuperar seu acesso e seus valores.</p>
+    `
   }
 ];
