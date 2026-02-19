@@ -134,11 +134,15 @@
     @apply text-muted-foreground;
   }
 
-  /* Lead paragraph (first paragraph) */
+  /* Lead paragraph — auto-detected or explicit .article-lead */
   .article-content > p:first-child,
-  .article-content > div > p:first-child {
-    @apply text-xl md:text-2xl font-medium leading-relaxed mb-10 text-foreground/80;
+  .article-content > div > p:first-child,
+  .article-content .article-lead {
+    @apply text-xl md:text-2xl font-medium leading-[1.8] mb-10 text-foreground/80;
     text-align: justify;
+    font-style: italic;
+    border-left: 3px solid hsl(var(--accent) / 0.5);
+    padding-left: 1.25rem;
   }
 
   .article-content h2 {
