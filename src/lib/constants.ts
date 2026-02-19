@@ -5,6 +5,9 @@ import {
   Users, 
   Clock, 
   FileText,
+  Instagram,
+  Facebook,
+  ShoppingBag,
   LucideIcon 
 } from 'lucide-react';
 
@@ -99,6 +102,33 @@ export const SERVICES: Record<string, Service> = {
     heroTitle: 'Assessoria Contratual',
     heroSubtitle: 'Elaboração e revisão de instrumentos contratuais para conferir maior segurança jurídica às suas relações comerciais.',
     features: ['Elaboração de Contratos', 'Revisão de Cláusulas', 'Alterações Societárias', 'Acordos de Sócios']
+  },
+  recovery_instagram: {
+    id: 'recovery_instagram',
+    title: 'Recuperação de Instagram',
+    shortDesc: 'Assessoria jurídica para recuperação de contas hackeadas ou bloqueadas no Instagram.',
+    icon: Instagram,
+    heroTitle: 'Recuperação de Conta do Instagram',
+    heroSubtitle: 'Teve sua conta do Instagram hackeada, invadida ou bloqueada indevidamente? Atuamos judicialmente para garantir a recuperação do seu perfil e proteção dos seus dados.',
+    features: ['Notificação Extrajudicial', 'Ação Judicial contra a Meta', 'Tutela de Urgência', 'Indenização por Danos']
+  },
+  recovery_facebook: {
+    id: 'recovery_facebook',
+    title: 'Recuperação de Facebook',
+    shortDesc: 'Assessoria jurídica para recuperação de contas hackeadas ou bloqueadas no Facebook.',
+    icon: Facebook,
+    heroTitle: 'Recuperação de Conta do Facebook',
+    heroSubtitle: 'Conta do Facebook hackeada ou desativada sem motivo? Atuamos com medidas judiciais para restabelecer seu acesso e responsabilizar a plataforma.',
+    features: ['Notificação Extrajudicial', 'Ação Judicial contra a Meta', 'Tutela de Urgência', 'Indenização por Danos']
+  },
+  recovery_mercadolivre: {
+    id: 'recovery_mercadolivre',
+    title: 'Recuperação de Mercado Livre',
+    shortDesc: 'Assessoria jurídica para recuperação de contas bloqueadas no Mercado Livre.',
+    icon: ShoppingBag,
+    heroTitle: 'Recuperação de Conta do Mercado Livre',
+    heroSubtitle: 'Conta do Mercado Livre bloqueada ou suspensa indevidamente? Atuamos para reverter punições injustas e recuperar seu acesso à plataforma.',
+    features: ['Notificação Extrajudicial', 'Ação Judicial', 'Tutela de Urgência', 'Recuperação de Saldo Retido']
   }
 };
 

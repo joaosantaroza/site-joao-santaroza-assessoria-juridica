@@ -1,4 +1,4 @@
-import { ArrowRight, BookOpen, Shield, Users, Clock, FileText, MessageCircle } from "lucide-react";
+import { ArrowRight, BookOpen, Shield, Users, Clock, FileText, MessageCircle, Instagram, Facebook, ShoppingBag } from "lucide-react";
 import { SectionTitle } from "@/components/ui/SectionTitle";
 import { ServiceCard } from "@/components/ui/ServiceCard";
 import { CONTACT_INFO, ViewType } from "@/lib/constants";
@@ -97,6 +97,36 @@ export const PracticeAreasHub = ({ onNavigate, onBack }: PracticeAreasHubProps) 
               description="Elaboração técnica de contratos e estruturação societária para blindar o negócio."
               ctaText="Proteger Negócio"
               onClick={() => onNavigate('contracts')}
+            />
+          </motion.div>
+
+          <motion.div variants={itemVariants}>
+            <ServiceCard
+              icon={Instagram}
+              title="Recuperação de Instagram"
+              description="Conta hackeada ou bloqueada? Atuação judicial para recuperar seu perfil e seus dados."
+              ctaText="Recuperar Conta"
+              onClick={() => onNavigate('recovery_instagram')}
+            />
+          </motion.div>
+
+          <motion.div variants={itemVariants}>
+            <ServiceCard
+              icon={Facebook}
+              title="Recuperação de Facebook"
+              description="Conta invadida ou desativada indevidamente? Medidas judiciais para restabelecer seu acesso."
+              ctaText="Recuperar Conta"
+              onClick={() => onNavigate('recovery_facebook')}
+            />
+          </motion.div>
+
+          <motion.div variants={itemVariants}>
+            <ServiceCard
+              icon={ShoppingBag}
+              title="Recuperação de Mercado Livre"
+              description="Conta bloqueada ou suspensa? Atuação para reverter punições e recuperar saldo retido."
+              ctaText="Recuperar Conta"
+              onClick={() => onNavigate('recovery_mercadolivre')}
             />
           </motion.div>
 
