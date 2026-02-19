@@ -165,17 +165,17 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     readTime: '6 min',
     image: 'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
     content: `
-      <p class="text-xl font-medium mb-8 text-justify">A evolução da medicina transformou o diagnóstico do vírus da imunodeficiência humana (HIV) de uma condição outrora fatal em uma doença crônica perfeitamente manejável. Graças à eficácia da terapia antirretroviral (TARV), muitas pessoas vivem hoje décadas com saúde e plena qualidade de vida. No entanto, essa vitória da ciência trouxe consigo um paradoxo jurídico: frequentemente, a Receita Federal nega a isenção de Imposto de Renda a quem não apresenta sintomas ativos da AIDS. Essa prática pode ignorar a finalidade do benefício fiscal, que visa apoiar o tratamento contínuo e preservar a dignidade do paciente.</p>
+      <p>A evolução da medicina transformou o diagnóstico do vírus da imunodeficiência humana (HIV) de uma condição outrora fatal em uma doença crônica perfeitamente manejável. Graças à eficácia da terapia antirretroviral (TARV), muitas pessoas vivem hoje décadas com saúde e plena qualidade de vida. No entanto, essa vitória da ciência trouxe consigo um paradoxo jurídico: frequentemente, a Receita Federal nega a isenção de Imposto de Renda a quem não apresenta sintomas ativos da AIDS. Essa prática pode ignorar a finalidade do benefício fiscal, que visa apoiar o tratamento contínuo e preservar a dignidade do paciente.</p>
       
-      <p class="text-lg mb-6 text-justify">Para compreender o alcance desse direito, é preciso identificar as hipóteses legais. A isenção, prevista na Lei nº 7.713/1988, é destinada especificamente aos rendimentos de aposentadoria, pensões e reformas militares. Conforme o entendimento consolidado pelo STJ no Tema 1037, o benefício não se estende aos trabalhadores que ainda estão na ativa, focando naqueles que enfrentam os custos da saúde na inatividade.</p>
+      <p>Para compreender o alcance desse direito, é preciso identificar as hipóteses legais. A isenção, prevista na Lei nº 7.713/1988, é destinada especificamente aos rendimentos de aposentadoria, pensões e reformas militares. Conforme o entendimento consolidado pelo STJ no Tema 1037, o benefício não se estende aos trabalhadores que ainda estão na ativa, focando naqueles que enfrentam os custos da saúde na inatividade.</p>
       
-      <p class="text-lg mb-6 text-justify">Um dos maiores obstáculos reside no "mito dos sintomas". O Judiciário pacificou a questão através da Súmula 627 do STJ, estabelecendo que o contribuinte tem direito ao benefício independentemente da demonstração de sintomas contemporâneos. A justiça reconhece que o estado de saúde estável é fruto de disciplina e gastos constantes.</p>
+      <p>Um dos maiores obstáculos reside no "mito dos sintomas". O Judiciário pacificou a questão através da Súmula 627 do STJ, estabelecendo que o contribuinte tem direito ao benefício independentemente da demonstração de sintomas contemporâneos. A justiça reconhece que o estado de saúde estável é fruto de disciplina e gastos constantes.</p>
       
-      <p class="text-lg mb-6 text-justify">Além das aposentadorias, o direito pode se estender à previdência complementar (PGBL/VGBL) e reformas militares. Para viabilizar a análise, embora a lei mencione laudo oficial, a Súmula 598 do STJ permite que o magistrado reconheça a isenção com base em outras provas, como exames e relatórios particulares. É possível, ainda, pleitear a devolução de valores pagos indevidamente nos últimos cinco anos.</p>
+      <p>Além das aposentadorias, o direito pode se estender à previdência complementar (PGBL/VGBL) e reformas militares. Para viabilizar a análise, embora a lei mencione laudo oficial, a Súmula 598 do STJ permite que o magistrado reconheça a isenção com base em outras provas, como exames e relatórios particulares. É possível, ainda, pleitear a devolução de valores pagos indevidamente nos últimos cinco anos.</p>
       
-      <p class="text-lg mb-6 text-justify">Por fim, a Lei 14.289/2022 garante o sigilo sobre a condição de saúde em processos administrativos e judiciais. A busca pela isenção é uma ferramenta de justiça social para garantir recursos necessários ao bem-estar e à longevidade.</p>
+      <p>Por fim, a Lei 14.289/2022 garante o sigilo sobre a condição de saúde em processos administrativos e judiciais. A busca pela isenção é uma ferramenta de justiça social para garantir recursos necessários ao bem-estar e à longevidade.</p>
       
-      <p class="text-xl font-semibold text-center text-primary">Saiba mais sobre seus direitos e agende um atendimento inicial para análise do seu caso.</p>
+      <p class="article-cta">Saiba mais sobre seus direitos e agende um atendimento inicial para análise do seu caso.</p>
     `
   },
   {
@@ -187,31 +187,18 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     readTime: '7 min',
     image: 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
     content: `
-      <p class="text-xl font-medium mb-8 text-justify">A Lei 7.713/88, em seu artigo 6º, inciso XIV, estabelece um rol de doenças graves que garantem aos aposentados e pensionistas a <strong>isenção total do Imposto de Renda</strong> sobre seus proventos.</p>
+      <p>A Lei 7.713/88, em seu artigo 6º, inciso XIV, estabelece um rol de doenças graves que garantem aos aposentados e pensionistas a <strong>isenção total do Imposto de Renda</strong> sobre seus proventos.</p>
 
       <h2>Lista oficial de doenças graves</h2>
-      <p class="text-justify">As seguintes condições garantem o direito à isenção:</p>
+      <p>As seguintes condições garantem o direito à isenção:</p>
       <ul>
         <li><strong>AIDS</strong> (Síndrome da Imunodeficiência Adquirida)</li>
-        <li><strong>Alienação mental</strong></li>
-        <li><strong>Cardiopatia grave</strong></li>
-        <li><strong>Cegueira</strong> (inclusive monocular)</li>
-        <li><strong>Contaminação por radiação</strong></li>
-        <li><strong>Doença de Paget</strong> em estados avançados (Osteíte Deformante)</li>
-        <li><strong>Doença de Parkinson</strong></li>
-        <li><strong>Esclerose múltipla</strong></li>
-        <li><strong>Espondiloartrose anquilosante</strong></li>
-        <li><strong>Fibrose cística</strong> (Mucoviscidose)</li>
-        <li><strong>Hanseníase</strong></li>
-        <li><strong>Hepatopatia grave</strong></li>
-        <li><strong>Nefropatia grave</strong></li>
-        <li><strong>Neoplasia maligna</strong> (Câncer)</li>
-        <li><strong>Paralisia irreversível e incapacitante</strong></li>
+...
         <li><strong>Tuberculose ativa</strong></li>
       </ul>
 
       <h2>Importante: a lista não é taxativa</h2>
-      <p class="text-justify">Apesar de a lei trazer um rol específico, a jurisprudência tem entendido que <strong>outras doenças graves podem garantir a isenção</strong>, especialmente quando:</p>
+      <p>Apesar de a lei trazer um rol específico, a jurisprudência tem entendido que <strong>outras doenças graves podem garantir a isenção</strong>, especialmente quando:</p>
       <ul>
         <li>Causam incapacidade ou limitação significativa</li>
         <li>Exigem tratamento contínuo e dispendioso</li>
@@ -219,16 +206,16 @@ export const BLOG_ARTICLES: BlogArticle[] = [
       </ul>
 
       <h2>Não precisa estar incapacitado</h2>
-      <p class="text-justify">Muitas pessoas deixam de buscar seu direito por acharem que precisam estar "muito doentes". Isso é um mito. A Súmula 627 do STJ é clara: <strong>não é necessário demonstrar sintomas atuais</strong> para ter direito à isenção.</p>
+      <p>Muitas pessoas deixam de buscar seu direito por acharem que precisam estar "muito doentes". Isso é um mito. A Súmula 627 do STJ é clara: <strong>não é necessário demonstrar sintomas atuais</strong> para ter direito à isenção.</p>
 
       <h2>Como comprovar a doença?</h2>
-      <p class="text-justify">A comprovação é feita por meio de <strong>laudo médico</strong> que ateste:</p>
+      <p>A comprovação é feita por meio de <strong>laudo médico</strong> que ateste:</p>
       <ul>
         <li>O diagnóstico da doença</li>
         <li>A data de início da enfermidade (se possível)</li>
         <li>CID (Classificação Internacional de Doenças)</li>
       </ul>
-      <p class="text-justify">O laudo pode ser emitido por médico particular ou do SUS. Não é necessário perícia do INSS para o pedido judicial.</p>
+      <p>O laudo pode ser emitido por médico particular ou do SUS. Não é necessário perícia do INSS para o pedido judicial.</p>
 
       <h2>Benefícios da isenção</h2>
       <ul>
@@ -237,6 +224,8 @@ export const BLOG_ARTICLES: BlogArticle[] = [
         <li><strong>Correção</strong> pela taxa SELIC</li>
         <li><strong>Extensão</strong> para previdência privada complementar</li>
       </ul>
+
+      <p class="article-cta">Descubra se você tem direito à isenção de IR. Agende uma análise do seu caso.</p>
     `
   },
   {
@@ -248,7 +237,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     readTime: '6 min',
     image: 'https://images.unsplash.com/photo-1554224154-26032ffc0d07?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
     content: `
-      <p class="text-xl font-medium mb-8 text-justify">Se você tem direito à isenção de IR por moléstia grave e não sabia, provavelmente pagou imposto que não deveria. A boa notícia: <strong>você pode recuperar tudo o que foi retido nos últimos 5 anos</strong>, com correção monetária.</p>
+      <p>Se você tem direito à isenção de IR por moléstia grave e não sabia, provavelmente pagou imposto que não deveria. A boa notícia: <strong>você pode recuperar tudo o que foi retido nos últimos 5 anos</strong>, com correção monetária.</p>
 
       <h2>O que é a restituição retroativa?</h2>
       <p class="text-justify">Quando o direito à isenção é reconhecido, ele retroage à <strong>data do diagnóstico da doença</strong> ou, no máximo, aos últimos 5 anos (prazo prescricional). Todo o IR que foi descontado da sua aposentadoria ou pensão nesse período deve ser devolvido.</p>
@@ -298,6 +287,8 @@ export const BLOG_ARTICLES: BlogArticle[] = [
         <li>Declarações de IR entregues (se houver)</li>
         <li>Extrato de pagamento do INSS ou contracheques</li>
       </ul>
+
+      <p class="article-cta">Descubra quanto você pode recuperar de IR pago indevidamente. Agende uma consulta.</p>
     `
   },
   {
@@ -309,7 +300,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     readTime: '8 min',
     image: 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
     content: `
-      <p class="text-xl font-medium mb-8 text-justify">Ser demitido nunca é fácil, mas conhecer seus direitos pode fazer toda a diferença. Este guia explica <strong>tudo o que você tem direito a receber</strong> em cada modalidade de desligamento.</p>
+      <p>Ser demitido nunca é fácil, mas conhecer seus direitos pode fazer toda a diferença. Este guia explica <strong>tudo o que você tem direito a receber</strong> em cada modalidade de desligamento.</p>
 
       <h2>Demissão sem justa causa</h2>
       <p class="text-justify">Quando o empregador dispensa o funcionário sem motivo justificado, este tem direito a:</p>
@@ -362,6 +353,8 @@ export const BLOG_ARTICLES: BlogArticle[] = [
         <li>Procure orientação jurídica especializada</li>
         <li>Você tem até 2 anos após a demissão para reclamar na Justiça</li>
       </ol>
+
+      <p class="article-cta">Não recebeu suas verbas rescisórias corretamente? Fale com um especialista para garantir seus direitos.</p>
     `
   },
   {
@@ -427,7 +420,9 @@ export const BLOG_ARTICLES: BlogArticle[] = [
       <p class="text-justify">Se a empresa tem mais de 20 funcionários e não apresentar os cartões de ponto, presume-se verdadeira a jornada alegada pelo trabalhador.</p>
 
       <h2>Prazo para reclamar</h2>
-      <p class="text-justify">Você pode cobrar as horas extras dos <strong>últimos 5 anos</strong>, mas precisa entrar com a ação em até <strong>2 anos após a demissão</strong>.</p>
+      <p>Você pode cobrar as horas extras dos <strong>últimos 5 anos</strong>, mas precisa entrar com a ação em até <strong>2 anos após a demissão</strong>.</p>
+
+      <p class="article-cta">Tem horas extras não pagas? Agende uma análise do seu caso para calcular o que você tem a receber.</p>
     `
   },
   {
@@ -503,7 +498,9 @@ export const BLOG_ARTICLES: BlogArticle[] = [
       </ul>
 
       <h2>Próximos passos</h2>
-      <p class="text-justify">Se você está sofrendo assédio moral, não fique em silêncio. Procure ajuda psicológica e orientação jurídica especializada para entender as melhores opções para o seu caso.</p>
+      <p>Se você está sofrendo assédio moral, não fique em silêncio. Procure ajuda psicológica e orientação jurídica especializada para entender as melhores opções para o seu caso.</p>
+
+      <p class="article-cta">Está sofrendo assédio moral no trabalho? Busque orientação jurídica para proteger seus direitos.</p>
     `
   },
   {
@@ -546,7 +543,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
       <h2>Próximos passos</h2>
       <p class="text-lg mb-6 text-justify">Se você está passando por isso, lembre-se de que o tempo é precioso: reúna seus documentos, especialmente o ultrassom com a idade gestacional e o termo de rescisão, e busque orientação especializada, pois <strong>garantir seus direitos é o primeiro passo para garantir a segurança do seu filho</strong>.</p>
 
-      <p class="text-xl font-semibold text-center text-primary">Agende uma consulta para análise do seu caso e defesa dos seus direitos.</p>
+      <p class="article-cta">Agende uma consulta para análise do seu caso e defesa dos seus direitos.</p>
     `
   },
   {
@@ -585,7 +582,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
 
       <p class="text-lg mb-6 text-justify">Ao aceitar essas variações naturais, a empresa constrói registros muito mais resistentes a contestações judiciais. Afinal, a boa escrita de um destino jurídico seguro começa no relógio de ponto, garantindo que cada minuto registrado seja um aliado fiel da justiça e da integridade corporativa.</p>
 
-      <p class="text-xl font-semibold text-center text-primary">Precisa de orientação sobre gestão de ponto e segurança trabalhista? Agende uma consulta.</p>
+      <p class="article-cta">Precisa de orientação sobre gestão de ponto e segurança trabalhista? Agende uma consulta.</p>
     `
   },
   {
@@ -647,7 +644,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
         <li>E-mails trocados com o suporte da Meta</li>
       </ul>
 
-      <p class="text-xl font-semibold text-center text-primary">Busque orientação jurídica especializada para recuperar sua conta e seus direitos.</p>
+      <p class="article-cta">Busque orientação jurídica especializada para recuperar sua conta e seus direitos.</p>
     `
   },
   {
@@ -713,7 +710,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
         <li>Revise periodicamente os dispositivos conectados à sua conta</li>
       </ul>
 
-      <p class="text-xl font-semibold text-center text-primary">Não conseguiu recuperar sua conta? Busque orientação jurídica para garantir seus direitos.</p>
+      <p class="article-cta">Não conseguiu recuperar sua conta? Busque orientação jurídica para garantir seus direitos.</p>
     `
   },
   {
@@ -790,7 +787,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
         <li>Notas fiscais dos produtos vendidos (se aplicável)</li>
       </ul>
 
-      <p class="text-xl font-semibold text-center text-primary">Teve sua conta bloqueada indevidamente? Busque orientação jurídica para recuperar seu acesso e seus valores.</p>
+      <p class="article-cta">Teve sua conta bloqueada indevidamente? Busque orientação jurídica para recuperar seu acesso e seus valores.</p>
     `
   }
 ];
