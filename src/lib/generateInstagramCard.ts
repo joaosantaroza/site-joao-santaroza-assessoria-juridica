@@ -12,7 +12,7 @@ const CARD_HEIGHT = 1350;
 const NAVY = '#041E42';
 const BRONZE = '#B8945A';
 const WHITE = '#FFFFFF';
-const SITE_URL = 'diegolopesadvogados.com.br';
+const SITE_URL = 'joaosantarozadvocacia.com.br';
 
 function wrapText(ctx: CanvasRenderingContext2D, text: string, maxWidth: number, lineHeight: number): string[] {
   const words = text.split(' ');
