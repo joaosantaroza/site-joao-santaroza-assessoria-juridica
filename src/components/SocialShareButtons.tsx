@@ -60,12 +60,48 @@ export const SocialShareButtons = ({ url, title, imageUrl, className }: SocialSh
   };
 
   const handleInstagramShare = async () => {
-    const result = await nativeShareWithImage(title, url, imageUrl, 'https://instagram.com');
-    if (result.method === 'fallback' && result.success) {
+    if (!imageUrl) return;
+
+    try {
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+      const anonKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+
+      const response = await fetch(`${supabaseUrl}/functions/v1/proxy-image`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': anonKey,
+        },
+        body: JSON.stringify({ url: imageUrl }),
+      });
+
+      if (!response.ok) throw new Error('Falha ao buscar imagem');
+
+      const blob = await response.blob();
+      const downloadUrl = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = downloadUrl;
+      link.download = `artigo-${Date.now()}.jpg`;
+      link.click();
+      URL.revokeObjectURL(downloadUrl);
+
+      await navigator.clipboard.writeText(url).catch(() => {});
+
       toast({
-        title: "Link copiado!",
-        description: "Abrindo Instagram... Cole o link para compartilhar.",
+        title: "Imagem baixada!",
+        description: "Link copiado para a área de transferência. Abra o Instagram e compartilhe.",
         duration: 5000,
+      });
+
+      setTimeout(() => {
+        window.open('https://instagram.com', '_blank', 'noopener,noreferrer');
+      }, 500);
+    } catch (error) {
+      console.error('Erro ao baixar imagem:', error);
+      toast({
+        title: "Erro",
+        description: "Não foi possível baixar a imagem.",
+        variant: "destructive",
       });
     }
   };
