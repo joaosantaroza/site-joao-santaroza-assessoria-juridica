@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { nativeShareWithImage } from "@/lib/nativeShare";
 import { useInstagramShare } from "@/hooks/useInstagramShare";
+import { generateInstagramCard } from "@/lib/generateInstagramCard";
 
 interface FloatingShareButtonProps {
   url: string;
@@ -104,8 +105,9 @@ export const FloatingShareButton = ({
 
       if (!response.ok) throw new Error('Falha ao buscar imagem');
 
-      const blob = await response.blob();
-      const downloadUrl = URL.createObjectURL(blob);
+      const imageBlob = await response.blob();
+      const cardBlob = await generateInstagramCard(title, imageBlob);
+      const downloadUrl = URL.createObjectURL(cardBlob);
       const link = document.createElement('a');
       link.href = downloadUrl;
       link.download = `artigo-${Date.now()}.jpg`;
