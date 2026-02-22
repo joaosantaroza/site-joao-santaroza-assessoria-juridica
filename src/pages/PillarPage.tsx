@@ -7,6 +7,7 @@ import { getClusterById, CONTENT_CLUSTERS } from "@/lib/contentClusters";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { ContactModal } from "@/components/ContactModal";
+import { BreadcrumbsJsonLd } from "@/components/BreadcrumbsJsonLd";
 import { useState } from "react";
 import { ViewType } from "@/lib/constants";
 import { SectionTitle } from "@/components/ui/SectionTitle";
@@ -69,20 +70,27 @@ const PillarPage = () => {
     });
   };
 
+  const breadcrumbItems = [
+    { name: "Início", path: "/" },
+    { name: "Blog", path: "/blog" },
+    { name: cluster.name, path: cluster.pillarSlug },
+  ];
+
   return (
     <div className="min-h-screen bg-background">
       <Navbar onNavigate={handleNavigate} onContact={() => setShowContact(true)} />
+      <BreadcrumbsJsonLd items={breadcrumbItems} />
 
       {/* Breadcrumbs */}
-      <div className="container mx-auto px-4 pt-6">
-        <nav className="flex items-center gap-2 text-sm text-muted-foreground">
-          <Link to="/" className="hover:text-primary transition-colors">Início</Link>
-          <ChevronRight className="w-3 h-3" />
-          <Link to="/blog" className="hover:text-primary transition-colors">Blog</Link>
-          <ChevronRight className="w-3 h-3" />
-          <span className="text-foreground font-medium truncate">{cluster.name}</span>
-        </nav>
-      </div>
+      <nav className="container mx-auto px-4 pt-6" aria-label="Breadcrumb">
+        <ol className="flex items-center gap-2 text-sm text-muted-foreground">
+          <li><Link to="/" className="hover:text-primary transition-colors">Início</Link></li>
+          <li><ChevronRight className="w-3 h-3" /></li>
+          <li><Link to="/blog" className="hover:text-primary transition-colors">Blog</Link></li>
+          <li><ChevronRight className="w-3 h-3" /></li>
+          <li><span className="text-foreground font-medium truncate" aria-current="page">{cluster.name}</span></li>
+        </ol>
+      </nav>
 
       {/* Hero */}
       <section className="container mx-auto px-4 py-12 lg:py-16">
@@ -106,16 +114,18 @@ const PillarPage = () => {
           </div>
 
           {/* Keywords cloud */}
-          <div className="flex flex-wrap gap-2 mt-6">
-            {cluster.keywords.map((kw) => (
-              <span
-                key={kw}
-                className="px-3 py-1 rounded-full bg-muted text-muted-foreground text-xs font-medium"
-              >
-                {kw}
-              </span>
-            ))}
-          </div>
+          <aside aria-label="Palavras-chave relacionadas" className="mt-6">
+            <h2 className="sr-only">Palavras-chave relacionadas</h2>
+            <ul className="flex flex-wrap gap-2" role="list">
+              {cluster.keywords.map((kw) => (
+                <li key={kw}>
+                  <span className="inline-block px-3 py-1 rounded-full bg-muted text-muted-foreground text-xs font-medium">
+                    {kw}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </aside>
         </motion.div>
       </section>
 
