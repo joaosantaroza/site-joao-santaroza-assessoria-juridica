@@ -13,6 +13,7 @@ import Blog from "./pages/Blog";
 import BlogArticle from "./pages/BlogArticle";
 import LandingPage from "./pages/LandingPage";
 import NotFound from "./pages/NotFound";
+import PillarPage from "./pages/PillarPage";
 
 const queryClient = new QueryClient();
 
@@ -27,6 +28,7 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/blog" element={<Blog />} />
             <Route path="/blog/:slug" element={<BlogArticle />} />
+            <Route path="/temas/:clusterId" element={<PillarPage />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/admin" element={<Admin />} />
             <Route path="/admin/artigos" element={<AdminArticles />} />
