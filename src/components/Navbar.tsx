@@ -60,6 +60,12 @@ export const Navbar = ({ onNavigate, onContact }: NavbarProps) => {
             Especialidades
           </button>
           <Link 
+            to="/sobre"
+            className="text-sm font-bold uppercase tracking-wider text-muted-foreground hover:text-primary transition-colors"
+          >
+            Sobre
+          </Link>
+          <Link 
             to="/blog"
             className="text-sm font-bold uppercase tracking-wider text-muted-foreground hover:text-primary transition-colors"
           >
@@ -100,6 +106,13 @@ export const Navbar = ({ onNavigate, onContact }: NavbarProps) => {
             >
               ESPECIALIDADES
             </button>
+            <Link 
+              to="/sobre"
+              onClick={() => setIsMenuOpen(false)}
+              className="text-left font-bold text-primary"
+            >
+              SOBRE
+            </Link>
             <Link 
               to="/blog"
               onClick={() => setIsMenuOpen(false)}
