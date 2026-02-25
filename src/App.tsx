@@ -15,6 +15,7 @@ import LandingPage from "./pages/LandingPage";
 import NotFound from "./pages/NotFound";
 import PillarPage from "./pages/PillarPage";
 import About from "./pages/About";
+import { WhatsAppWidget } from "./components/WhatsAppWidget";
 
 const queryClient = new QueryClient();
 
@@ -39,6 +40,7 @@ const App = () => (
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
+          <WhatsAppWidget />
         </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>
