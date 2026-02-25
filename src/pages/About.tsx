@@ -32,7 +32,7 @@ const TIMELINE = [
   { year: "2021", title: "Certificação em Negociação", desc: "Conclusão do curso Negotiation Mastery pela Dale Carnegie Training." },
   { year: "2022", title: "Certificação em Apresentações", desc: "Conclusão do curso High Impact Presentations pela Dale Carnegie Training." },
   { year: "2022", title: "Fundação do Escritório Digital", desc: "Criação da João Santaroza Assessoria Jurídica com atuação digital em todo o Brasil." },
-  { year: "2024", title: "Referência em Isenção de IR", desc: "Reconhecimento como referência em isenção fiscal para portadores de doenças graves." },
+  { year: "2024", title: "Referência em Defesa do Executado", desc: "Reconhecimento como referência em defesa do executado, isenção fiscal e desbloqueio de contas." },
 ];
 
 const EDUCATION = [
