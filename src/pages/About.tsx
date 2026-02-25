@@ -25,18 +25,21 @@ import lawyerPhoto from "@/assets/lawyer-photo.jpg";
 // ── Data ──────────────────────────────────────────────
 
 const TIMELINE = [
-  { year: "2016", title: "Graduação em Direito", desc: "Conclusão do Bacharelado em Direito." },
+  { year: "2008", title: "Início da Graduação em Direito", desc: "Ingresso no curso de Direito pela Universidade Paranaense (UNIPAR)." },
+  { year: "2013", title: "Conclusão do Bacharelado", desc: "Formação em Direito pela UNIPAR com foco em áreas cível e tributária." },
+  { year: "2016", title: "Início da Atuação como Advogado", desc: "Início da carreira advocatícia em Tapejara, Paraná, com atuação em tempo integral." },
   { year: "2017", title: "Inscrição na OAB/PR", desc: "Aprovação no Exame de Ordem e inscrição sob o nº 81.381." },
-  { year: "2018", title: "Pós-graduação em Direito Tributário", desc: "Especialização em Direito Tributário com foco em isenções fiscais." },
-  { year: "2020", title: "Especialização em Direito do Trabalho", desc: "Aprofundamento em relações trabalhistas e gestão de passivos." },
-  { year: "2022", title: "Fundação do Escritório", desc: "Criação da João Santaroza Assessoria Jurídica com atuação digital em todo o Brasil." },
+  { year: "2021", title: "Certificação em Negociação", desc: "Conclusão do curso Negotiation Mastery pela Dale Carnegie Training." },
+  { year: "2022", title: "Certificação em Apresentações", desc: "Conclusão do curso High Impact Presentations pela Dale Carnegie Training." },
+  { year: "2022", title: "Fundação do Escritório Digital", desc: "Criação da João Santaroza Assessoria Jurídica com atuação digital em todo o Brasil." },
   { year: "2024", title: "Referência em Isenção de IR", desc: "Reconhecimento como referência em isenção fiscal para portadores de doenças graves." },
 ];
 
 const EDUCATION = [
-  { title: "Bacharelado em Direito", institution: "Universidade Estadual de Maringá (UEM)", year: "2012 – 2016", icon: GraduationCap },
-  { title: "Pós-graduação em Direito Tributário", institution: "Instituição de Ensino Superior", year: "2017 – 2018", icon: BookOpen },
-  { title: "Especialização em Direito do Trabalho", institution: "Instituição de Ensino Superior", year: "2019 – 2020", icon: Briefcase },
+  { title: "Bacharelado em Direito", institution: "Universidade Paranaense (UNIPAR)", year: "2008 – 2013", icon: GraduationCap },
+  { title: "Pós-graduação em Direito Tributário", institution: "Damásio Educacional", year: "Especialização", icon: BookOpen },
+  { title: "High Impact Presentations", institution: "Dale Carnegie Training", year: "2022", icon: Award },
+  { title: "Negotiation Mastery", institution: "Dale Carnegie Training", year: "2021", icon: Briefcase },
 ];
 
 const VALUES = [
@@ -157,7 +160,7 @@ export default function About() {
               {CONTACT_INFO.lawyerName}
             </h1>
             <p className="text-lg text-muted-foreground leading-relaxed mb-6">
-              Advogado comprometido com a defesa dos seus direitos. Especialista em Isenção de Imposto de Renda para portadores de doenças graves, Direito Trabalhista e Desbloqueio de Contas Judiciais, com atuação digital em todo o Brasil.
+              Advogado atuante desde 2016, com mais de 9 anos de experiência em planejamento tributário, gestão de contratos e defesa de direitos. Especialista em Isenção de Imposto de Renda para portadores de doenças graves e Desbloqueio de Contas Judiciais, com atuação digital em todo o Brasil a partir de Tapejara, Paraná.
             </p>
             <Button onClick={() => setShowContact(true)} size="lg">
               Agendar Consulta
@@ -197,13 +200,13 @@ export default function About() {
             </h2>
             <div className="space-y-4 text-muted-foreground leading-relaxed text-justify">
               <p>
-                Desde o início da minha formação, sempre tive como propósito utilizar o Direito como instrumento de transformação na vida das pessoas. Acredito que o acesso à justiça deve ser simples, transparente e humanizado.
+                Formado em Direito pela Universidade Paranaense (UNIPAR) e pós-graduado em Direito Tributário pelo Damásio Educacional, atuo como advogado desde abril de 2016. Ao longo de mais de 9 anos de carreira, construí uma trajetória focada em planejamento tributário e gestão de contratos, sempre com o propósito de utilizar o Direito como instrumento de transformação na vida das pessoas.
               </p>
               <p>
-                Ao longo dos anos, me especializei em áreas que impactam diretamente o patrimônio e a qualidade de vida dos meus clientes: a isenção de imposto de renda para portadores de doenças graves, o desbloqueio de contas judiciais e a defesa dos direitos trabalhistas.
+                Especializei-me em áreas que impactam diretamente o patrimônio e a qualidade de vida dos meus clientes: a isenção de imposto de renda para portadores de doenças graves, o desbloqueio de contas judiciais e a assessoria contratual e societária. Busquei também formação complementar em negociação e comunicação de alto impacto pela Dale Carnegie Training, o que me permite conduzir cada caso com estratégia e clareza.
               </p>
               <p>
-                Minha filosofia de trabalho é baseada em três pilares: <strong className="text-foreground">diagnóstico preciso</strong> da situação jurídica, <strong className="text-foreground">comunicação clara</strong> em cada etapa do processo e <strong className="text-foreground">busca incansável</strong> pelo melhor resultado possível.
+                Minha filosofia de trabalho é baseada em três pilares: <strong className="text-foreground">diagnóstico preciso</strong> da situação jurídica, <strong className="text-foreground">comunicação clara</strong> em cada etapa do processo e <strong className="text-foreground">busca incansável</strong> pelo melhor resultado possível. Acredito que o acesso à justiça deve ser simples, transparente e humanizado — valores que aplico em cada atendimento, seja presencial ou digital.
               </p>
             </div>
           </motion.div>
@@ -275,7 +278,7 @@ export default function About() {
             </h2>
           </motion.div>
 
-          <div className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-5xl mx-auto">
             {EDUCATION.map((edu, i) => {
               const Icon = edu.icon;
               return (
