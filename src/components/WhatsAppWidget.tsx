@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useLocation } from "react-router-dom";
 import { MessageCircle, X, ChevronRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { CONTACT_INFO } from "@/lib/constants";
@@ -56,6 +57,12 @@ const OPTIONS: WhatsAppOption[] = [
 
 export const WhatsAppWidget = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const location = useLocation();
+
+  const hiddenRoutes = ["/admin", "/auth"];
+  const shouldHide = hiddenRoutes.some(route => location.pathname.startsWith(route));
+
+  if (shouldHide) return null;
 
   const handleOptionClick = (message: string) => {
     const url = `https://wa.me/55${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
