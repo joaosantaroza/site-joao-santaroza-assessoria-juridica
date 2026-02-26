@@ -390,11 +390,38 @@ export default function Admin() {
             {whatsappClicks.length > 0 && (
               <Card className="border-border bg-card">
                 <CardHeader>
-                  <CardTitle className="font-heading flex items-center gap-2">
-                    <MessageCircle className="h-5 w-5 text-[#25D366]" />
-                    Leads via WhatsApp por Área
-                  </CardTitle>
-                  <CardDescription>Cliques no widget de WhatsApp por área de atuação</CardDescription>
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div>
+                      <CardTitle className="font-heading flex items-center gap-2">
+                        <MessageCircle className="h-5 w-5 text-[#25D366]" />
+                        Leads via WhatsApp por Área
+                      </CardTitle>
+                      <CardDescription>Cliques no widget de WhatsApp por área de atuação</CardDescription>
+                    </div>
+                    <Button
+                      onClick={() => {
+                        if (whatsappClicks.length === 0) return;
+                        const csvContent = [
+                          ['Área', 'Data'].join(','),
+                          ...whatsappClicks.map(c => [
+                            `"${c.area}"`,
+                            `"${new Date(c.created_at).toLocaleString('pt-BR')}"`
+                          ].join(','))
+                        ].join('\n');
+                        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                        const link = document.createElement('a');
+                        link.href = URL.createObjectURL(blob);
+                        link.download = `whatsapp-cliques-${new Date().toISOString().split('T')[0]}.csv`;
+                        link.click();
+                        toast({ title: 'Exportação concluída', description: `${whatsappClicks.length} cliques exportados.` });
+                      }}
+                      variant="outline"
+                      size="sm"
+                    >
+                      <Download className="h-4 w-4 mr-2" />
+                      Exportar CSV
+                    </Button>
+                  </div>
                 </CardHeader>
                 <CardContent>
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
