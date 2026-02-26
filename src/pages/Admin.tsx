@@ -417,7 +417,7 @@ export default function Admin() {
             )}
 
             {/* Charts Section */}
-            <LeadsChart leads={leads} />
+            <LeadsChart leads={leads} whatsappClicks={whatsappClicks} />
 
             {/* Leads Table */}
             <Card className="border-border bg-card">

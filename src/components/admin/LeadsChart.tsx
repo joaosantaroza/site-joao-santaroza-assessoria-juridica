@@ -4,7 +4,7 @@ import { ptBR } from 'date-fns/locale';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line, CartesianGrid, Legend } from 'recharts';
-import { TrendingUp, TrendingDown, Minus } from 'lucide-react';
+import { TrendingUp, TrendingDown, Minus, MessageCircle } from 'lucide-react';
 
 interface EbookLead {
   id: string;
@@ -15,13 +15,19 @@ interface EbookLead {
   created_at: string;
 }
 
+interface WhatsappClick {
+  area: string;
+  created_at: string;
+}
+
 interface LeadsChartProps {
   leads: EbookLead[];
+  whatsappClicks?: WhatsappClick[];
 }
 
 const COLORS = ['hsl(var(--primary))', 'hsl(var(--accent))', 'hsl(142 76% 36%)', 'hsl(38 92% 50%)', 'hsl(280 65% 60%)'];
 
-export function LeadsChart({ leads }: LeadsChartProps) {
+export function LeadsChart({ leads, whatsappClicks = [] }: LeadsChartProps) {
   // Aggregate leads by month (last 6 months)
   const monthlyData = useMemo(() => {
     const months: { [key: string]: number } = {};
@@ -84,10 +90,40 @@ export function LeadsChart({ leads }: LeadsChartProps) {
     };
   }, [monthlyData]);
 
+  // Aggregate WhatsApp clicks by month (last 6 months)
+  const whatsappMonthlyData = useMemo(() => {
+    const months: { [key: string]: number } = {};
+    const now = new Date();
+    
+    for (let i = 5; i >= 0; i--) {
+      const month = startOfMonth(subMonths(now, i));
+      const key = format(month, 'yyyy-MM');
+      months[key] = 0;
+    }
+    
+    whatsappClicks.forEach(click => {
+      const date = parseISO(click.created_at);
+      const key = format(date, 'yyyy-MM');
+      if (months[key] !== undefined) {
+        months[key]++;
+      }
+    });
+    
+    return Object.entries(months).map(([key, count]) => ({
+      month: format(parseISO(`${key}-01`), 'MMM', { locale: ptBR }),
+      fullMonth: format(parseISO(`${key}-01`), 'MMMM yyyy', { locale: ptBR }),
+      cliques: count
+    }));
+  }, [whatsappClicks]);
+
   const chartConfig = {
     leads: {
       label: "Leads",
       color: "hsl(var(--primary))",
+    },
+    cliques: {
+      label: "Cliques WhatsApp",
+      color: "hsl(142 76% 36%)",
     },
   };
 
@@ -255,6 +291,54 @@ export function LeadsChart({ leads }: LeadsChartProps) {
           </ChartContainer>
         </CardContent>
       </Card>
+
+      {/* WhatsApp Clicks Timeline - Full Width */}
+      {whatsappClicks.length > 0 && (
+        <Card className="lg:col-span-2">
+          <CardHeader>
+            <CardTitle className="text-base flex items-center gap-2">
+              <MessageCircle className="h-4 w-4 text-[#25D366]" />
+              Evolução de Cliques WhatsApp
+            </CardTitle>
+            <CardDescription>Volume mensal de cliques no widget</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <ChartContainer config={chartConfig} className="h-[200px] w-full">
+              <LineChart data={whatsappMonthlyData} margin={{ top: 10, right: 30, left: -20, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+                <XAxis 
+                  dataKey="month" 
+                  tickLine={false} 
+                  axisLine={false}
+                  tick={{ fontSize: 12 }}
+                />
+                <YAxis 
+                  tickLine={false} 
+                  axisLine={false}
+                  tick={{ fontSize: 12 }}
+                  allowDecimals={false}
+                />
+                <ChartTooltip 
+                  content={
+                    <ChartTooltipContent 
+                      formatter={(value) => [`${value} cliques`, '']}
+                      labelFormatter={(label, payload) => payload?.[0]?.payload?.fullMonth || label}
+                    />
+                  }
+                />
+                <Line 
+                  type="monotone" 
+                  dataKey="cliques" 
+                  stroke="hsl(142 76% 36%)" 
+                  strokeWidth={2}
+                  dot={{ fill: 'hsl(142 76% 36%)', strokeWidth: 2, r: 4 }}
+                  activeDot={{ r: 6 }}
+                />
+              </LineChart>
+            </ChartContainer>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }
