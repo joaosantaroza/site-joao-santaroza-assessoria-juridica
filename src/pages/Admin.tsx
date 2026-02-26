@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
+import { subDays } from 'date-fns';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
@@ -6,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
 import { LeadsChart } from '@/components/admin/LeadsChart';
@@ -52,8 +54,16 @@ export default function Admin() {
   const [isLoadingLeads, setIsLoadingLeads] = useState(true);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState('articles');
+  const [whatsappPeriod, setWhatsappPeriod] = useState<string>('all');
   const navigate = useNavigate();
   const { toast } = useToast();
+
+  const filteredWhatsappClicks = useMemo(() => {
+    if (whatsappPeriod === 'all') return whatsappClicks;
+    const days = parseInt(whatsappPeriod);
+    const cutoff = subDays(new Date(), days);
+    return whatsappClicks.filter(c => new Date(c.created_at) >= cutoff);
+  }, [whatsappClicks, whatsappPeriod]);
 
   useEffect(() => {
     if (!isLoading && !user) {
@@ -344,7 +354,7 @@ export default function Admin() {
                       <MessageCircle className="h-6 w-6 text-[#25D366]" />
                     </div>
                     <div>
-                      <p className="text-2xl font-bold text-foreground">{whatsappClicks.length}</p>
+                      <p className="text-2xl font-bold text-foreground">{filteredWhatsappClicks.length}</p>
                       <p className="text-sm text-muted-foreground">Cliques WhatsApp</p>
                     </div>
                   </div>
@@ -386,8 +396,24 @@ export default function Admin() {
               </Card>
             </div>
 
+            {/* WhatsApp Period Filter */}
+            <div className="flex items-center gap-3">
+              <span className="text-sm text-muted-foreground">Período WhatsApp:</span>
+              <Select value={whatsappPeriod} onValueChange={setWhatsappPeriod}>
+                <SelectTrigger className="w-[160px]">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="7">Últimos 7 dias</SelectItem>
+                  <SelectItem value="30">Últimos 30 dias</SelectItem>
+                  <SelectItem value="90">Últimos 90 dias</SelectItem>
+                  <SelectItem value="all">Todo período</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
             {/* WhatsApp Clicks by Area */}
-            {whatsappClicks.length > 0 && (
+            {filteredWhatsappClicks.length > 0 && (
               <Card className="border-border bg-card">
                 <CardHeader>
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -400,10 +426,10 @@ export default function Admin() {
                     </div>
                     <Button
                       onClick={() => {
-                        if (whatsappClicks.length === 0) return;
+                        if (filteredWhatsappClicks.length === 0) return;
                         const csvContent = [
                           ['Área', 'Data'].join(','),
-                          ...whatsappClicks.map(c => [
+                          ...filteredWhatsappClicks.map(c => [
                             `"${c.area}"`,
                             `"${new Date(c.created_at).toLocaleString('pt-BR')}"`
                           ].join(','))
@@ -413,7 +439,7 @@ export default function Admin() {
                         link.href = URL.createObjectURL(blob);
                         link.download = `whatsapp-cliques-${new Date().toISOString().split('T')[0]}.csv`;
                         link.click();
-                        toast({ title: 'Exportação concluída', description: `${whatsappClicks.length} cliques exportados.` });
+                        toast({ title: 'Exportação concluída', description: `${filteredWhatsappClicks.length} cliques exportados.` });
                       }}
                       variant="outline"
                       size="sm"
@@ -426,7 +452,7 @@ export default function Admin() {
                 <CardContent>
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                     {Object.entries(
-                      whatsappClicks.reduce<Record<string, number>>((acc, c) => {
+                      filteredWhatsappClicks.reduce<Record<string, number>>((acc, c) => {
                         acc[c.area] = (acc[c.area] || 0) + 1;
                         return acc;
                       }, {})
@@ -444,7 +470,7 @@ export default function Admin() {
             )}
 
             {/* Charts Section */}
-            <LeadsChart leads={leads} whatsappClicks={whatsappClicks} />
+            <LeadsChart leads={leads} whatsappClicks={filteredWhatsappClicks} />
 
             {/* Leads Table */}
             <Card className="border-border bg-card">
