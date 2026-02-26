@@ -24,7 +24,10 @@ import {
   ShieldAlert,
   FileText,
   ArrowRight,
-  MessageCircle
+  MessageCircle,
+  TrendingUp,
+  TrendingDown,
+  Minus
 } from 'lucide-react';
 import {
   AlertDialog,
@@ -63,6 +66,21 @@ export default function Admin() {
     const days = parseInt(whatsappPeriod);
     const cutoff = subDays(new Date(), days);
     return whatsappClicks.filter(c => new Date(c.created_at) >= cutoff);
+  }, [whatsappClicks, whatsappPeriod]);
+
+  const whatsappVariation = useMemo(() => {
+    if (whatsappPeriod === 'all') return null;
+    const days = parseInt(whatsappPeriod);
+    const now = new Date();
+    const currentStart = subDays(now, days);
+    const previousStart = subDays(now, days * 2);
+    const current = whatsappClicks.filter(c => new Date(c.created_at) >= currentStart).length;
+    const previous = whatsappClicks.filter(c => {
+      const d = new Date(c.created_at);
+      return d >= previousStart && d < currentStart;
+    }).length;
+    if (previous === 0) return current > 0 ? 100 : 0;
+    return Math.round(((current - previous) / previous) * 100);
   }, [whatsappClicks, whatsappPeriod]);
 
   useEffect(() => {
@@ -354,8 +372,19 @@ export default function Admin() {
                       <MessageCircle className="h-6 w-6 text-[#25D366]" />
                     </div>
                     <div>
-                      <p className="text-2xl font-bold text-foreground">{filteredWhatsappClicks.length}</p>
+                      <div className="flex items-center gap-2">
+                        <p className="text-2xl font-bold text-foreground">{filteredWhatsappClicks.length}</p>
+                        {whatsappVariation !== null && (
+                          <span className={`flex items-center text-xs font-medium ${whatsappVariation > 0 ? 'text-green-500' : whatsappVariation < 0 ? 'text-red-500' : 'text-muted-foreground'}`}>
+                            {whatsappVariation > 0 ? <TrendingUp className="h-3 w-3 mr-0.5" /> : whatsappVariation < 0 ? <TrendingDown className="h-3 w-3 mr-0.5" /> : <Minus className="h-3 w-3 mr-0.5" />}
+                            {whatsappVariation > 0 ? '+' : ''}{whatsappVariation}%
+                          </span>
+                        )}
+                      </div>
                       <p className="text-sm text-muted-foreground">Cliques WhatsApp</p>
+                      {whatsappVariation !== null && (
+                        <p className="text-xs text-muted-foreground/70">vs período anterior</p>
+                      )}
                     </div>
                   </div>
                 </CardContent>
