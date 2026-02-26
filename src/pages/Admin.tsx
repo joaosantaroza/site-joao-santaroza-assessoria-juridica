@@ -83,6 +83,31 @@ export default function Admin() {
     return Math.round(((current - previous) / previous) * 100);
   }, [whatsappClicks, whatsappPeriod]);
 
+  const leadsVariation = useMemo(() => {
+    if (leads.length === 0) return null;
+    const now = new Date();
+    const thirtyDaysAgo = subDays(now, 30);
+    const sixtyDaysAgo = subDays(now, 60);
+    const current = leads.filter(l => new Date(l.created_at) >= thirtyDaysAgo).length;
+    const previous = leads.filter(l => {
+      const d = new Date(l.created_at);
+      return d >= sixtyDaysAgo && d < thirtyDaysAgo;
+    }).length;
+    if (previous === 0) return current > 0 ? 100 : 0;
+    return Math.round(((current - previous) / previous) * 100);
+  }, [leads]);
+
+  const leadsTodayVariation = useMemo(() => {
+    if (leads.length === 0) return null;
+    const now = new Date();
+    const today = now.toDateString();
+    const yesterday = subDays(now, 1).toDateString();
+    const todayCount = leads.filter(l => new Date(l.created_at).toDateString() === today).length;
+    const yesterdayCount = leads.filter(l => new Date(l.created_at).toDateString() === yesterday).length;
+    if (yesterdayCount === 0) return todayCount > 0 ? 100 : 0;
+    return Math.round(((todayCount - yesterdayCount) / yesterdayCount) * 100);
+  }, [leads]);
+
   useEffect(() => {
     if (!isLoading && !user) {
       navigate('/auth');
@@ -359,8 +384,19 @@ export default function Admin() {
                       <Users className="h-6 w-6 text-accent" />
                     </div>
                     <div>
-                      <p className="text-2xl font-bold text-foreground">{leads.length}</p>
+                      <div className="flex items-center gap-2">
+                        <p className="text-2xl font-bold text-foreground">{leads.length}</p>
+                        {leadsVariation !== null && (
+                          <span className={`flex items-center text-xs font-medium ${leadsVariation > 0 ? 'text-green-500' : leadsVariation < 0 ? 'text-red-500' : 'text-muted-foreground'}`}>
+                            {leadsVariation > 0 ? <TrendingUp className="h-3 w-3 mr-0.5" /> : leadsVariation < 0 ? <TrendingDown className="h-3 w-3 mr-0.5" /> : <Minus className="h-3 w-3 mr-0.5" />}
+                            {leadsVariation > 0 ? '+' : ''}{leadsVariation}%
+                          </span>
+                        )}
+                      </div>
                       <p className="text-sm text-muted-foreground">Total de Leads</p>
+                      {leadsVariation !== null && (
+                        <p className="text-xs text-muted-foreground/70">vs últimos 30 dias</p>
+                      )}
                     </div>
                   </div>
                 </CardContent>
@@ -411,14 +447,21 @@ export default function Admin() {
                       <Calendar className="h-6 w-6 text-accent" />
                     </div>
                     <div>
-                      <p className="text-2xl font-bold text-foreground">
-                        {leads.filter(l => {
-                          const today = new Date();
-                          const leadDate = new Date(l.created_at);
-                          return leadDate.toDateString() === today.toDateString();
-                        }).length}
-                      </p>
+                      <div className="flex items-center gap-2">
+                        <p className="text-2xl font-bold text-foreground">
+                          {leads.filter(l => new Date(l.created_at).toDateString() === new Date().toDateString()).length}
+                        </p>
+                        {leadsTodayVariation !== null && (
+                          <span className={`flex items-center text-xs font-medium ${leadsTodayVariation > 0 ? 'text-green-500' : leadsTodayVariation < 0 ? 'text-red-500' : 'text-muted-foreground'}`}>
+                            {leadsTodayVariation > 0 ? <TrendingUp className="h-3 w-3 mr-0.5" /> : leadsTodayVariation < 0 ? <TrendingDown className="h-3 w-3 mr-0.5" /> : <Minus className="h-3 w-3 mr-0.5" />}
+                            {leadsTodayVariation > 0 ? '+' : ''}{leadsTodayVariation}%
+                          </span>
+                        )}
+                      </div>
                       <p className="text-sm text-muted-foreground">Leads Hoje</p>
+                      {leadsTodayVariation !== null && (
+                        <p className="text-xs text-muted-foreground/70">vs ontem</p>
+                      )}
                     </div>
                   </div>
                 </CardContent>
