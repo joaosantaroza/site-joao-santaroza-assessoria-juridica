@@ -125,7 +125,7 @@ export const WhatsAppWidget = () => {
         onClick={() => setIsOpen(!isOpen)}
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.95 }}
-        className="w-14 h-14 rounded-full bg-[#25D366] text-white shadow-lg flex items-center justify-center hover:shadow-xl transition-shadow"
+        className={`w-14 h-14 rounded-full bg-[#25D366] text-white shadow-lg flex items-center justify-center hover:shadow-xl transition-shadow ${!isOpen ? 'animate-[pulse_2s_cubic-bezier(0.4,0,0.6,1)_infinite] ring-4 ring-[#25D366]/30' : ''}`}
         aria-label="Abrir WhatsApp"
       >
         <AnimatePresence mode="wait">
