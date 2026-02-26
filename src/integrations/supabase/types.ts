@@ -336,6 +336,24 @@ export type Database = {
         }
         Relationships: []
       }
+      whatsapp_clicks: {
+        Row: {
+          area: string
+          created_at: string
+          id: string
+        }
+        Insert: {
+          area: string
+          created_at?: string
+          id?: string
+        }
+        Update: {
+          area?: string
+          created_at?: string
+          id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

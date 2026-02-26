@@ -3,6 +3,7 @@ import { useLocation } from "react-router-dom";
 import { MessageCircle, X, ChevronRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { CONTACT_INFO } from "@/lib/constants";
+import { supabase } from "@/integrations/supabase/client";
 
 const WHATSAPP_NUMBER = CONTACT_INFO.whatsapp.replace(/\D/g, "");
 
@@ -64,8 +65,11 @@ export const WhatsAppWidget = () => {
 
   if (shouldHide) return null;
 
-  const handleOptionClick = (message: string) => {
-    const url = `https://wa.me/55${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
+  const handleOptionClick = (option: WhatsAppOption) => {
+    // Track click asynchronously (fire-and-forget)
+    supabase.from("whatsapp_clicks").insert({ area: option.label }).then();
+    
+    const url = `https://wa.me/55${WHATSAPP_NUMBER}?text=${encodeURIComponent(option.message)}`;
     window.open(url, "_blank", "noopener,noreferrer");
     setIsOpen(false);
   };
@@ -112,7 +116,7 @@ export const WhatsAppWidget = () => {
               {OPTIONS.map((option, i) => (
                 <button
                   key={i}
-                  onClick={() => handleOptionClick(option.message)}
+                  onClick={() => handleOptionClick(option)}
                   className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left hover:bg-muted/50 transition-colors group"
                 >
                   <span className="text-lg flex-shrink-0">{option.emoji}</span>

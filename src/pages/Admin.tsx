@@ -21,7 +21,8 @@ import {
   Calendar,
   ShieldAlert,
   FileText,
-  ArrowRight
+  ArrowRight,
+  MessageCircle
 } from 'lucide-react';
 import {
   AlertDialog,
@@ -47,6 +48,7 @@ interface EbookLead {
 export default function Admin() {
   const { user, isAdmin, isLoading, signOut } = useAuth();
   const [leads, setLeads] = useState<EbookLead[]>([]);
+  const [whatsappClicks, setWhatsappClicks] = useState<{ area: string; created_at: string }[]>([]);
   const [isLoadingLeads, setIsLoadingLeads] = useState(true);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState('articles');
@@ -62,8 +64,17 @@ export default function Admin() {
   useEffect(() => {
     if (user && isAdmin) {
       fetchLeads();
+      fetchWhatsappClicks();
     }
   }, [user, isAdmin]);
+
+  const fetchWhatsappClicks = async () => {
+    const { data } = await supabase
+      .from("whatsapp_clicks")
+      .select("area, created_at")
+      .order("created_at", { ascending: false });
+    setWhatsappClicks(data || []);
+  };
 
   const fetchLeads = async () => {
     setIsLoadingLeads(true);
@@ -312,7 +323,7 @@ export default function Admin() {
           {/* Leads Tab */}
           <TabsContent value="leads" className="space-y-6">
             {/* Stats */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <Card className="border-border bg-card">
                 <CardContent className="pt-6">
                   <div className="flex items-center gap-4">
@@ -322,6 +333,19 @@ export default function Admin() {
                     <div>
                       <p className="text-2xl font-bold text-foreground">{leads.length}</p>
                       <p className="text-sm text-muted-foreground">Total de Leads</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+              <Card className="border-border bg-card">
+                <CardContent className="pt-6">
+                  <div className="flex items-center gap-4">
+                    <div className="h-12 w-12 rounded-lg bg-[#25D366]/20 flex items-center justify-center">
+                      <MessageCircle className="h-6 w-6 text-[#25D366]" />
+                    </div>
+                    <div>
+                      <p className="text-2xl font-bold text-foreground">{whatsappClicks.length}</p>
+                      <p className="text-sm text-muted-foreground">Cliques WhatsApp</p>
                     </div>
                   </div>
                 </CardContent>
@@ -361,6 +385,36 @@ export default function Admin() {
                 </CardContent>
               </Card>
             </div>
+
+            {/* WhatsApp Clicks by Area */}
+            {whatsappClicks.length > 0 && (
+              <Card className="border-border bg-card">
+                <CardHeader>
+                  <CardTitle className="font-heading flex items-center gap-2">
+                    <MessageCircle className="h-5 w-5 text-[#25D366]" />
+                    Leads via WhatsApp por Área
+                  </CardTitle>
+                  <CardDescription>Cliques no widget de WhatsApp por área de atuação</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                    {Object.entries(
+                      whatsappClicks.reduce<Record<string, number>>((acc, c) => {
+                        acc[c.area] = (acc[c.area] || 0) + 1;
+                        return acc;
+                      }, {})
+                    )
+                      .sort(([, a], [, b]) => b - a)
+                      .map(([area, count]) => (
+                        <div key={area} className="flex items-center justify-between p-3 rounded-lg bg-muted/30 border border-border">
+                          <span className="text-sm font-medium text-foreground truncate">{area}</span>
+                          <Badge variant="secondary" className="ml-2 shrink-0">{count}</Badge>
+                        </div>
+                      ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
 
             {/* Charts Section */}
             <LeadsChart leads={leads} />
