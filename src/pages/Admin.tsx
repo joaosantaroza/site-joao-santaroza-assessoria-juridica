@@ -11,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
 import { LeadsChart } from '@/components/admin/LeadsChart';
+import { Sparkline } from '@/components/admin/Sparkline';
 import { 
   Loader2, 
   LogOut, 
@@ -107,6 +108,18 @@ export default function Admin() {
     if (yesterdayCount === 0) return todayCount > 0 ? 100 : 0;
     return Math.round(((todayCount - yesterdayCount) / yesterdayCount) * 100);
   }, [leads]);
+
+  // Sparkline data: count per day for last 7 days
+  const buildDailySparkline = (items: { created_at: string }[], days = 7) => {
+    const now = new Date();
+    return Array.from({ length: days }, (_, i) => {
+      const day = subDays(now, days - 1 - i).toDateString();
+      return items.filter(item => new Date(item.created_at).toDateString() === day).length;
+    });
+  };
+
+  const leadsSparkline = useMemo(() => buildDailySparkline(leads), [leads]);
+  const whatsappSparkline = useMemo(() => buildDailySparkline(whatsappClicks), [whatsappClicks]);
 
   useEffect(() => {
     if (!isLoading && !user) {
@@ -379,90 +392,101 @@ export default function Admin() {
              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <Card className="border-border bg-card">
                 <CardContent className="pt-6">
-                  <div className="flex items-center gap-4">
-                    <div className="h-12 w-12 rounded-lg bg-accent/20 flex items-center justify-center">
-                      <Users className="h-6 w-6 text-accent" />
-                    </div>
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <p className="text-2xl font-bold text-foreground">{leads.length}</p>
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-4">
+                      <div className="h-12 w-12 rounded-lg bg-accent/20 flex items-center justify-center shrink-0">
+                        <Users className="h-6 w-6 text-accent" />
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <p className="text-2xl font-bold text-foreground">{leads.length}</p>
+                          {leadsVariation !== null && (
+                            <span className={`flex items-center text-xs font-medium ${leadsVariation > 0 ? 'text-green-500' : leadsVariation < 0 ? 'text-red-500' : 'text-muted-foreground'}`}>
+                              {leadsVariation > 0 ? <TrendingUp className="h-3 w-3 mr-0.5" /> : leadsVariation < 0 ? <TrendingDown className="h-3 w-3 mr-0.5" /> : <Minus className="h-3 w-3 mr-0.5" />}
+                              {leadsVariation > 0 ? '+' : ''}{leadsVariation}%
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-sm text-muted-foreground">Total de Leads</p>
                         {leadsVariation !== null && (
-                          <span className={`flex items-center text-xs font-medium ${leadsVariation > 0 ? 'text-green-500' : leadsVariation < 0 ? 'text-red-500' : 'text-muted-foreground'}`}>
-                            {leadsVariation > 0 ? <TrendingUp className="h-3 w-3 mr-0.5" /> : leadsVariation < 0 ? <TrendingDown className="h-3 w-3 mr-0.5" /> : <Minus className="h-3 w-3 mr-0.5" />}
-                            {leadsVariation > 0 ? '+' : ''}{leadsVariation}%
-                          </span>
+                          <p className="text-xs text-muted-foreground/70">vs últimos 30 dias</p>
                         )}
                       </div>
-                      <p className="text-sm text-muted-foreground">Total de Leads</p>
-                      {leadsVariation !== null && (
-                        <p className="text-xs text-muted-foreground/70">vs últimos 30 dias</p>
-                      )}
                     </div>
+                    <Sparkline data={leadsSparkline} color="hsl(var(--accent))" />
                   </div>
                 </CardContent>
               </Card>
               <Card className="border-border bg-card">
                 <CardContent className="pt-6">
-                  <div className="flex items-center gap-4">
-                    <div className="h-12 w-12 rounded-lg bg-[#25D366]/20 flex items-center justify-center">
-                      <MessageCircle className="h-6 w-6 text-[#25D366]" />
-                    </div>
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <p className="text-2xl font-bold text-foreground">{filteredWhatsappClicks.length}</p>
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-4">
+                      <div className="h-12 w-12 rounded-lg bg-[#25D366]/20 flex items-center justify-center shrink-0">
+                        <MessageCircle className="h-6 w-6 text-[#25D366]" />
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <p className="text-2xl font-bold text-foreground">{filteredWhatsappClicks.length}</p>
+                          {whatsappVariation !== null && (
+                            <span className={`flex items-center text-xs font-medium ${whatsappVariation > 0 ? 'text-green-500' : whatsappVariation < 0 ? 'text-red-500' : 'text-muted-foreground'}`}>
+                              {whatsappVariation > 0 ? <TrendingUp className="h-3 w-3 mr-0.5" /> : whatsappVariation < 0 ? <TrendingDown className="h-3 w-3 mr-0.5" /> : <Minus className="h-3 w-3 mr-0.5" />}
+                              {whatsappVariation > 0 ? '+' : ''}{whatsappVariation}%
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-sm text-muted-foreground">Cliques WhatsApp</p>
                         {whatsappVariation !== null && (
-                          <span className={`flex items-center text-xs font-medium ${whatsappVariation > 0 ? 'text-green-500' : whatsappVariation < 0 ? 'text-red-500' : 'text-muted-foreground'}`}>
-                            {whatsappVariation > 0 ? <TrendingUp className="h-3 w-3 mr-0.5" /> : whatsappVariation < 0 ? <TrendingDown className="h-3 w-3 mr-0.5" /> : <Minus className="h-3 w-3 mr-0.5" />}
-                            {whatsappVariation > 0 ? '+' : ''}{whatsappVariation}%
-                          </span>
+                          <p className="text-xs text-muted-foreground/70">vs período anterior</p>
                         )}
                       </div>
-                      <p className="text-sm text-muted-foreground">Cliques WhatsApp</p>
-                      {whatsappVariation !== null && (
-                        <p className="text-xs text-muted-foreground/70">vs período anterior</p>
-                      )}
                     </div>
+                    <Sparkline data={whatsappSparkline} color="#25D366" />
                   </div>
                 </CardContent>
               </Card>
               <Card className="border-border bg-card">
                 <CardContent className="pt-6">
-                  <div className="flex items-center gap-4">
-                    <div className="h-12 w-12 rounded-lg bg-accent/20 flex items-center justify-center">
-                      <BookOpen className="h-6 w-6 text-accent" />
-                    </div>
-                    <div>
-                      <p className="text-2xl font-bold text-foreground">
-                        {[...new Set(leads.map(l => l.ebook_id))].length}
-                      </p>
-                      <p className="text-sm text-muted-foreground">E-books Ativos</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-              <Card className="border-border bg-card">
-                <CardContent className="pt-6">
-                  <div className="flex items-center gap-4">
-                    <div className="h-12 w-12 rounded-lg bg-accent/20 flex items-center justify-center">
-                      <Calendar className="h-6 w-6 text-accent" />
-                    </div>
-                    <div>
-                      <div className="flex items-center gap-2">
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-4">
+                      <div className="h-12 w-12 rounded-lg bg-accent/20 flex items-center justify-center shrink-0">
+                        <BookOpen className="h-6 w-6 text-accent" />
+                      </div>
+                      <div>
                         <p className="text-2xl font-bold text-foreground">
-                          {leads.filter(l => new Date(l.created_at).toDateString() === new Date().toDateString()).length}
+                          {[...new Set(leads.map(l => l.ebook_id))].length}
                         </p>
+                        <p className="text-sm text-muted-foreground">E-books Ativos</p>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+              <Card className="border-border bg-card">
+                <CardContent className="pt-6">
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-4">
+                      <div className="h-12 w-12 rounded-lg bg-accent/20 flex items-center justify-center shrink-0">
+                        <Calendar className="h-6 w-6 text-accent" />
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <p className="text-2xl font-bold text-foreground">
+                            {leads.filter(l => new Date(l.created_at).toDateString() === new Date().toDateString()).length}
+                          </p>
+                          {leadsTodayVariation !== null && (
+                            <span className={`flex items-center text-xs font-medium ${leadsTodayVariation > 0 ? 'text-green-500' : leadsTodayVariation < 0 ? 'text-red-500' : 'text-muted-foreground'}`}>
+                              {leadsTodayVariation > 0 ? <TrendingUp className="h-3 w-3 mr-0.5" /> : leadsTodayVariation < 0 ? <TrendingDown className="h-3 w-3 mr-0.5" /> : <Minus className="h-3 w-3 mr-0.5" />}
+                              {leadsTodayVariation > 0 ? '+' : ''}{leadsTodayVariation}%
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-sm text-muted-foreground">Leads Hoje</p>
                         {leadsTodayVariation !== null && (
-                          <span className={`flex items-center text-xs font-medium ${leadsTodayVariation > 0 ? 'text-green-500' : leadsTodayVariation < 0 ? 'text-red-500' : 'text-muted-foreground'}`}>
-                            {leadsTodayVariation > 0 ? <TrendingUp className="h-3 w-3 mr-0.5" /> : leadsTodayVariation < 0 ? <TrendingDown className="h-3 w-3 mr-0.5" /> : <Minus className="h-3 w-3 mr-0.5" />}
-                            {leadsTodayVariation > 0 ? '+' : ''}{leadsTodayVariation}%
-                          </span>
+                          <p className="text-xs text-muted-foreground/70">vs ontem</p>
                         )}
                       </div>
-                      <p className="text-sm text-muted-foreground">Leads Hoje</p>
-                      {leadsTodayVariation !== null && (
-                        <p className="text-xs text-muted-foreground/70">vs ontem</p>
-                      )}
                     </div>
+                    <Sparkline data={leadsSparkline} color="hsl(var(--accent))" />
                   </div>
                 </CardContent>
               </Card>
