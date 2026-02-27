@@ -12,8 +12,10 @@ interface SparklineProps {
 export function Sparkline({ data, color = 'hsl(var(--accent))', width = 80, height = 24 }: SparklineProps) {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
-  const { path, points } = useMemo(() => {
-    if (data.length < 2) return { path: '', points: [] as { x: number; y: number }[] };
+  const gradientId = useMemo(() => `spark-grad-${Math.random().toString(36).slice(2, 8)}`, []);
+
+  const { path, areaPath, points } = useMemo(() => {
+    if (data.length < 2) return { path: '', areaPath: '', points: [] as { x: number; y: number }[] };
     const max = Math.max(...data, 1);
     const min = Math.min(...data, 0);
     const range = max - min || 1;
@@ -23,7 +25,8 @@ export function Sparkline({ data, color = 'hsl(var(--accent))', width = 80, heig
       y: height - ((v - min) / range) * (height - 2) - 1,
     }));
     const d = `M${pts.map(p => `${p.x},${p.y}`).join(' L')}`;
-    return { path: d, points: pts };
+    const area = `${d} L${pts[pts.length - 1].x},${height} L${pts[0].x},${height} Z`;
+    return { path: d, areaPath: area, points: pts };
   }, [data, width, height]);
 
   if (data.length < 2) return null;
@@ -35,6 +38,20 @@ export function Sparkline({ data, color = 'hsl(var(--accent))', width = 80, heig
   return (
     <div className="relative shrink-0" style={{ width, height: height + 4 }}>
       <svg width={width} height={height} className="overflow-visible">
+        <defs>
+          <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor={color} stopOpacity={0.3} />
+            <stop offset="100%" stopColor={color} stopOpacity={0} />
+          </linearGradient>
+        </defs>
+        <motion.path
+          d={areaPath}
+          fill={`url(#${gradientId})`}
+          stroke="none"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.8, delay: 0.3, ease: 'easeOut' }}
+        />
         <motion.path
           d={path}
           fill="none"
