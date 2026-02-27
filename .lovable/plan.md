@@ -1,48 +1,100 @@
 
-# Dashboard de Funil de Conversao
 
-## Objetivo
-Adicionar um card visual de funil de conversao na aba "Leads" do Admin, mostrando a jornada: **Visitas** (total de views nos artigos) → **Downloads de E-book** (leads capturados) → **Contato WhatsApp** (cliques no widget), com taxas de conversao entre cada etapa.
+# Sistema de Agendamento Online de Consultas
 
-## Novo componente: `src/components/admin/ConversionFunnel.tsx`
+## Visao Geral
+Criar um sistema completo de agendamento onde visitantes podem marcar consultas pelo site. O agendamento sera salvo no banco de dados e visivel no painel admin, com notificacao via WhatsApp para o advogado.
 
-### Dados recebidos via props
-- `totalViews`: numero total de visualizacoes de artigos (soma de `view_count` de `blog_posts`)
-- `totalLeads`: quantidade de leads de e-book
-- `totalWhatsapp`: quantidade de cliques WhatsApp
+## Arquitetura
 
-### Visual
-- 3 barras horizontais empilhadas (funil), cada uma mais estreita que a anterior
-- Cada barra mostra: icone + label + valor absoluto
-- Entre cada barra, uma seta com a taxa de conversao (ex: "12.5%")
-- Cores: accent para visitas, primary para downloads, verde (#25D366) para WhatsApp
-- Animacao de entrada com framer-motion (barras deslizam da esquerda, sequencialmente)
-- Layout responsivo (stack vertical funciona em mobile)
+### 1. Tabela no banco de dados: `appointments`
 
-### Logica de taxas
-- Taxa Visita→Download: `(totalLeads / totalViews) * 100`
-- Taxa Download→WhatsApp: `(totalWhatsapp / totalLeads) * 100`
-- Taxa geral (Visita→WhatsApp): `(totalWhatsapp / totalViews) * 100`
-- Protecao contra divisao por zero
+```text
+appointments
++------------------+---------------------------+
+| Campo            | Tipo                      |
++------------------+---------------------------+
+| id               | uuid (PK)                 |
+| name             | text (NOT NULL)           |
+| phone            | text (NOT NULL)           |
+| email            | text (nullable)           |
+| practice_area    | text (NOT NULL)           |
+| preferred_date   | date (NOT NULL)           |
+| preferred_time   | text (NOT NULL)           |
+| message          | text (nullable)           |
+| status           | text (default 'pending')  |
+| created_at       | timestamptz               |
++------------------+---------------------------+
+```
 
-## Alteracoes em `src/pages/Admin.tsx`
+Politicas RLS:
+- INSERT: qualquer visitante pode inserir (publico)
+- SELECT/UPDATE/DELETE: apenas admins (`has_role(auth.uid(), 'admin')`)
+- Bloqueio de read/update/delete para anon e authenticated regulares
 
-### Buscar dados de views
-- Adicionar estado `totalArticleViews`
-- Criar funcao `fetchArticleViews` que faz `supabase.from('blog_posts').select('view_count')` e soma todos os valores
-- Chamar no `useEffect` junto com `fetchLeads` e `fetchWhatsappClicks`
+### 2. Componente: `AppointmentModal.tsx`
 
-### Inserir o funil
-- Importar `ConversionFunnel`
-- Inserir um Card logo acima dos stats cards existentes (antes da grid de 4 cards)
-- Titulo: "Funil de Conversao"
-- Descricao: "Jornada do visitante: visualizacao → download → contato"
-- Passar `totalViews`, `leads.length`, `whatsappClicks.length` como props
+Modal de agendamento acessivel pelo botao "Agende um Atendimento" no hero e em outros pontos do site. Campos:
+- Nome completo (obrigatorio)
+- WhatsApp (obrigatorio, com mascara)
+- E-mail (opcional)
+- Area de interesse (select com as areas de atuacao existentes em SERVICES)
+- Data preferida (date picker com calendario, apenas dias uteis futuros)
+- Horario preferido (select: 09h, 10h, 11h, 14h, 15h, 16h, 17h)
+- Mensagem/relato breve (opcional)
+
+Apos submissao:
+- Salva no banco de dados
+- Exibe confirmacao com opcao de enviar tambem via WhatsApp
+- Animacao de sucesso com framer-motion
+
+### 3. Integracao no site
+
+- Substituir o `ContactModal` pelo `AppointmentModal` nos pontos de "Agendar Atendimento"
+- Manter o `ContactModal` existente para contatos gerais
+- Adicionar botao "Agendar Consulta" na Navbar
+- Adicionar rota `/agendar` como pagina dedicada (opcional, acessivel via link direto)
+
+### 4. Painel Admin: aba "Agenda"
+
+Nova aba no Admin com:
+- Lista de agendamentos com filtro por status (Pendente, Confirmado, Concluido, Cancelado)
+- Acoes: confirmar, concluir ou cancelar agendamento
+- Card de estatisticas: total pendentes, agendamentos da semana
+- Botao de WhatsApp direto para contatar o cliente
+
+### 5. Notificacao admin
+
+Ao criar um agendamento, inserir uma notificacao na tabela `admin_notifications` (via edge function para respeitar RLS).
 
 ## Detalhes tecnicos
 
-- As barras do funil usam largura proporcional: a maior etapa ocupa 100%, as demais proporcionalmente
-- Cada barra tera `border-radius` e padding interno
-- Taxa de conversao exibida em badge entre as barras com icone de seta para baixo
-- Tooltip opcional ao hover mostrando o calculo
-- Caso algum valor seja 0, exibe "N/A" na taxa
+### Edge Function: `submit-appointment`
+- Recebe os dados do formulario
+- Valida inputs (nome, telefone, data)
+- Insere na tabela `appointments` usando service_role
+- Cria notificacao em `admin_notifications`
+- Rate limit por IP (reutilizar padrao existente)
+- Retorna confirmacao
+
+### Componentes a criar
+- `src/components/AppointmentModal.tsx` - modal de agendamento
+- `supabase/functions/submit-appointment/index.ts` - edge function
+
+### Componentes a modificar
+- `src/pages/Admin.tsx` - adicionar aba "Agenda" com lista e gestao
+- `src/components/HomePage.tsx` - conectar botao "Agende um Atendimento" ao novo modal
+- `src/pages/Index.tsx` - adicionar estado e handler do modal de agendamento
+- `src/components/Navbar.tsx` - adicionar botao de agendamento
+
+### Validacao
+- Validacao client-side com zod (nome min 2 chars, telefone formato brasileiro, data futura)
+- Validacao server-side na edge function
+- Rate limit: max 3 agendamentos por IP por hora
+
+### UX
+- Calendario interativo com react-day-picker (ja instalado)
+- Horarios em formato amigavel
+- Feedback visual de sucesso com animacao
+- Responsivo para mobile
+
