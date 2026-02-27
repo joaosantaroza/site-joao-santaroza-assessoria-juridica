@@ -1,39 +1,39 @@
 
-# Pagina "Sobre" - E-E-A-T Otimizada
+# Mapa de Calor de Atividade por Dia/Hora
 
 ## Objetivo
-Criar uma pagina dedicada `/sobre` com foco em demonstrar Experiencia, Especialidade, Autoridade e Confiabilidade (E-E-A-T) do advogado para o Google e visitantes.
+Criar um componente de mapa de calor (heatmap) no painel admin que mostre a distribuição de leads e cliques WhatsApp por dia da semana (eixo Y) e hora do dia (eixo X), permitindo identificar os melhores momentos para engajamento.
 
-## Conteudo da Pagina
+## Componente: `src/components/admin/ActivityHeatmap.tsx`
 
-A pagina tera as seguintes secoes:
+- Grid 7 linhas (Seg-Dom) x 24 colunas (0h-23h)
+- Cada celula com cor proporcional a intensidade (escala de transparencia usando a cor accent)
+- Tooltip ao passar o mouse mostrando: dia, hora e quantidade
+- Toggle para alternar entre "Leads" e "WhatsApp"
+- Labels nos eixos: dias abreviados em pt-BR no eixo Y, horas no eixo X
 
-1. **Hero** -- Foto profissional (ja existente em `src/assets/lawyer-photo.jpg`) ao lado do nome, OAB e uma frase de apresentacao
-2. **Historia / Bio** -- Texto narrativo sobre a trajetoria do advogado, motivacoes e filosofia de trabalho
-3. **Timeline de Carreira** -- Linha do tempo visual com marcos profissionais (formacao, OAB, especializacoes, fundacao do escritorio)
-4. **Formacao Academica** -- Cards com graduacao, pos-graduacao e cursos relevantes
-5. **Valores do Escritorio** -- Grid com icones e descricoes (Etica, Transparencia, Resultado, Sigilo, Humanizacao)
-6. **CTA Final** -- Botao para agendar consulta via ContactModal
+### Logica de dados
+- Recebe `leads` e `whatsappClicks` como props (mesmos dados ja carregados no Admin)
+- Agrupa por `dayOfWeek` (0-6, com `getDay()`) e `hour` (0-23, com `getHours()`)
+- Calcula intensidade relativa: `count / maxCount` para mapear opacidade de 0.05 a 1
+- Usa `useMemo` para performance
 
-## Implementacao Tecnica
+### Visual
+- Celulas pequenas (~20x20px) com `border-radius` sutil
+- Cor de fundo: accent com opacidade variavel (mais escuro = mais atividade)
+- Legenda de intensidade na parte inferior (gradiente de baixo a alto)
+- Animacao de entrada com framer-motion (fade-in sequencial por linha)
 
-### Arquivos a criar
-- **`src/pages/About.tsx`** -- Pagina principal com todas as secoes, usando componentes existentes (Navbar, Footer, ContactModal, BreadcrumbsJsonLd, useSEO)
+## Integracao no `src/pages/Admin.tsx`
 
-### Arquivos a modificar
-- **`src/App.tsx`** -- Adicionar rota `/sobre`
-- **`src/components/Navbar.tsx`** -- Adicionar link "Sobre" no menu desktop e mobile
+- Inserir o heatmap na aba "Leads", entre o filtro de periodo WhatsApp e o card de "Leads via WhatsApp por Area" (entre linhas 509 e 511)
+- Passar `leads` e `whatsappClicks` como props
+- Envolver em um Card com titulo "Mapa de Calor de Atividade" e descricao
 
-### SEO e Dados Estruturados
-- Hook `useSEO` configurado com titulo, descricao otimizada, URL canonica `/sobre` e keywords de E-E-A-T
-- `BreadcrumbsJsonLd` com caminho Inicio > Sobre o Advogado
-- JSON-LD `Person` schema embutido na pagina com: nome, cargo, OAB (identifier), areas de atuacao (knowsAbout), afiliacao OAB/PR, URL da pagina e imagem -- reforçando o schema que ja existe no `LocalBusinessSchema` como `founder`
-- Open Graph type `profile` para compartilhamento social otimizado
+## Detalhes tecnicos
 
-### Design
-- Seguira o padrao visual existente: cores navy/dourado, tipografia do projeto, componentes Framer Motion para animacoes de entrada
-- Responsivo com layout em grid para desktop e stack para mobile
-- Timeline com linha vertical e marcadores estilizados
-
-### Dados do Advogado
-Os dados serao definidos diretamente na pagina (constantes locais), usando informacoes ja disponiveis em `CONTACT_INFO` (nome, OAB, foto, endereco). Os textos de bio, formacao e timeline serao placeholders editaveis que o usuario podera ajustar depois.
+- Dias em pt-BR: `['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab']`
+- Horas exibidas a cada 3h no eixo X para nao poluir: 0h, 3h, 6h, ..., 21h
+- Estado local `activeSource` para toggle entre leads/whatsapp
+- Tooltip posicionado com CSS absolute, similar ao Sparkline
+- Responsivo: scroll horizontal em mobile com `overflow-x-auto`
