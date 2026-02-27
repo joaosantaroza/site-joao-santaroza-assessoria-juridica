@@ -12,6 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
 import { LeadsChart } from '@/components/admin/LeadsChart';
 import { Sparkline } from '@/components/admin/Sparkline';
+import { ActivityHeatmap } from '@/components/admin/ActivityHeatmap';
 import { 
   Loader2, 
   LogOut, 
@@ -507,6 +508,17 @@ export default function Admin() {
                 </SelectContent>
               </Select>
             </div>
+
+            {/* Activity Heatmap */}
+            <Card className="border-border bg-card">
+              <CardHeader>
+                <CardTitle className="font-heading text-base">Mapa de Calor de Atividade</CardTitle>
+                <CardDescription>Distribuição de atividade por dia da semana e hora do dia</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ActivityHeatmap leads={leads} whatsappClicks={whatsappClicks} />
+              </CardContent>
+            </Card>
 
             {/* WhatsApp Clicks by Area */}
             {filteredWhatsappClicks.length > 0 && (
