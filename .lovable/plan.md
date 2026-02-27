@@ -1,39 +1,48 @@
 
-# Mapa de Calor de Atividade por Dia/Hora
+# Dashboard de Funil de Conversao
 
 ## Objetivo
-Criar um componente de mapa de calor (heatmap) no painel admin que mostre a distribuição de leads e cliques WhatsApp por dia da semana (eixo Y) e hora do dia (eixo X), permitindo identificar os melhores momentos para engajamento.
+Adicionar um card visual de funil de conversao na aba "Leads" do Admin, mostrando a jornada: **Visitas** (total de views nos artigos) → **Downloads de E-book** (leads capturados) → **Contato WhatsApp** (cliques no widget), com taxas de conversao entre cada etapa.
 
-## Componente: `src/components/admin/ActivityHeatmap.tsx`
+## Novo componente: `src/components/admin/ConversionFunnel.tsx`
 
-- Grid 7 linhas (Seg-Dom) x 24 colunas (0h-23h)
-- Cada celula com cor proporcional a intensidade (escala de transparencia usando a cor accent)
-- Tooltip ao passar o mouse mostrando: dia, hora e quantidade
-- Toggle para alternar entre "Leads" e "WhatsApp"
-- Labels nos eixos: dias abreviados em pt-BR no eixo Y, horas no eixo X
-
-### Logica de dados
-- Recebe `leads` e `whatsappClicks` como props (mesmos dados ja carregados no Admin)
-- Agrupa por `dayOfWeek` (0-6, com `getDay()`) e `hour` (0-23, com `getHours()`)
-- Calcula intensidade relativa: `count / maxCount` para mapear opacidade de 0.05 a 1
-- Usa `useMemo` para performance
+### Dados recebidos via props
+- `totalViews`: numero total de visualizacoes de artigos (soma de `view_count` de `blog_posts`)
+- `totalLeads`: quantidade de leads de e-book
+- `totalWhatsapp`: quantidade de cliques WhatsApp
 
 ### Visual
-- Celulas pequenas (~20x20px) com `border-radius` sutil
-- Cor de fundo: accent com opacidade variavel (mais escuro = mais atividade)
-- Legenda de intensidade na parte inferior (gradiente de baixo a alto)
-- Animacao de entrada com framer-motion (fade-in sequencial por linha)
+- 3 barras horizontais empilhadas (funil), cada uma mais estreita que a anterior
+- Cada barra mostra: icone + label + valor absoluto
+- Entre cada barra, uma seta com a taxa de conversao (ex: "12.5%")
+- Cores: accent para visitas, primary para downloads, verde (#25D366) para WhatsApp
+- Animacao de entrada com framer-motion (barras deslizam da esquerda, sequencialmente)
+- Layout responsivo (stack vertical funciona em mobile)
 
-## Integracao no `src/pages/Admin.tsx`
+### Logica de taxas
+- Taxa Visita→Download: `(totalLeads / totalViews) * 100`
+- Taxa Download→WhatsApp: `(totalWhatsapp / totalLeads) * 100`
+- Taxa geral (Visita→WhatsApp): `(totalWhatsapp / totalViews) * 100`
+- Protecao contra divisao por zero
 
-- Inserir o heatmap na aba "Leads", entre o filtro de periodo WhatsApp e o card de "Leads via WhatsApp por Area" (entre linhas 509 e 511)
-- Passar `leads` e `whatsappClicks` como props
-- Envolver em um Card com titulo "Mapa de Calor de Atividade" e descricao
+## Alteracoes em `src/pages/Admin.tsx`
+
+### Buscar dados de views
+- Adicionar estado `totalArticleViews`
+- Criar funcao `fetchArticleViews` que faz `supabase.from('blog_posts').select('view_count')` e soma todos os valores
+- Chamar no `useEffect` junto com `fetchLeads` e `fetchWhatsappClicks`
+
+### Inserir o funil
+- Importar `ConversionFunnel`
+- Inserir um Card logo acima dos stats cards existentes (antes da grid de 4 cards)
+- Titulo: "Funil de Conversao"
+- Descricao: "Jornada do visitante: visualizacao → download → contato"
+- Passar `totalViews`, `leads.length`, `whatsappClicks.length` como props
 
 ## Detalhes tecnicos
 
-- Dias em pt-BR: `['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab']`
-- Horas exibidas a cada 3h no eixo X para nao poluir: 0h, 3h, 6h, ..., 21h
-- Estado local `activeSource` para toggle entre leads/whatsapp
-- Tooltip posicionado com CSS absolute, similar ao Sparkline
-- Responsivo: scroll horizontal em mobile com `overflow-x-auto`
+- As barras do funil usam largura proporcional: a maior etapa ocupa 100%, as demais proporcionalmente
+- Cada barra tera `border-radius` e padding interno
+- Taxa de conversao exibida em badge entre as barras com icone de seta para baixo
+- Tooltip opcional ao hover mostrando o calculo
+- Caso algum valor seja 0, exibe "N/A" na taxa
