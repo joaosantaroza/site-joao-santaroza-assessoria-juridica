@@ -413,7 +413,7 @@ export default function Admin() {
                         )}
                       </div>
                     </div>
-                    <Sparkline data={leadsSparkline} color="hsl(var(--accent))" />
+                    <Sparkline data={leadsSparkline} color="hsl(var(--accent))" trend={leadsVariation} />
                   </div>
                 </CardContent>
               </Card>
@@ -440,7 +440,7 @@ export default function Admin() {
                         )}
                       </div>
                     </div>
-                    <Sparkline data={whatsappSparkline} color="#25D366" />
+                    <Sparkline data={whatsappSparkline} color="#25D366" trend={whatsappVariation} />
                   </div>
                 </CardContent>
               </Card>
@@ -486,7 +486,7 @@ export default function Admin() {
                         )}
                       </div>
                     </div>
-                    <Sparkline data={leadsSparkline} color="hsl(var(--accent))" />
+                    <Sparkline data={leadsSparkline} color="hsl(var(--accent))" trend={leadsTodayVariation} />
                   </div>
                 </CardContent>
               </Card>
