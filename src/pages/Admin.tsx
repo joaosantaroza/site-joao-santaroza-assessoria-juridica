@@ -30,7 +30,8 @@ import {
   MessageCircle,
   TrendingUp,
   TrendingDown,
-  Minus
+  Minus,
+  Check
 } from 'lucide-react';
 import {
   AlertDialog,
@@ -53,6 +54,19 @@ interface EbookLead {
   created_at: string;
 }
 
+interface Appointment {
+  id: string;
+  name: string;
+  phone: string;
+  email: string | null;
+  practice_area: string;
+  preferred_date: string;
+  preferred_time: string;
+  message: string | null;
+  status: string;
+  created_at: string;
+}
+
 export default function Admin() {
   const { user, isAdmin, isLoading, signOut } = useAuth();
   const [leads, setLeads] = useState<EbookLead[]>([]);
@@ -62,6 +76,9 @@ export default function Admin() {
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState('articles');
   const [whatsappPeriod, setWhatsappPeriod] = useState<string>('all');
+  const [appointments, setAppointments] = useState<Appointment[]>([]);
+  const [isLoadingAppointments, setIsLoadingAppointments] = useState(true);
+  const [appointmentFilter, setAppointmentFilter] = useState<string>('all');
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -135,8 +152,34 @@ export default function Admin() {
       fetchLeads();
       fetchWhatsappClicks();
       fetchArticleViews();
+      fetchAppointments();
     }
   }, [user, isAdmin]);
+
+  const fetchAppointments = async () => {
+    setIsLoadingAppointments(true);
+    const { data, error } = await supabase
+      .from('appointments')
+      .select('*')
+      .order('preferred_date', { ascending: true });
+    if (!error) setAppointments((data as Appointment[]) || []);
+    setIsLoadingAppointments(false);
+  };
+
+  const updateAppointmentStatus = async (id: string, status: string) => {
+    const { error } = await supabase
+      .from('appointments')
+      .update({ status })
+      .eq('id', id);
+    if (error) {
+      toast({ title: 'Erro', description: 'Falha ao atualizar status.', variant: 'destructive' });
+    } else {
+      setAppointments(prev => prev.map(a => a.id === id ? { ...a, status } : a));
+      toast({ title: 'Atualizado', description: `Status alterado para ${status === 'confirmed' ? 'Confirmado' : status === 'completed' ? 'Concluído' : 'Cancelado'}.` });
+    }
+  };
+
+  const filteredAppointments = appointments.filter(a => appointmentFilter === 'all' || a.status === appointmentFilter);
 
   const fetchArticleViews = async () => {
     const { data } = await supabase.from('blog_posts').select('view_count');
@@ -367,6 +410,10 @@ export default function Admin() {
               <FileText className="h-4 w-4" />
               Artigos
             </TabsTrigger>
+            <TabsTrigger value="agenda" className="gap-2 data-[state=active]:bg-accent data-[state=active]:text-accent-foreground">
+              <Calendar className="h-4 w-4" />
+              Agenda
+            </TabsTrigger>
             <TabsTrigger value="leads" className="gap-2 data-[state=active]:bg-accent data-[state=active]:text-accent-foreground">
               <Users className="h-4 w-4" />
               Leads
@@ -392,6 +439,169 @@ export default function Admin() {
                   </div>
                   <ArrowRight className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors" />
                 </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Agenda Tab */}
+          <TabsContent value="agenda" className="space-y-6">
+            {/* Stats */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <Card className="border-border bg-card">
+                <CardContent className="pt-6">
+                  <div className="flex items-center gap-4">
+                    <div className="h-12 w-12 rounded-lg bg-yellow-500/20 flex items-center justify-center shrink-0">
+                      <Calendar className="h-6 w-6 text-yellow-500" />
+                    </div>
+                    <div>
+                      <p className="text-2xl font-bold text-foreground">{appointments.filter(a => a.status === 'pending').length}</p>
+                      <p className="text-sm text-muted-foreground">Pendentes</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+              <Card className="border-border bg-card">
+                <CardContent className="pt-6">
+                  <div className="flex items-center gap-4">
+                    <div className="h-12 w-12 rounded-lg bg-accent/20 flex items-center justify-center shrink-0">
+                      <Check className="h-6 w-6 text-accent" />
+                    </div>
+                    <div>
+                      <p className="text-2xl font-bold text-foreground">{appointments.filter(a => a.status === 'confirmed').length}</p>
+                      <p className="text-sm text-muted-foreground">Confirmados</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+              <Card className="border-border bg-card">
+                <CardContent className="pt-6">
+                  <div className="flex items-center gap-4">
+                    <div className="h-12 w-12 rounded-lg bg-primary/20 flex items-center justify-center shrink-0">
+                      <Calendar className="h-6 w-6 text-primary" />
+                    </div>
+                    <div>
+                      <p className="text-2xl font-bold text-foreground">
+                        {appointments.filter(a => {
+                          const d = new Date(a.preferred_date);
+                          const now = new Date();
+                          const weekEnd = new Date(now);
+                          weekEnd.setDate(weekEnd.getDate() + 7);
+                          return d >= now && d <= weekEnd;
+                        }).length}
+                      </p>
+                      <p className="text-sm text-muted-foreground">Esta semana</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Filter + Table */}
+            <Card className="border-border bg-card">
+              <CardHeader>
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                  <div>
+                    <CardTitle className="font-heading">Agendamentos</CardTitle>
+                    <CardDescription>Consultas agendadas pelos visitantes do site</CardDescription>
+                  </div>
+                  <div className="flex gap-2">
+                    <Select value={appointmentFilter} onValueChange={setAppointmentFilter}>
+                      <SelectTrigger className="w-[160px]">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">Todos</SelectItem>
+                        <SelectItem value="pending">Pendentes</SelectItem>
+                        <SelectItem value="confirmed">Confirmados</SelectItem>
+                        <SelectItem value="completed">Concluídos</SelectItem>
+                        <SelectItem value="cancelled">Cancelados</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <Button onClick={fetchAppointments} variant="outline" size="sm" disabled={isLoadingAppointments}>
+                      <RefreshCw className={`h-4 w-4 mr-2 ${isLoadingAppointments ? 'animate-spin' : ''}`} />
+                      Atualizar
+                    </Button>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent>
+                {isLoadingAppointments ? (
+                  <div className="flex items-center justify-center py-12">
+                    <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+                  </div>
+                ) : filteredAppointments.length === 0 ? (
+                  <div className="text-center py-12">
+                    <Calendar className="h-12 w-12 mx-auto text-muted-foreground/50 mb-4" />
+                    <p className="text-muted-foreground">Nenhum agendamento encontrado.</p>
+                  </div>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Nome</TableHead>
+                          <TableHead>Área</TableHead>
+                          <TableHead>Data</TableHead>
+                          <TableHead>Horário</TableHead>
+                          <TableHead>Status</TableHead>
+                          <TableHead>Contato</TableHead>
+                          <TableHead className="w-[140px]">Ações</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {filteredAppointments.map((apt) => (
+                          <TableRow key={apt.id}>
+                            <TableCell className="font-medium">{apt.name}</TableCell>
+                            <TableCell><Badge variant="secondary">{apt.practice_area}</Badge></TableCell>
+                            <TableCell>{new Date(apt.preferred_date + 'T12:00:00').toLocaleDateString('pt-BR')}</TableCell>
+                            <TableCell>{apt.preferred_time}</TableCell>
+                            <TableCell>
+                              <Badge variant={
+                                apt.status === 'pending' ? 'outline' :
+                                apt.status === 'confirmed' ? 'default' :
+                                apt.status === 'completed' ? 'secondary' : 'destructive'
+                              }>
+                                {apt.status === 'pending' ? 'Pendente' :
+                                 apt.status === 'confirmed' ? 'Confirmado' :
+                                 apt.status === 'completed' ? 'Concluído' : 'Cancelado'}
+                              </Badge>
+                            </TableCell>
+                            <TableCell>
+                              <a
+                                href={`https://wa.me/55${apt.phone}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center gap-1 text-accent hover:underline text-sm"
+                              >
+                                <Phone className="h-3 w-3" />
+                                WhatsApp
+                              </a>
+                            </TableCell>
+                            <TableCell>
+                              <div className="flex gap-1">
+                                {apt.status === 'pending' && (
+                                  <Button size="sm" variant="outline" onClick={() => updateAppointmentStatus(apt.id, 'confirmed')} className="text-xs h-7 px-2">
+                                    Confirmar
+                                  </Button>
+                                )}
+                                {(apt.status === 'pending' || apt.status === 'confirmed') && (
+                                  <Button size="sm" variant="outline" onClick={() => updateAppointmentStatus(apt.id, 'completed')} className="text-xs h-7 px-2">
+                                    Concluir
+                                  </Button>
+                                )}
+                                {apt.status !== 'cancelled' && apt.status !== 'completed' && (
+                                  <Button size="sm" variant="ghost" onClick={() => updateAppointmentStatus(apt.id, 'cancelled')} className="text-xs h-7 px-2 text-destructive">
+                                    Cancelar
+                                  </Button>
+                                )}
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+                )}
               </CardContent>
             </Card>
           </TabsContent>

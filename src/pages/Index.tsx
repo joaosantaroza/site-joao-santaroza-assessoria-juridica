@@ -6,11 +6,13 @@ import { PracticeAreasHub } from '@/components/PracticeAreasHub';
 import { TaxExemptionHub } from '@/components/TaxExemptionHub';
 import { ServicePage } from '@/components/ServicePage';
 import { ContactModal } from '@/components/ContactModal';
+import { AppointmentModal } from '@/components/AppointmentModal';
 import { SERVICES, ViewType } from '@/lib/constants';
 
 const Index = () => {
   const [currentView, setCurrentView] = useState<ViewType | string>('home');
   const [showModal, setShowModal] = useState(false);
+  const [showAppointment, setShowAppointment] = useState(false);
 
   useEffect(() => { 
     window.scrollTo(0, 0); 
@@ -29,7 +31,7 @@ const Index = () => {
         return (
           <HomePage 
             onNavigate={setCurrentView as (view: ViewType) => void} 
-            onContact={() => setShowModal(true)}
+            onContact={() => setShowAppointment(true)}
           />
         );
       case 'practice_areas':
@@ -42,14 +44,14 @@ const Index = () => {
             <ServicePage 
               service={SERVICES[currentView as keyof typeof SERVICES]} 
               onBack={() => setCurrentView('practice_areas')} 
-              onContact={() => setShowModal(true)} 
+              onContact={() => setShowAppointment(true)} 
             />
           );
         }
         return (
           <HomePage 
             onNavigate={setCurrentView as (view: ViewType) => void} 
-            onContact={() => setShowModal(true)}
+            onContact={() => setShowAppointment(true)}
           />
         );
     }
@@ -57,7 +59,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen font-sans selection:bg-accent selection:text-accent-foreground">
-      <Navbar onNavigate={setCurrentView} onContact={() => setShowModal(true)} />
+      <Navbar onNavigate={setCurrentView} onContact={() => setShowAppointment(true)} />
       
       <main>
         {renderContent()}
@@ -69,6 +71,11 @@ const Index = () => {
         isOpen={showModal} 
         onClose={() => setShowModal(false)} 
         initialSubject={getModalSubject()} 
+      />
+
+      <AppointmentModal
+        isOpen={showAppointment}
+        onClose={() => setShowAppointment(false)}
       />
     </div>
   );
