@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import { subDays } from 'date-fns';
+import { motion } from 'framer-motion';
 
 interface SparklineProps {
   data: number[];
@@ -34,7 +35,17 @@ export function Sparkline({ data, color = 'hsl(var(--accent))', width = 80, heig
   return (
     <div className="relative shrink-0" style={{ width, height: height + 4 }}>
       <svg width={width} height={height} className="overflow-visible">
-        <path d={path} fill="none" stroke={color} strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" />
+        <motion.path
+          d={path}
+          fill="none"
+          stroke={color}
+          strokeWidth={1.5}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          initial={{ pathLength: 0, opacity: 0 }}
+          animate={{ pathLength: 1, opacity: 1 }}
+          transition={{ duration: 0.8, ease: 'easeOut' }}
+        />
         {hoveredIndex !== null && points[hoveredIndex] && (
           <circle cx={points[hoveredIndex].x} cy={points[hoveredIndex].y} r={3} fill={color} />
         )}
