@@ -13,6 +13,7 @@ import { useToast } from '@/hooks/use-toast';
 import { LeadsChart } from '@/components/admin/LeadsChart';
 import { Sparkline } from '@/components/admin/Sparkline';
 import { ActivityHeatmap } from '@/components/admin/ActivityHeatmap';
+import { ConversionFunnel } from '@/components/admin/ConversionFunnel';
 import { 
   Loader2, 
   LogOut, 
@@ -56,6 +57,7 @@ export default function Admin() {
   const { user, isAdmin, isLoading, signOut } = useAuth();
   const [leads, setLeads] = useState<EbookLead[]>([]);
   const [whatsappClicks, setWhatsappClicks] = useState<{ area: string; created_at: string }[]>([]);
+  const [totalArticleViews, setTotalArticleViews] = useState(0);
   const [isLoadingLeads, setIsLoadingLeads] = useState(true);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState('articles');
@@ -132,8 +134,15 @@ export default function Admin() {
     if (user && isAdmin) {
       fetchLeads();
       fetchWhatsappClicks();
+      fetchArticleViews();
     }
   }, [user, isAdmin]);
+
+  const fetchArticleViews = async () => {
+    const { data } = await supabase.from('blog_posts').select('view_count');
+    const total = data?.reduce((sum, post) => sum + (post.view_count || 0), 0) || 0;
+    setTotalArticleViews(total);
+  };
 
   const fetchWhatsappClicks = async () => {
     const { data } = await supabase
@@ -389,6 +398,21 @@ export default function Admin() {
 
           {/* Leads Tab */}
           <TabsContent value="leads" className="space-y-6">
+            {/* Conversion Funnel */}
+            <Card className="border-border bg-card">
+              <CardHeader>
+                <CardTitle className="font-heading text-base">Funil de Conversão</CardTitle>
+                <CardDescription>Jornada do visitante: visualização → download → contato</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ConversionFunnel
+                  totalViews={totalArticleViews}
+                  totalLeads={leads.length}
+                  totalWhatsapp={whatsappClicks.length}
+                />
+              </CardContent>
+            </Card>
+
             {/* Stats */}
              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <Card className="border-border bg-card">
