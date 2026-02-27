@@ -1,15 +1,17 @@
 import { useMemo, useState } from 'react';
 import { subDays } from 'date-fns';
 import { motion } from 'framer-motion';
+import { TrendingUp, TrendingDown, Minus } from 'lucide-react';
 
 interface SparklineProps {
   data: number[];
   color?: string;
   width?: number;
   height?: number;
+  trend?: number | null;
 }
 
-export function Sparkline({ data, color = 'hsl(var(--accent))', width = 80, height = 24 }: SparklineProps) {
+export function Sparkline({ data, color = 'hsl(var(--accent))', width = 80, height = 24, trend }: SparklineProps) {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
   const gradientId = useMemo(() => `spark-grad-${Math.random().toString(36).slice(2, 8)}`, []);
@@ -36,8 +38,9 @@ export function Sparkline({ data, color = 'hsl(var(--accent))', width = 80, heig
   const hitAreaWidth = stepX * 0.8;
 
   return (
-    <div className="relative shrink-0" style={{ width, height: height + 4 }}>
-      <svg width={width} height={height} className="overflow-visible">
+    <div className="flex flex-col items-center gap-1 shrink-0">
+      <div className="relative" style={{ width, height: height + 4 }}>
+        <svg width={width} height={height} className="overflow-visible">
         <defs>
           <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
             <stop offset="0%" stopColor={color} stopOpacity={0.3} />
@@ -94,6 +97,18 @@ export function Sparkline({ data, color = 'hsl(var(--accent))', width = 80, heig
             {subDays(now, data.length - 1 - hoveredIndex).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })}
           </span>
         </div>
+      )}
+      </div>
+      {trend != null && (
+        <motion.div
+          className={`flex items-center gap-0.5 text-[10px] font-medium ${trend > 0 ? 'text-green-500' : trend < 0 ? 'text-red-500' : 'text-muted-foreground'}`}
+          initial={{ opacity: 0, y: 4 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 0.6 }}
+        >
+          {trend > 0 ? <TrendingUp className="h-3 w-3" /> : trend < 0 ? <TrendingDown className="h-3 w-3" /> : <Minus className="h-3 w-3" />}
+          {trend > 0 ? '+' : ''}{trend}%
+        </motion.div>
       )}
     </div>
   );
