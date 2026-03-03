@@ -1,64 +1,76 @@
 
-# Transformar o Site em PWA Instalavel
 
-## O que sera feito
-O site sera transformado em um Progressive Web App (PWA) que pode ser instalado no celular como um aplicativo nativo, com suporte a funcionamento offline e notificacoes push para novos artigos.
+# Corrigir Erros de Build + Exportacao de Relatorios em PDF e CSV
 
-## Etapas
+## Parte 1: Corrigir erros de build (pre-requisito)
 
-### 1. Instalar e configurar o plugin PWA no Vite
-- Instalar `vite-plugin-pwa`
-- Configurar em `vite.config.ts` com manifest, service worker (Workbox), e estrategias de cache
-- Adicionar `/~oauth` ao `navigateFallbackDenylist` para nao interferir com autenticacao
-- Definir o manifesto com nome, cores, icones e configuracao de display standalone
+Existem dois erros de build que precisam ser corrigidos antes de qualquer nova funcionalidade:
 
-### 2. Criar icones do PWA
-- Criar icones em `public/` nos tamanhos 192x192 e 512x512 (usando o favicon existente como base)
-- Adicionar meta tags de PWA no `index.html` (theme-color, apple-touch-icon, etc.)
+### 1.1 CSS @import deve vir antes de outras declaracoes
+O arquivo `src/index.css` tem `@import url(...)` na linha 5, depois dos `@tailwind`. Mover o `@import` para a linha 1 (antes dos `@tailwind`).
 
-### 3. Criar pagina `/instalar`
-- Nova pagina `src/pages/Install.tsx` com instrucoes visuais de como instalar o app
-- Botao que dispara o prompt nativo de instalacao (evento `beforeinstallprompt`)
-- Instrucoes especificas para iOS (Share → Adicionar a Tela Inicio) e Android
-- Adicionar rota no `App.tsx`
+### 1.2 PWA: arquivo muito grande para pre-cache
+O asset `ebook-gestante-capa.png` (2.55 MB) excede o limite padrao de 2 MB do Workbox. Solucao: adicionar `maximumFileSizeToCacheInBytes: 3 * 1024 * 1024` na configuracao do workbox em `vite.config.ts`, e excluir PNGs grandes do glob de pre-cache.
 
-### 4. Componente de prompt de instalacao
-- Criar `src/components/PWAInstallPrompt.tsx` - um banner/toast que aparece para usuarios mobile sugerindo instalar o app
-- Mostrar apenas uma vez (salvar no localStorage)
+**Arquivo:** `vite.config.ts` - adicionar `maximumFileSizeToCacheInBytes: 3 * 1024 * 1024` dentro de `workbox`
+**Arquivo:** `src/index.css` - mover `@import url(...)` para antes dos `@tailwind`
 
-### 5. Notificacoes Push para novos artigos
-- Criar edge function `push-subscribe` para salvar subscricoes push no banco
-- Criar tabela `push_subscriptions` (endpoint, keys, created_at) com RLS
-- Criar edge function `send-push-notification` que envia notificacoes via Web Push API
-- Gerar par de chaves VAPID e salvar como secrets
-- No frontend, solicitar permissao de notificacao e registrar a subscricao
-- No admin, ao publicar um artigo, disparar notificacao push para todos os inscritos
+---
 
-### 6. Integracao no site
-- Adicionar botao "Ativar Notificacoes" no footer ou navbar
-- Mostrar badge de "Novo" para artigos nao lidos apos push
+## Parte 2: Exportacao de Relatorios em PDF e CSV
 
-## Arquivos a criar
-- `src/pages/Install.tsx` - pagina de instalacao
-- `src/components/PWAInstallPrompt.tsx` - prompt de instalacao
-- `src/hooks/usePWA.ts` - hook para gerenciar instalacao e notificacoes
-- `supabase/functions/push-subscribe/index.ts` - salvar subscricoes
-- `supabase/functions/send-push-notification/index.ts` - enviar notificacoes
+### O que sera feito
+Adicionar botoes de exportacao no painel admin para gerar relatorios em PDF e CSV de tres conjuntos de dados:
+- **Leads de E-books** (ja tem CSV, adicionar PDF)
+- **Agendamentos** (adicionar CSV e PDF)
+- **Analytics/WhatsApp** (ja tem CSV, adicionar PDF)
 
-## Arquivos a modificar
-- `vite.config.ts` - adicionar vite-plugin-pwa
-- `index.html` - meta tags PWA
-- `src/App.tsx` - adicionar rota /instalar
-- `src/components/Navbar.tsx` - botao de notificacoes
+### Abordagem tecnica
+Geracao de PDF sera feita 100% no frontend usando uma utilidade leve que cria PDFs com a API nativa do Canvas + Blob, sem dependencias externas pesadas. O PDF tera o visual institucional (cores Navy/Bronze, logotipo).
 
-## Banco de dados
-- Nova tabela `push_subscriptions` com colunas: id, endpoint, p256dh, auth, created_at
-- RLS: insert publico (via service_role), select/delete para admins
+### Novo arquivo: `src/lib/exportUtils.ts`
+Utilidades compartilhadas para exportacao:
+- `exportToCSV(headers, rows, filename)` - funcao generica de CSV (refatorar o codigo existente)
+- `exportToPDF(title, headers, rows, filename)` - gera PDF tabelar usando a abordagem de construcao manual de documento PDF (string-based, sem lib externa)
+- O PDF incluira: cabecalho com nome do escritorio, data de geracao, tabela formatada, rodape com pagina
 
-## Secrets necessarios
-- `VAPID_PUBLIC_KEY` e `VAPID_PRIVATE_KEY` - chaves para Web Push (serao geradas automaticamente pela edge function na primeira execucao ou fornecidas pelo usuario)
+### Modificacoes em `src/pages/Admin.tsx`
+1. **Aba Agenda**: Adicionar botoes "Exportar CSV" e "Exportar PDF" no cabecalho da tabela de agendamentos
+2. **Aba Leads**: Adicionar botao "Exportar PDF" ao lado dos botoes CSV existentes
+3. **Aba Leads (WhatsApp)**: Adicionar botao "Exportar PDF" ao lado do CSV existente
+4. Refatorar as funcoes de CSV existentes para usar `exportToCSV` do novo utilitario
 
-## Resultado
-- App instalavel em qualquer celular (Android e iOS)
-- Funciona offline com cache dos artigos ja visitados
-- Usuarios recebem notificacao push quando um novo artigo e publicado
+### Formato do PDF
+- Cabecalho: "Joao Santaroza Advocacia - [Tipo do Relatorio]"
+- Data de geracao
+- Tabela com dados formatados
+- Cores: fundo de cabecalho navy (#273A5F), texto branco
+- Rodape com numero da pagina
+
+### Detalhes de implementacao
+
+**Exportacao de Agendamentos (CSV)**:
+- Colunas: Nome, Area, Data, Horario, Status, Telefone, E-mail
+- Nome do arquivo: `agendamentos-YYYY-MM-DD.csv`
+
+**Exportacao de Agendamentos (PDF)**:
+- Mesmas colunas, formatadas em tabela
+- Nome do arquivo: `agendamentos-YYYY-MM-DD.pdf`
+
+**Exportacao de Leads (PDF)**:
+- Versao segura (PII mascarado) e versao completa
+- Colunas: Nome, Telefone, E-book, Data
+- Nome do arquivo: `leads-ebooks-YYYY-MM-DD.pdf`
+
+**Exportacao WhatsApp (PDF)**:
+- Resumo por area (area, quantidade, percentual)
+- Nome do arquivo: `whatsapp-analytics-YYYY-MM-DD.pdf`
+
+### Arquivos a criar
+- `src/lib/exportUtils.ts` - utilidades de exportacao CSV e PDF
+
+### Arquivos a modificar
+- `vite.config.ts` - fix maximumFileSizeToCacheInBytes
+- `src/index.css` - fix @import order
+- `src/pages/Admin.tsx` - adicionar botoes de exportacao PDF e refatorar CSV
+
