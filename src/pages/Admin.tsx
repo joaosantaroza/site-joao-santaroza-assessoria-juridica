@@ -1,5 +1,6 @@
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, useCallback } from 'react';
 import { subDays } from 'date-fns';
+import { exportToCSV, exportToPDF } from '@/lib/exportUtils';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
@@ -504,7 +505,7 @@ export default function Admin() {
                     <CardTitle className="font-heading">Agendamentos</CardTitle>
                     <CardDescription>Consultas agendadas pelos visitantes do site</CardDescription>
                   </div>
-                  <div className="flex gap-2">
+                   <div className="flex flex-wrap gap-2">
                     <Select value={appointmentFilter} onValueChange={setAppointmentFilter}>
                       <SelectTrigger className="w-[160px]">
                         <SelectValue />
@@ -520,6 +521,44 @@ export default function Admin() {
                     <Button onClick={fetchAppointments} variant="outline" size="sm" disabled={isLoadingAppointments}>
                       <RefreshCw className={`h-4 w-4 mr-2 ${isLoadingAppointments ? 'animate-spin' : ''}`} />
                       Atualizar
+                    </Button>
+                    <Button
+                      onClick={() => {
+                        if (filteredAppointments.length === 0) return;
+                        const headers = ['Nome', 'Área', 'Data', 'Horário', 'Status', 'Telefone', 'E-mail'];
+                        const rows = filteredAppointments.map(a => [
+                          a.name, a.practice_area,
+                          new Date(a.preferred_date + 'T12:00:00').toLocaleDateString('pt-BR'),
+                          a.preferred_time,
+                          a.status === 'pending' ? 'Pendente' : a.status === 'confirmed' ? 'Confirmado' : a.status === 'completed' ? 'Concluído' : 'Cancelado',
+                          a.phone, a.email || ''
+                        ]);
+                        exportToCSV(headers, rows, `agendamentos-${new Date().toISOString().split('T')[0]}.csv`);
+                        toast({ title: 'CSV exportado', description: `${filteredAppointments.length} agendamentos exportados.` });
+                      }}
+                      variant="outline" size="sm" disabled={filteredAppointments.length === 0}
+                    >
+                      <Download className="h-4 w-4 mr-2" />
+                      CSV
+                    </Button>
+                    <Button
+                      onClick={() => {
+                        if (filteredAppointments.length === 0) return;
+                        const headers = ['Nome', 'Área', 'Data', 'Horário', 'Status', 'Telefone', 'E-mail'];
+                        const rows = filteredAppointments.map(a => [
+                          a.name, a.practice_area,
+                          new Date(a.preferred_date + 'T12:00:00').toLocaleDateString('pt-BR'),
+                          a.preferred_time,
+                          a.status === 'pending' ? 'Pendente' : a.status === 'confirmed' ? 'Confirmado' : a.status === 'completed' ? 'Concluído' : 'Cancelado',
+                          a.phone, a.email || ''
+                        ]);
+                        exportToPDF('Relatório de Agendamentos', headers, rows, `agendamentos-${new Date().toISOString().split('T')[0]}.pdf`);
+                        toast({ title: 'PDF exportado', description: `${filteredAppointments.length} agendamentos exportados.` });
+                      }}
+                      variant="outline" size="sm" disabled={filteredAppointments.length === 0}
+                    >
+                      <FileText className="h-4 w-4 mr-2" />
+                      PDF
                     </Button>
                   </div>
                 </div>
@@ -766,6 +805,7 @@ export default function Admin() {
                       </CardTitle>
                       <CardDescription>Cliques no widget de WhatsApp por área de atuação</CardDescription>
                     </div>
+                    <div className="flex flex-wrap gap-2">
                     <Button
                       onClick={() => {
                         if (filteredWhatsappClicks.length === 0) return;
@@ -781,14 +821,35 @@ export default function Admin() {
                         link.href = URL.createObjectURL(blob);
                         link.download = `whatsapp-cliques-${new Date().toISOString().split('T')[0]}.csv`;
                         link.click();
-                        toast({ title: 'Exportação concluída', description: `${filteredWhatsappClicks.length} cliques exportados.` });
+                        toast({ title: 'CSV exportado', description: `${filteredWhatsappClicks.length} cliques exportados.` });
                       }}
                       variant="outline"
                       size="sm"
                     >
                       <Download className="h-4 w-4 mr-2" />
-                      Exportar CSV
+                      CSV
                     </Button>
+                    <Button
+                      onClick={() => {
+                        const areaCounts = filteredWhatsappClicks.reduce<Record<string, number>>((acc, c) => {
+                          acc[c.area] = (acc[c.area] || 0) + 1;
+                          return acc;
+                        }, {});
+                        const total = filteredWhatsappClicks.length;
+                        const headers = ['Área', 'Quantidade', 'Percentual'];
+                        const rows = Object.entries(areaCounts)
+                          .sort(([, a], [, b]) => b - a)
+                          .map(([area, count]) => [area, String(count), `${((count / total) * 100).toFixed(1)}%`]);
+                        exportToPDF('WhatsApp Analytics', headers, rows, `whatsapp-analytics-${new Date().toISOString().split('T')[0]}.pdf`);
+                        toast({ title: 'PDF exportado', description: 'Relatório WhatsApp exportado.' });
+                      }}
+                      variant="outline"
+                      size="sm"
+                    >
+                      <FileText className="h-4 w-4 mr-2" />
+                      PDF
+                    </Button>
+                    </div>
                   </div>
                 </CardHeader>
                 <CardContent>
@@ -836,6 +897,22 @@ export default function Admin() {
                     <Button onClick={() => handleExportCSV(false)} variant="ghost" size="sm" disabled={leads.length === 0} title="Exporta com todos os dados pessoais visíveis">
                       <Download className="h-4 w-4 mr-2" />
                       Exportar Completo
+                    </Button>
+                    <Button
+                      onClick={() => {
+                        if (leads.length === 0) return;
+                        const headers = ['Nome', 'Telefone', 'E-book', 'Data'];
+                        const rows = leads.map(l => [
+                          l.name, l.phone, l.ebook_title,
+                          new Date(l.created_at).toLocaleString('pt-BR')
+                        ]);
+                        exportToPDF('Leads de E-books', headers, rows, `leads-ebooks-${new Date().toISOString().split('T')[0]}.pdf`);
+                        toast({ title: 'PDF exportado', description: `${leads.length} leads exportados.` });
+                      }}
+                      variant="outline" size="sm" disabled={leads.length === 0}
+                    >
+                      <FileText className="h-4 w-4 mr-2" />
+                      PDF
                     </Button>
                   </div>
                 </div>
