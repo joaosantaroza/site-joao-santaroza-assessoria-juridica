@@ -15,8 +15,28 @@ interface ContactModalProps {
 export const ContactModal = ({ isOpen, onClose, initialSubject = '' }: ContactModalProps) => {
   const [formData, setFormData] = useState({ name: '', phone: '', message: '' });
   const [isLoading, setIsLoading] = useState(false);
+  const [phoneError, setPhoneError] = useState('');
   
   if (!isOpen) return null;
+
+  const formatPhone = (value: string) => {
+    const digits = value.replace(/\D/g, '').slice(0, 11);
+    if (digits.length <= 2) return `(${digits}`;
+    if (digits.length <= 7) return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
+    return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
+  };
+
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const formatted = formatPhone(e.target.value);
+    setFormData({ ...formData, phone: formatted });
+    const digits = formatted.replace(/\D/g, '');
+    setPhoneError(digits.length > 0 && digits.length < 10 ? 'Número incompleto' : '');
+  };
+
+  const isPhoneValid = () => {
+    const digits = formData.phone.replace(/\D/g, '');
+    return digits.length >= 10 && digits.length <= 11;
+  };
 
   const openWhatsApp = () => {
     const text = `Olá, Dr. João Victor. \n\nMeu nome é *${formData.name}*.\nTelefone: ${formData.phone}\n\n*Assunto:* ${initialSubject || 'Consulta Jurídica'}\n*Mensagem:* ${formData.message}`;
@@ -91,9 +111,10 @@ export const ContactModal = ({ isOpen, onClose, initialSubject = '' }: ContactMo
               required
               placeholder="(00) 00000-0000"
               value={formData.phone}
-              onChange={(e) => setFormData({...formData, phone: e.target.value})}
-              className="bg-secondary"
+              onChange={handlePhoneChange}
+              className={`bg-secondary ${phoneError ? 'border-destructive' : ''}`}
             />
+            {phoneError && <p className="text-xs text-destructive mt-1">{phoneError}</p>}
           </div>
           <div>
             <label className="block text-xs font-bold uppercase tracking-wider mb-2 text-muted-foreground">
@@ -106,7 +127,7 @@ export const ContactModal = ({ isOpen, onClose, initialSubject = '' }: ContactMo
               className="bg-secondary h-24 resize-none"
             />
           </div>
-          <Button type="submit" className="w-full" size="lg" disabled={isLoading}>
+          <Button type="submit" className="w-full" size="lg" disabled={isLoading || !isPhoneValid()}>
             {isLoading ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Enviando...</> : 'Iniciar Conversa'}
           </Button>
         </form>
