@@ -237,6 +237,36 @@ serve(async (req) => {
 
     console.log(`Lead submitted: ${ebook_id} from IP ${clientIP}${email ? ` (${email})` : ""}`);
 
+    // Create follow-up sequence (fire and forget)
+    try {
+      const { data: insertedLead } = await supabaseAdmin
+        .from("ebook_leads")
+        .select("id")
+        .eq("phone", phone.replace(/\D/g, ""))
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (insertedLead) {
+        await fetch(`${supabaseUrl}/functions/v1/create-follow-up-sequence`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${supabaseServiceKey}`,
+          },
+          body: JSON.stringify({
+            lead_type: "ebook",
+            lead_id: insertedLead.id,
+            lead_name: name.trim(),
+            lead_phone: phone.replace(/\D/g, ""),
+            practice_area: ebook_title,
+          }),
+        });
+      }
+    } catch (followUpErr) {
+      console.error("Follow-up creation failed (non-blocking):", followUpErr);
+    }
+
     // Generate signed URL for the ebook download (valid for 1 hour)
     let signedUrl: string | null = null;
     const SIGNED_URL_EXPIRY_SECONDS = 3600; // 1 hour
