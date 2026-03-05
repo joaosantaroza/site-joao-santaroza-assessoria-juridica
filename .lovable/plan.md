@@ -1,57 +1,76 @@
 
 
-# Dashboard de SEO no Painel Admin
+# Corrigir Erros de Build + Exportacao de Relatorios em PDF e CSV
 
-## Visao geral
+## Parte 1: Corrigir erros de build (pre-requisito)
 
-Adicionar uma nova aba "SEO" no painel de artigos (`/admin/artigos`) com quatro funcionalidades:
+Existem dois erros de build que precisam ser corrigidos antes de qualquer nova funcionalidade:
 
-1. **Pontuacao de meta tags por artigo** — analise client-side do titulo, excerpt, slug, imagem e categorias
-2. **Artigos sem alt text nas imagens** — scan do conteudo markdown/HTML buscando `<img>` e `![` sem alt
-3. **Links quebrados internos** — detectar links internos no conteudo que apontam para slugs inexistentes
-4. **Sugestoes de palavras-chave com IA** — usar Lovable AI (Gemini Flash) via edge function para gerar keywords
+### 1.1 CSS @import deve vir antes de outras declaracoes
+O arquivo `src/index.css` tem `@import url(...)` na linha 5, depois dos `@tailwind`. Mover o `@import` para a linha 1 (antes dos `@tailwind`).
 
-## Implementacao
+### 1.2 PWA: arquivo muito grande para pre-cache
+O asset `ebook-gestante-capa.png` (2.55 MB) excede o limite padrao de 2 MB do Workbox. Solucao: adicionar `maximumFileSizeToCacheInBytes: 3 * 1024 * 1024` na configuracao do workbox em `vite.config.ts`, e excluir PNGs grandes do glob de pre-cache.
 
-### Novo componente: `src/components/admin/SEODashboard.tsx`
+**Arquivo:** `vite.config.ts` - adicionar `maximumFileSizeToCacheInBytes: 3 * 1024 * 1024` dentro de `workbox`
+**Arquivo:** `src/index.css` - mover `@import url(...)` para antes dos `@tailwind`
 
-Componente principal com 4 secoes em cards:
+---
 
-**1. Score de Meta Tags (client-side)**
-Para cada artigo publicado, calcular pontuacao (0-100) baseada em:
-- Titulo entre 30-60 caracteres (+25pts)
-- Excerpt/description entre 120-160 chars (+25pts)
-- Imagem de capa presente (+20pts)
-- Categorias definidas (+15pts)
-- Slug amigavel sem caracteres especiais (+15pts)
+## Parte 2: Exportacao de Relatorios em PDF e CSV
 
-Exibir tabela com artigo, score, e indicadores visuais (verde/amarelo/vermelho).
+### O que sera feito
+Adicionar botoes de exportacao no painel admin para gerar relatorios em PDF e CSV de tres conjuntos de dados:
+- **Leads de E-books** (ja tem CSV, adicionar PDF)
+- **Agendamentos** (adicionar CSV e PDF)
+- **Analytics/WhatsApp** (ja tem CSV, adicionar PDF)
 
-**2. Artigos sem Alt Text (client-side)**
-Scan do campo `content` de cada artigo buscando:
-- Tags `<img` sem atributo `alt` ou com `alt=""`
-- Sintaxe markdown `![](url)` com alt vazio
-Listar artigos afetados com contagem de imagens sem alt e link para edicao.
+### Abordagem tecnica
+Geracao de PDF sera feita 100% no frontend usando uma utilidade leve que cria PDFs com a API nativa do Canvas + Blob, sem dependencias externas pesadas. O PDF tera o visual institucional (cores Navy/Bronze, logotipo).
 
-**3. Links Internos Quebrados (client-side)**
-Extrair links internos do conteudo (href que comecam com `/blog/` ou contem o dominio do site), verificar se o slug referenciado existe na lista de artigos publicados. Listar links orfaos.
+### Novo arquivo: `src/lib/exportUtils.ts`
+Utilidades compartilhadas para exportacao:
+- `exportToCSV(headers, rows, filename)` - funcao generica de CSV (refatorar o codigo existente)
+- `exportToPDF(title, headers, rows, filename)` - gera PDF tabelar usando a abordagem de construcao manual de documento PDF (string-based, sem lib externa)
+- O PDF incluira: cabecalho com nome do escritorio, data de geracao, tabela formatada, rodape com pagina
 
-**4. Sugestoes de Palavras-chave (IA)**
-Botao por artigo que chama edge function para gerar 5-8 keywords SEO baseadas no titulo, excerpt e categoria. Usa Lovable AI Gateway com `google/gemini-3-flash-preview`.
+### Modificacoes em `src/pages/Admin.tsx`
+1. **Aba Agenda**: Adicionar botoes "Exportar CSV" e "Exportar PDF" no cabecalho da tabela de agendamentos
+2. **Aba Leads**: Adicionar botao "Exportar PDF" ao lado dos botoes CSV existentes
+3. **Aba Leads (WhatsApp)**: Adicionar botao "Exportar PDF" ao lado do CSV existente
+4. Refatorar as funcoes de CSV existentes para usar `exportToCSV` do novo utilitario
 
-### Nova edge function: `supabase/functions/suggest-keywords/index.ts`
+### Formato do PDF
+- Cabecalho: "Joao Santaroza Advocacia - [Tipo do Relatorio]"
+- Data de geracao
+- Tabela com dados formatados
+- Cores: fundo de cabecalho navy (#273A5F), texto branco
+- Rodape com numero da pagina
 
-Recebe `{ title, excerpt, category }`, chama Lovable AI Gateway com tool calling para retornar array de keywords estruturado. Retorna JSON com sugestoes.
+### Detalhes de implementacao
 
-### Integracao no AdminArticles
+**Exportacao de Agendamentos (CSV)**:
+- Colunas: Nome, Area, Data, Horario, Status, Telefone, E-mail
+- Nome do arquivo: `agendamentos-YYYY-MM-DD.csv`
 
-Adicionar nova aba "SEO" no `TabsList` de `/admin/artigos` ao lado de "Criar & Gerenciar", "Social Media" e "Analytics". A aba renderiza o componente `SEODashboard` recebendo a lista de artigos.
+**Exportacao de Agendamentos (PDF)**:
+- Mesmas colunas, formatadas em tabela
+- Nome do arquivo: `agendamentos-YYYY-MM-DD.pdf`
+
+**Exportacao de Leads (PDF)**:
+- Versao segura (PII mascarado) e versao completa
+- Colunas: Nome, Telefone, E-book, Data
+- Nome do arquivo: `leads-ebooks-YYYY-MM-DD.pdf`
+
+**Exportacao WhatsApp (PDF)**:
+- Resumo por area (area, quantidade, percentual)
+- Nome do arquivo: `whatsapp-analytics-YYYY-MM-DD.pdf`
 
 ### Arquivos a criar
-- `src/components/admin/SEODashboard.tsx`
-- `supabase/functions/suggest-keywords/index.ts`
+- `src/lib/exportUtils.ts` - utilidades de exportacao CSV e PDF
 
 ### Arquivos a modificar
-- `src/pages/AdminArticles.tsx` — adicionar aba SEO
-- `supabase/config.toml` — registrar nova edge function
+- `vite.config.ts` - fix maximumFileSizeToCacheInBytes
+- `src/index.css` - fix @import order
+- `src/pages/Admin.tsx` - adicionar botoes de exportacao PDF e refatorar CSV
 
