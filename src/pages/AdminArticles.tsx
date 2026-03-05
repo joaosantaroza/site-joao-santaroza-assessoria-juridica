@@ -3,12 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Loader2, ShieldAlert, BarChart3, Instagram } from 'lucide-react';
+import { ArrowLeft, Loader2, ShieldAlert, BarChart3, Instagram, Search } from 'lucide-react';
 import { ArticleForm, BlogPostEdit } from '@/components/admin/ArticleForm';
 import { ArticlesList } from '@/components/admin/ArticlesList';
 import { TrendingAnalytics } from '@/components/admin/TrendingAnalytics';
 import { SocialCaptionGenerator } from '@/components/admin/SocialCaptionGenerator';
 import { ScheduledPostsQueue } from '@/components/admin/ScheduledPostsQueue';
+import { SEODashboard } from '@/components/admin/SEODashboard';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
@@ -16,7 +17,7 @@ export default function AdminArticles() {
   const { isAdmin, isLoading } = useAuth();
   const [articleRefreshTrigger, setArticleRefreshTrigger] = useState(0);
   const [editingArticle, setEditingArticle] = useState<BlogPostEdit | null>(null);
-  const [publishedArticles, setPublishedArticles] = useState<{ id: string; title: string; excerpt: string; content: string; slug: string; image_url?: string | null }[]>([]);
+  const [publishedArticles, setPublishedArticles] = useState<{ id: string; title: string; excerpt: string; content: string; slug: string; image_url?: string | null; category?: string[] | null }[]>([]);
   const navigate = useNavigate();
 
   // Fetch published articles for social caption generator
@@ -24,7 +25,7 @@ export default function AdminArticles() {
     const fetchArticles = async () => {
       const { data } = await supabase
         .from('blog_posts')
-        .select('id, title, excerpt, content, slug, image_url')
+        .select('id, title, excerpt, content, slug, image_url, category')
         .eq('published', true)
         .order('created_at', { ascending: false });
       if (data) setPublishedArticles(data);
@@ -102,6 +103,10 @@ export default function AdminArticles() {
               <BarChart3 className="h-4 w-4" />
               Analytics
             </TabsTrigger>
+            <TabsTrigger value="seo" className="gap-2 data-[state=active]:bg-accent data-[state=active]:text-accent-foreground">
+              <Search className="h-4 w-4" />
+              SEO
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="articles" className="space-y-6">
@@ -123,6 +128,10 @@ export default function AdminArticles() {
 
           <TabsContent value="analytics">
             <TrendingAnalytics />
+          </TabsContent>
+
+          <TabsContent value="seo">
+            <SEODashboard articles={publishedArticles} />
           </TabsContent>
         </Tabs>
       </div>
