@@ -106,8 +106,8 @@ export const ContactModal = ({ isOpen, onClose, initialSubject = '' }: ContactMo
               className="bg-secondary h-24 resize-none"
             />
           </div>
-          <Button type="submit" className="w-full" size="lg">
-            Iniciar Conversa
+          <Button type="submit" className="w-full" size="lg" disabled={isLoading}>
+            {isLoading ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Enviando...</> : 'Iniciar Conversa'}
           </Button>
         </form>
       </div>
