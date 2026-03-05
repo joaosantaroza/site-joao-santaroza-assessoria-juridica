@@ -1,9 +1,10 @@
 import { useState } from "react";
-import { X } from "lucide-react";
+import { X, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { CONTACT_INFO } from "@/lib/constants";
+import { supabase } from "@/integrations/supabase/client";
 
 interface ContactModalProps {
   isOpen: boolean;
@@ -13,13 +14,34 @@ interface ContactModalProps {
 
 export const ContactModal = ({ isOpen, onClose, initialSubject = '' }: ContactModalProps) => {
   const [formData, setFormData] = useState({ name: '', phone: '', message: '' });
+  const [isLoading, setIsLoading] = useState(false);
   
   if (!isOpen) return null;
-  
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+
+  const openWhatsApp = () => {
     const text = `Olá, Dr. João Victor. \n\nMeu nome é *${formData.name}*.\nTelefone: ${formData.phone}\n\n*Assunto:* ${initialSubject || 'Consulta Jurídica'}\n*Mensagem:* ${formData.message}`;
     window.open(`https://wa.me/55${CONTACT_INFO.whatsapp.replace(/\D/g, '')}?text=${encodeURIComponent(text)}`, '_blank');
+  };
+  
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    try {
+      await supabase.functions.invoke('submit-contact', {
+        body: {
+          name: formData.name,
+          phone: formData.phone,
+          message: formData.message,
+          subject: initialSubject || 'Consulta Jurídica',
+        },
+      });
+    } catch (err) {
+      console.error('Erro ao salvar contato:', err);
+    }
+
+    openWhatsApp();
+    setIsLoading(false);
     onClose();
   };
 
@@ -84,8 +106,8 @@ export const ContactModal = ({ isOpen, onClose, initialSubject = '' }: ContactMo
               className="bg-secondary h-24 resize-none"
             />
           </div>
-          <Button type="submit" className="w-full" size="lg">
-            Iniciar Conversa
+          <Button type="submit" className="w-full" size="lg" disabled={isLoading}>
+            {isLoading ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Enviando...</> : 'Iniciar Conversa'}
           </Button>
         </form>
       </div>
