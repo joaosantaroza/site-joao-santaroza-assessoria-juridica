@@ -24,7 +24,11 @@ Crawl-delay: 2
 
 # Disallow admin and auth routes
 Disallow: /admin
+Disallow: /admin/
+Disallow: /admin/artigos
+Disallow: /admin/artigos/
 Disallow: /auth
+Disallow: /auth/
 
 # Sitemap
 Sitemap: https://joaosantarozaadvocacia.com.br/sitemap.xml
