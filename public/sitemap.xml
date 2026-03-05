@@ -2,30 +2,74 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://joaosantarozaadvocacia.com.br/</loc>
-    <lastmod>2026-02-03</lastmod>
+    <lastmod>2026-03-05</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
+    <loc>https://joaosantarozaadvocacia.com.br/sobre</loc>
+    <lastmod>2026-03-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
     <loc>https://joaosantarozaadvocacia.com.br/blog</loc>
-    <lastmod>2026-02-03</lastmod>
+    <lastmod>2026-03-05</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
+    <loc>https://joaosantarozaadvocacia.com.br/instalar</loc>
+    <lastmod>2026-03-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
     <loc>https://joaosantarozaadvocacia.com.br/areas-de-atuacao</loc>
-    <lastmod>2026-02-03</lastmod>
+    <lastmod>2026-03-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://joaosantarozaadvocacia.com.br/isencao-de-imposto-de-renda</loc>
-    <lastmod>2026-02-03</lastmod>
+    <lastmod>2026-03-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
 
-  <!-- Blog posts (atualize conforme publicar novos artigos) -->
+  <!-- Páginas pilar (temas) -->
+  <url>
+    <loc>https://joaosantarozaadvocacia.com.br/temas/isencao-ir</loc>
+    <lastmod>2026-03-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://joaosantarozaadvocacia.com.br/temas/direito-trabalhista</loc>
+    <lastmod>2026-03-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://joaosantarozaadvocacia.com.br/temas/desbloqueio-contas</loc>
+    <lastmod>2026-03-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://joaosantarozaadvocacia.com.br/temas/direito-previdenciario</loc>
+    <lastmod>2026-03-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://joaosantarozaadvocacia.com.br/temas/direito-digital</loc>
+    <lastmod>2026-03-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Blog posts -->
   <url>
     <loc>https://joaosantarozaadvocacia.com.br/blog/holding-ou-cpf-o-planejamento-tributario-de-imoveis-pos-reforma</loc>
     <lastmod>2026-01-30</lastmod>
@@ -35,6 +79,72 @@
   <url>
     <loc>https://joaosantarozaadvocacia.com.br/blog/prescricao-intercorrente</loc>
     <lastmod>2026-01-30</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://joaosantarozaadvocacia.com.br/blog/isencao-ir-hiv</loc>
+    <lastmod>2026-03-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://joaosantarozaadvocacia.com.br/blog/molestias-graves-lei</loc>
+    <lastmod>2026-03-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://joaosantarozaadvocacia.com.br/blog/restituicao-retroativa</loc>
+    <lastmod>2026-03-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://joaosantarozaadvocacia.com.br/blog/direitos-demissao</loc>
+    <lastmod>2026-03-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://joaosantarozaadvocacia.com.br/blog/horas-extras-calculo</loc>
+    <lastmod>2026-03-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://joaosantarozaadvocacia.com.br/blog/assedio-moral-trabalho</loc>
+    <lastmod>2026-03-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://joaosantarozaadvocacia.com.br/blog/direitos-gestante-demitida</loc>
+    <lastmod>2026-03-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://joaosantarozaadvocacia.com.br/blog/horario-britanico-ponto</loc>
+    <lastmod>2026-03-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://joaosantarozaadvocacia.com.br/blog/recuperacao-conta-instagram</loc>
+    <lastmod>2026-03-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://joaosantarozaadvocacia.com.br/blog/recuperacao-conta-facebook</loc>
+    <lastmod>2026-03-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://joaosantarozaadvocacia.com.br/blog/recuperacao-conta-mercadolivre</loc>
+    <lastmod>2026-03-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
