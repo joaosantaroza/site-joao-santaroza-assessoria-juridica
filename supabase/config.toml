@@ -41,3 +41,6 @@ verify_jwt = false
 
 [functions.suggest-keywords]
 verify_jwt = false
+
+[functions.submit-contact]
+verify_jwt = false
