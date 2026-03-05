@@ -1005,6 +1005,10 @@ export default function Admin() {
               </CardContent>
             </Card>
           </TabsContent>
+          {/* Follow-up Tab */}
+          <TabsContent value="followup">
+            <FollowUpTab />
+          </TabsContent>
         </Tabs>
       </main>
     </div>
