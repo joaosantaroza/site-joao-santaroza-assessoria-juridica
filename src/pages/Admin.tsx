@@ -15,6 +15,7 @@ import { LeadsChart } from '@/components/admin/LeadsChart';
 import { Sparkline } from '@/components/admin/Sparkline';
 import { ActivityHeatmap } from '@/components/admin/ActivityHeatmap';
 import { ConversionFunnel } from '@/components/admin/ConversionFunnel';
+import { FollowUpTab } from '@/components/admin/FollowUpTab';
 import { 
   Loader2, 
   LogOut, 
@@ -418,6 +419,10 @@ export default function Admin() {
             <TabsTrigger value="leads" className="gap-2 data-[state=active]:bg-accent data-[state=active]:text-accent-foreground">
               <Users className="h-4 w-4" />
               Leads
+            </TabsTrigger>
+            <TabsTrigger value="followup" className="gap-2 data-[state=active]:bg-accent data-[state=active]:text-accent-foreground">
+              <MessageCircle className="h-4 w-4" />
+              Follow-up
             </TabsTrigger>
           </TabsList>
 
@@ -999,6 +1004,10 @@ export default function Admin() {
                 )}
               </CardContent>
             </Card>
+          </TabsContent>
+          {/* Follow-up Tab */}
+          <TabsContent value="followup">
+            <FollowUpTab />
           </TabsContent>
         </Tabs>
       </main>

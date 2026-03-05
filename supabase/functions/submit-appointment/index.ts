@@ -142,6 +142,36 @@ serve(async (req) => {
 
     console.log(`Appointment created: ${practice_area} on ${preferred_date} at ${preferred_time}`);
 
+    // Create follow-up sequence (fire and forget)
+    try {
+      const { data: insertedApt } = await supabaseAdmin
+        .from("appointments")
+        .select("id")
+        .eq("phone", phone.replace(/\D/g, ""))
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (insertedApt) {
+        await fetch(`${supabaseUrl}/functions/v1/create-follow-up-sequence`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${supabaseServiceKey}`,
+          },
+          body: JSON.stringify({
+            lead_type: "appointment",
+            lead_id: insertedApt.id,
+            lead_name: name.trim(),
+            lead_phone: phone.replace(/\D/g, ""),
+            practice_area,
+          }),
+        });
+      }
+    } catch (followUpErr) {
+      console.error("Follow-up creation failed (non-blocking):", followUpErr);
+    }
+
     return new Response(JSON.stringify({ success: true }),
       { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
 

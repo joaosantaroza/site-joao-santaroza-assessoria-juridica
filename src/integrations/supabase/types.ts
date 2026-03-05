@@ -260,6 +260,51 @@ export type Database = {
         }
         Relationships: []
       }
+      follow_ups: {
+        Row: {
+          completed_at: string | null
+          created_at: string | null
+          follow_up_date: string
+          id: string
+          lead_id: string
+          lead_name: string
+          lead_phone: string
+          lead_type: string
+          notes: string | null
+          practice_area: string
+          sequence_step: number
+          status: string
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string | null
+          follow_up_date: string
+          id?: string
+          lead_id: string
+          lead_name: string
+          lead_phone: string
+          lead_type: string
+          notes?: string | null
+          practice_area: string
+          sequence_step?: number
+          status?: string
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string | null
+          follow_up_date?: string
+          id?: string
+          lead_id?: string
+          lead_name?: string
+          lead_phone?: string
+          lead_type?: string
+          notes?: string | null
+          practice_area?: string
+          sequence_step?: number
+          status?: string
+        }
+        Relationships: []
+      }
       push_subscriptions: {
         Row: {
           auth: string

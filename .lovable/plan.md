@@ -1,74 +1,76 @@
 
 
-# Automacao de Follow-up para Leads
+# Corrigir Erros de Build + Exportacao de Relatorios em PDF e CSV
 
-## Limitacao importante
+## Parte 1: Corrigir erros de build (pre-requisito)
 
-O Lovable **nao suporta envio de emails transacionais ou de marketing** — apenas emails de autenticacao. Portanto, uma sequencia de emails de follow-up automatizada via email nao e viavel nativamente.
+Existem dois erros de build que precisam ser corrigidos antes de qualquer nova funcionalidade:
 
-## Alternativa proposta: Follow-up via WhatsApp + Notificacoes Admin
+### 1.1 CSS @import deve vir antes de outras declaracoes
+O arquivo `src/index.css` tem `@import url(...)` na linha 5, depois dos `@tailwind`. Mover o `@import` para a linha 1 (antes dos `@tailwind`).
 
-Em vez de emails, implementar um sistema de follow-up que combina:
+### 1.2 PWA: arquivo muito grande para pre-cache
+O asset `ebook-gestante-capa.png` (2.55 MB) excede o limite padrao de 2 MB do Workbox. Solucao: adicionar `maximumFileSizeToCacheInBytes: 3 * 1024 * 1024` na configuracao do workbox em `vite.config.ts`, e excluir PNGs grandes do glob de pre-cache.
 
-1. **Fila de follow-ups no banco de dados** — tabela `follow_ups` que registra cada lead/agendamento com datas programadas de acompanhamento
-2. **Dashboard de follow-up no Admin** — nova aba "Follow-up" mostrando leads que precisam de contato hoje, com templates de mensagem WhatsApp prontos por area juridica
-3. **Notificacoes automaticas ao admin** — alertas quando um follow-up esta pendente
-4. **Templates de mensagem por area** — mensagens pre-escritas para cada area juridica, com botao de copiar e link direto para WhatsApp
+**Arquivo:** `vite.config.ts` - adicionar `maximumFileSizeToCacheInBytes: 3 * 1024 * 1024` dentro de `workbox`
+**Arquivo:** `src/index.css` - mover `@import url(...)` para antes dos `@tailwind`
 
-### Etapas
+---
 
-#### 1. Criar tabela `follow_ups`
-```sql
-CREATE TABLE public.follow_ups (
-  id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
-  lead_type text NOT NULL, -- 'ebook' ou 'appointment'
-  lead_id uuid NOT NULL,
-  lead_name text NOT NULL,
-  lead_phone text NOT NULL,
-  practice_area text NOT NULL,
-  follow_up_date date NOT NULL,
-  sequence_step integer NOT NULL DEFAULT 1, -- 1=dia seguinte, 2=3 dias, 3=7 dias
-  status text NOT NULL DEFAULT 'pending', -- pending, completed, skipped
-  completed_at timestamptz,
-  notes text,
-  created_at timestamptz DEFAULT now()
-);
-```
-Com RLS para admins e service_role.
+## Parte 2: Exportacao de Relatorios em PDF e CSV
 
-#### 2. Edge function `create-follow-up-sequence`
-Chamada automaticamente pelas edge functions existentes (`submit-ebook-lead`, `submit-appointment`) apos salvar o lead. Cria 3 registros de follow-up:
-- Dia seguinte (step 1)
-- 3 dias depois (step 2)  
-- 7 dias depois (step 3)
+### O que sera feito
+Adicionar botoes de exportacao no painel admin para gerar relatorios em PDF e CSV de tres conjuntos de dados:
+- **Leads de E-books** (ja tem CSV, adicionar PDF)
+- **Agendamentos** (adicionar CSV e PDF)
+- **Analytics/WhatsApp** (ja tem CSV, adicionar PDF)
 
-#### 3. Templates de mensagem WhatsApp por area juridica
-Arquivo `src/lib/followUpTemplates.ts` com mensagens personalizadas:
-- **Isencao IR/HIV**: "Ola [nome], tudo bem? Vi que voce demonstrou interesse em isencao de IR..."
-- **Trabalhista**: "Ola [nome], como esta? Gostaria de saber se conseguiu resolver..."
-- **Desbloqueio**: "Ola [nome], passando para verificar se a situacao do bloqueio..."
-- Cada area com 3 variantes (uma por step)
+### Abordagem tecnica
+Geracao de PDF sera feita 100% no frontend usando uma utilidade leve que cria PDFs com a API nativa do Canvas + Blob, sem dependencias externas pesadas. O PDF tera o visual institucional (cores Navy/Bronze, logotipo).
 
-#### 4. Nova aba "Follow-up" no Admin
-- Lista de follow-ups pendentes para hoje (e atrasados)
-- Filtro por status e area
-- Botao "Enviar via WhatsApp" que abre link com mensagem pre-preenchida
-- Botao "Marcar como concluido" / "Pular"
-- Indicadores: total pendente, concluidos hoje, taxa de conversao
+### Novo arquivo: `src/lib/exportUtils.ts`
+Utilidades compartilhadas para exportacao:
+- `exportToCSV(headers, rows, filename)` - funcao generica de CSV (refatorar o codigo existente)
+- `exportToPDF(title, headers, rows, filename)` - gera PDF tabelar usando a abordagem de construcao manual de documento PDF (string-based, sem lib externa)
+- O PDF incluira: cabecalho com nome do escritorio, data de geracao, tabela formatada, rodape com pagina
 
-#### 5. Notificacao automatica
-Ao criar follow-ups, inserir notificacao na tabela `admin_notifications` existente para alertar o admin.
+### Modificacoes em `src/pages/Admin.tsx`
+1. **Aba Agenda**: Adicionar botoes "Exportar CSV" e "Exportar PDF" no cabecalho da tabela de agendamentos
+2. **Aba Leads**: Adicionar botao "Exportar PDF" ao lado dos botoes CSV existentes
+3. **Aba Leads (WhatsApp)**: Adicionar botao "Exportar PDF" ao lado do CSV existente
+4. Refatorar as funcoes de CSV existentes para usar `exportToCSV` do novo utilitario
+
+### Formato do PDF
+- Cabecalho: "Joao Santaroza Advocacia - [Tipo do Relatorio]"
+- Data de geracao
+- Tabela com dados formatados
+- Cores: fundo de cabecalho navy (#273A5F), texto branco
+- Rodape com numero da pagina
+
+### Detalhes de implementacao
+
+**Exportacao de Agendamentos (CSV)**:
+- Colunas: Nome, Area, Data, Horario, Status, Telefone, E-mail
+- Nome do arquivo: `agendamentos-YYYY-MM-DD.csv`
+
+**Exportacao de Agendamentos (PDF)**:
+- Mesmas colunas, formatadas em tabela
+- Nome do arquivo: `agendamentos-YYYY-MM-DD.pdf`
+
+**Exportacao de Leads (PDF)**:
+- Versao segura (PII mascarado) e versao completa
+- Colunas: Nome, Telefone, E-book, Data
+- Nome do arquivo: `leads-ebooks-YYYY-MM-DD.pdf`
+
+**Exportacao WhatsApp (PDF)**:
+- Resumo por area (area, quantidade, percentual)
+- Nome do arquivo: `whatsapp-analytics-YYYY-MM-DD.pdf`
 
 ### Arquivos a criar
-- `supabase/functions/create-follow-up-sequence/index.ts`
-- `src/lib/followUpTemplates.ts`
+- `src/lib/exportUtils.ts` - utilidades de exportacao CSV e PDF
 
 ### Arquivos a modificar
-- `supabase/functions/submit-ebook-lead/index.ts` — chamar create-follow-up-sequence
-- `supabase/functions/submit-appointment/index.ts` — chamar create-follow-up-sequence
-- `src/pages/Admin.tsx` — adicionar aba Follow-up
-- `supabase/config.toml` — registrar nova edge function
-
-### Resultado
-Sistema semi-automatizado onde o admin recebe lembretes diarios de quem precisa de follow-up, com mensagens prontas para envio via WhatsApp — o canal mais efetivo para contato com clientes no Brasil.
+- `vite.config.ts` - fix maximumFileSizeToCacheInBytes
+- `src/index.css` - fix @import order
+- `src/pages/Admin.tsx` - adicionar botoes de exportacao PDF e refatorar CSV
 
