@@ -7,6 +7,7 @@ const SITE_URL = "https://joaosantarozaadvocacia.com.br";
 const STATIC_PAGES = [
   { path: "/", priority: "1.0", changefreq: "weekly" },
   { path: "/blog", priority: "0.9", changefreq: "daily" },
+  { path: "/especialidades", priority: "0.9", changefreq: "monthly" },
   { path: "/areas-de-atuacao", priority: "0.8", changefreq: "monthly" },
   { path: "/isencao-de-imposto-de-renda", priority: "0.8", changefreq: "monthly" },
 ];
