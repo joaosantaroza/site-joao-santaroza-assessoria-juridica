@@ -54,6 +54,49 @@ const faqs = [
         answer: "A aposentadoria especial é destinada a trabalhadores expostos a agentes nocivos à saúde, como ruído, calor ou produtos químicos. Os requisitos incluem tempo de contribuição em atividade especial e comprovação da exposição através de documentos técnicos."
       }
     ]
+  },
+  {
+    category: "Recuperação de Contas Digitais",
+    questions: [
+      {
+        question: "Minha conta do Instagram foi hackeada. É possível recuperar judicialmente?",
+        answer: "Sim. Quando os canais internos da Meta falham, é possível ingressar com ação judicial pedindo tutela de urgência para recuperação imediata da conta, além de indenização por danos morais e materiais. O Marco Civil da Internet e o Código de Defesa do Consumidor fundamentam a responsabilidade da plataforma pela segurança das contas dos usuários."
+      },
+      {
+        question: "A Meta pode ser processada no Brasil por bloquear minha conta sem motivo?",
+        answer: "Sim. A Meta possui representação no Brasil e responde perante o Judiciário brasileiro. Já há farta jurisprudência reconhecendo a responsabilidade da plataforma por bloqueios indevidos e falhas de segurança, com condenações em danos morais e obrigações de restabelecimento de acesso."
+      },
+      {
+        question: "Minha conta do Mercado Livre foi bloqueada e há saldo retido. O que fazer?",
+        answer: "É possível requerer judicialmente o desbloqueio da conta e a liberação imediata dos valores retidos, com base no CDC e na vedação ao enriquecimento sem causa. Tutelas de urgência têm sido concedidas com frequência nesses casos, especialmente quando há saldo significativo retido indevidamente."
+      }
+    ]
+  },
+  {
+    category: "Gestão de Passivos e Prescrição",
+    questions: [
+      {
+        question: "Uma dívida antiga pode ser cobrada para sempre?",
+        answer: "Não. As dívidas possuem prazo prescricional previsto em lei. Dívidas cíveis geralmente prescrevem em 3 ou 5 anos; execuções fiscais em 5 anos. Após esse prazo, a cobrança judicial pode ser bloqueada por meio de defesa técnica adequada."
+      },
+      {
+        question: "O que é prescrição intercorrente em execução fiscal?",
+        answer: "É a extinção da execução fiscal pelo decurso de prazo quando o credor abandona o processo sem promover atos úteis por mais de 5 anos. O STJ e o STF já consolidaram esse entendimento, e ele pode ser aplicado para extinguir execuções fiscais antigas paralisadas."
+      }
+    ]
+  },
+  {
+    category: "Contratos e Societário",
+    questions: [
+      {
+        question: "Por que é importante revisar um contrato antes de assinar?",
+        answer: "Contratos mal redigidos ou com cláusulas abusivas podem gerar prejuízos futuros difíceis de reverter. A revisão prévia por um advogado identifica riscos, desequilíbrios contratuais e cláusulas que podem ser renegociadas antes da assinatura, evitando litígios futuros."
+      },
+      {
+        question: "O que é uma holding familiar e quais as vantagens?",
+        answer: "Holding familiar é uma pessoa jurídica criada para concentrar e administrar o patrimônio da família. As principais vantagens são: economia tributária na transmissão de bens, maior facilidade no processo de sucessão, proteção patrimonial contra credores e planejamento societário eficiente."
+      }
+    ]
   }
 ];
 
