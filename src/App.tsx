@@ -16,6 +16,7 @@ import NotFound from "./pages/NotFound";
 import PillarPage from "./pages/PillarPage";
 import About from "./pages/About";
 import Install from "./pages/Install";
+import PracticeAreasPage from "./pages/PracticeAreasPage";
 import { WhatsAppWidget } from "./components/WhatsAppWidget";
 import { PWAInstallPrompt } from "./components/PWAInstallPrompt";
 
@@ -40,6 +41,7 @@ const App = () => (
             <Route path="/admin/artigos/:slug" element={<AdminArticleEdit />} />
             <Route path="/lp/:slug" element={<LandingPage />} />
             <Route path="/instalar" element={<Install />} />
+            <Route path="/especialidades" element={<PracticeAreasPage />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
