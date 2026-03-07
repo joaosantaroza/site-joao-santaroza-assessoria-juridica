@@ -57,7 +57,7 @@ export const HomePage = ({ onNavigate, onContact }: HomePageProps) => {
           
           <div className="flex flex-col sm:flex-row gap-5">
             <Button 
-              onClick={() => onNavigate('practice_areas')} 
+              onClick={() => navigate('/especialidades')} 
               size="lg"
               className="bg-accent text-accent-foreground hover:bg-accent/90"
             >
@@ -86,7 +86,7 @@ export const HomePage = ({ onNavigate, onContact }: HomePageProps) => {
         transition={{ duration: 0.6, delay: 0.3 }}
       >
         <div 
-          onClick={() => onNavigate('practice_areas')} 
+          onClick={() => navigate('/especialidades')} 
           className="flex flex-col md:flex-row items-center justify-between p-8 md:p-12 rounded-2xl cursor-pointer shadow-2xl transition-all transform hover:-translate-y-1 bg-card border-l-8 border-accent"
         >
           <div className="flex items-center gap-8 mb-6 md:mb-0">

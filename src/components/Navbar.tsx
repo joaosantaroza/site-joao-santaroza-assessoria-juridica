@@ -53,12 +53,12 @@ export const Navbar = ({ onNavigate, onContact }: NavbarProps) => {
           >
             Início
           </button>
-          <button 
-            onClick={() => onNavigate('practice_areas')} 
+          <Link 
+            to="/especialidades"
             className="text-sm font-bold uppercase tracking-wider text-muted-foreground hover:text-primary transition-colors"
           >
             Especialidades
-          </button>
+          </Link>
           <Link 
             to="/sobre"
             className="text-sm font-bold uppercase tracking-wider text-muted-foreground hover:text-primary transition-colors"
@@ -100,12 +100,13 @@ export const Navbar = ({ onNavigate, onContact }: NavbarProps) => {
             >
               INÍCIO
             </button>
-            <button 
-              onClick={() => { onNavigate('practice_areas'); setIsMenuOpen(false); }} 
+            <Link 
+              to="/especialidades"
+              onClick={() => setIsMenuOpen(false)}
               className="text-left font-bold text-primary"
             >
               ESPECIALIDADES
-            </button>
+            </Link>
             <Link 
               to="/sobre"
               onClick={() => setIsMenuOpen(false)}

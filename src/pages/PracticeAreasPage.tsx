@@ -30,7 +30,7 @@ export default function PracticeAreasPage() {
   return (
     <div className="min-h-screen bg-background">
       <Navbar onNavigate={handleNavigate} onContact={() => setShowContact(true)} />
-      <PracticeAreasHub onNavigate={handleNavigate} onContact={() => setShowContact(true)} />
+      <PracticeAreasHub onNavigate={handleNavigate} onBack={() => window.history.back()} />
       <Footer />
       <ContactModal isOpen={showContact} onClose={() => setShowContact(false)} />
     </div>
