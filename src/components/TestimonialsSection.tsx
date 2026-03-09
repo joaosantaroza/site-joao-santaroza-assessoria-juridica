@@ -48,7 +48,10 @@ const TestimonialCard = ({ testimonial, index }: { testimonial: Testimonial; ind
       <div className="flex items-center justify-between pt-4 border-t border-border">
         <div>
           <p className="font-semibold text-sm text-primary">{testimonial.name}</p>
-          <p className="text-xs text-muted-foreground">{testimonial.date}</p>
+          <span className="inline-block mt-1 text-xs border border-accent/30 text-accent rounded-full px-2 py-0.5">
+            {testimonial.areaLabel}
+          </span>
+          <p className="text-xs text-muted-foreground mt-1">{testimonial.date}</p>
         </div>
         <StarRating rating={testimonial.rating} />
       </div>
