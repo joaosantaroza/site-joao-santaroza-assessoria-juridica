@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Scale, FileText, Shield, Users, Building, Heart } from 'lucide-react';
+import { Scale, FileText, Shield, Users, Building, Heart, Smartphone } from 'lucide-react';
 
 /**
  * SEO-optimized text section for the homepage.
@@ -30,6 +30,12 @@ export const SEOSection = () => {
       title: 'Contratos Empresariais',
       description: 'Elaboração e revisão de contratos comerciais, societários e de prestação de serviços. Segurança jurídica para suas relações empresariais.',
       keywords: ['contratos', 'direito empresarial', 'societário'],
+    },
+    {
+      icon: Smartphone,
+      title: 'Recuperação de Contas Digitais',
+      description: 'Assessoria jurídica para recuperação de contas hackeadas ou bloqueadas no Instagram, Facebook e Mercado Livre. Medidas judiciais com tutela de urgência para restabelecer seu acesso e liberar valores retidos.',
+      keywords: ['conta hackeada', 'recuperar instagram', 'direito digital'],
     },
   ];
 
@@ -103,7 +109,7 @@ export const SEOSection = () => {
             para clientes de qualquer localidade. Nossa equipe está preparada para analisar seu caso com 
             sigilo e agilidade, seja você um aposentado buscando a{' '}
             <em>isenção de imposto de renda por doença grave</em>, um empresário enfrentando{' '}
-            <em>bloqueio de contas judiciais</em>, ou um trabalhador com dúvidas sobre seus{' '}
+            <em>bloqueio de contas judiciais</em>, <em>recuperação de contas digitais hackeadas</em>, ou um trabalhador com dúvidas sobre seus{' '}
             <em>direitos na rescisão contratual</em>.
           </p>
           
