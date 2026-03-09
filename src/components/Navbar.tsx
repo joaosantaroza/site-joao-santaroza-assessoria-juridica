@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CONTACT_INFO } from "@/lib/constants";
@@ -15,6 +15,10 @@ interface NavbarProps {
 export const Navbar = ({ onNavigate, onContact }: NavbarProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const navigate = useNavigate();
+  const { pathname } = useLocation();
+
+  const isActive = (path: string) =>
+    path === "/" ? pathname === "/" : pathname.startsWith(path);
 
   const handleHomeClick = () => {
     navigate('/');
@@ -49,25 +53,25 @@ export const Navbar = ({ onNavigate, onContact }: NavbarProps) => {
         <nav className="hidden lg:flex items-center gap-10">
           <button 
             onClick={handleHomeClick}
-            className="text-sm font-bold uppercase tracking-wider text-muted-foreground hover:text-primary transition-colors"
+            className={`text-sm font-bold uppercase tracking-wider transition-colors ${isActive("/") ? "text-primary border-b-2 border-accent pb-1" : "text-muted-foreground hover:text-primary"}`}
           >
             Início
           </button>
           <Link 
             to="/especialidades"
-            className="text-sm font-bold uppercase tracking-wider text-muted-foreground hover:text-primary transition-colors"
+            className={`text-sm font-bold uppercase tracking-wider transition-colors ${isActive("/especialidades") ? "text-primary border-b-2 border-accent pb-1" : "text-muted-foreground hover:text-primary"}`}
           >
             Especialidades
           </Link>
           <Link 
             to="/sobre"
-            className="text-sm font-bold uppercase tracking-wider text-muted-foreground hover:text-primary transition-colors"
+            className={`text-sm font-bold uppercase tracking-wider transition-colors ${isActive("/sobre") ? "text-primary border-b-2 border-accent pb-1" : "text-muted-foreground hover:text-primary"}`}
           >
             Sobre
           </Link>
           <Link 
             to="/blog"
-            className="text-sm font-bold uppercase tracking-wider text-muted-foreground hover:text-primary transition-colors"
+            className={`text-sm font-bold uppercase tracking-wider transition-colors ${isActive("/blog") ? "text-primary border-b-2 border-accent pb-1" : "text-muted-foreground hover:text-primary"}`}
           >
             Artigos
           </Link>
@@ -96,28 +100,28 @@ export const Navbar = ({ onNavigate, onContact }: NavbarProps) => {
           >
             <button 
               onClick={() => { handleHomeClick(); setIsMenuOpen(false); }} 
-              className="text-left font-bold text-primary"
+              className={`text-left font-bold ${isActive("/") ? "text-primary border-b-2 border-accent pb-1 inline-block" : "text-primary"}`}
             >
               INÍCIO
             </button>
             <Link 
               to="/especialidades"
               onClick={() => setIsMenuOpen(false)}
-              className="text-left font-bold text-primary"
+              className={`text-left font-bold ${isActive("/especialidades") ? "text-primary border-b-2 border-accent pb-1 inline-block" : "text-primary"}`}
             >
               ESPECIALIDADES
             </Link>
             <Link 
               to="/sobre"
               onClick={() => setIsMenuOpen(false)}
-              className="text-left font-bold text-primary"
+              className={`text-left font-bold ${isActive("/sobre") ? "text-primary border-b-2 border-accent pb-1 inline-block" : "text-primary"}`}
             >
               SOBRE
             </Link>
             <Link 
               to="/blog"
               onClick={() => setIsMenuOpen(false)}
-              className="text-left font-bold text-primary"
+              className={`text-left font-bold ${isActive("/blog") ? "text-primary border-b-2 border-accent pb-1 inline-block" : "text-primary"}`}
             >
               ARTIGOS
             </Link>
