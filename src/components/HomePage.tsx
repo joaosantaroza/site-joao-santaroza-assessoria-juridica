@@ -48,11 +48,11 @@ export const HomePage = ({ onNavigate, onContact }: HomePageProps) => {
           
           <h1 className="text-4xl lg:text-6xl font-extrabold tracking-tight text-primary-foreground mb-8 leading-tight font-heading">
             Assessoria Jurídica Especializada em{" "}
-            <span className="text-accent">Direito Tributário e Empresarial.</span>
+            <span className="text-accent">Direito Tributário, Empresarial e Digital.</span>
           </h1>
           
           <p className="text-xl text-primary-foreground/70 mb-12 leading-relaxed max-w-3xl font-light">
-            Atuação técnica em isenção de imposto de renda para portadores de moléstias graves, desbloqueio de contas e reestruturação de passivos. Atendimento personalizado com foco na orientação jurídica preventiva.
+            Atuação técnica em isenção de imposto de renda para portadores de moléstias graves, desbloqueio de contas judiciais, direito do trabalho, recuperação de contas digitais hackeadas e reestruturação de passivos. Atendimento personalizado com foco em resultados.
           </p>
           
           <div className="flex flex-col sm:flex-row gap-5">
@@ -98,7 +98,7 @@ export const HomePage = ({ onNavigate, onContact }: HomePageProps) => {
                 Nossas Especialidades
               </h3>
               <p className="text-muted-foreground text-sm">
-                Isenção de IR • Desbloqueio de Contas • Trabalho • Contratos
+                Isenção de IR • Desbloqueio de Contas • Trabalho • Recuperação Digital
               </p>
             </div>
           </div>
