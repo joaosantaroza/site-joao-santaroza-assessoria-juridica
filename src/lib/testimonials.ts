@@ -10,6 +10,7 @@ export interface Testimonial {
   rating: number; // 1-5
   date: string;
   practiceAreas: string[]; // Which service pages to show this on
+  areaLabel: string; // Friendly name of the practice area
 }
 
 export const TESTIMONIALS: Testimonial[] = [
@@ -21,6 +22,7 @@ export const TESTIMONIALS: Testimonial[] = [
     rating: 5,
     date: 'Janeiro 2026',
     practiceAreas: ['hiv', 'general_tax', 'tax_hub'],
+    areaLabel: 'Isenção de Imposto de Renda',
   },
   {
     id: 'test-2',
@@ -29,6 +31,7 @@ export const TESTIMONIALS: Testimonial[] = [
     rating: 5,
     date: 'Dezembro 2025',
     practiceAreas: ['hiv', 'tax_hub'],
+    areaLabel: 'Isenção de Imposto de Renda',
   },
   {
     id: 'test-3',
@@ -37,6 +40,7 @@ export const TESTIMONIALS: Testimonial[] = [
     rating: 5,
     date: 'Novembro 2025',
     practiceAreas: ['general_tax', 'tax_hub'],
+    areaLabel: 'Isenção de Imposto de Renda',
   },
   
   // Desbloqueio de Contas
@@ -47,6 +51,7 @@ export const TESTIMONIALS: Testimonial[] = [
     rating: 5,
     date: 'Janeiro 2026',
     practiceAreas: ['unlock'],
+    areaLabel: 'Desbloqueio de Contas',
   },
   {
     id: 'test-5',
@@ -55,6 +60,7 @@ export const TESTIMONIALS: Testimonial[] = [
     rating: 5,
     date: 'Outubro 2025',
     practiceAreas: ['unlock'],
+    areaLabel: 'Desbloqueio de Contas',
   },
   
   // Direito do Trabalho
@@ -65,6 +71,7 @@ export const TESTIMONIALS: Testimonial[] = [
     rating: 5,
     date: 'Dezembro 2025',
     practiceAreas: ['labor'],
+    areaLabel: 'Direito do Trabalho',
   },
   {
     id: 'test-7',
@@ -73,6 +80,7 @@ export const TESTIMONIALS: Testimonial[] = [
     rating: 5,
     date: 'Setembro 2025',
     practiceAreas: ['labor', 'contracts'],
+    areaLabel: 'Direito do Trabalho',
   },
   
   // Gestão de Passivos
@@ -83,6 +91,7 @@ export const TESTIMONIALS: Testimonial[] = [
     rating: 5,
     date: 'Novembro 2025',
     practiceAreas: ['prescription'],
+    areaLabel: 'Gestão de Passivos',
   },
   
   // Contratos e Societário
@@ -93,6 +102,7 @@ export const TESTIMONIALS: Testimonial[] = [
     rating: 5,
     date: 'Janeiro 2026',
     practiceAreas: ['contracts'],
+    areaLabel: 'Contratos Empresariais',
   },
   {
     id: 'test-10',
@@ -101,6 +111,7 @@ export const TESTIMONIALS: Testimonial[] = [
     rating: 5,
     date: 'Agosto 2025',
     practiceAreas: ['contracts'],
+    areaLabel: 'Contratos Empresariais',
   },
 ];
 
