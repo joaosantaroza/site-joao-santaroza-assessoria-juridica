@@ -31,6 +31,12 @@ export const SEOSection = () => {
       description: 'Elaboração e revisão de contratos comerciais, societários e de prestação de serviços. Segurança jurídica para suas relações empresariais.',
       keywords: ['contratos', 'direito empresarial', 'societário'],
     },
+    {
+      icon: Smartphone,
+      title: 'Recuperação de Contas Digitais',
+      description: 'Assessoria jurídica para recuperação de contas hackeadas ou bloqueadas no Instagram, Facebook e Mercado Livre. Medidas judiciais com tutela de urgência para restabelecer seu acesso e liberar valores retidos.',
+      keywords: ['conta hackeada', 'recuperar instagram', 'direito digital'],
+    },
   ];
 
   return (
