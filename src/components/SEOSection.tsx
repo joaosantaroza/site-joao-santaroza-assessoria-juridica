@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Scale, FileText, Shield, Users, Building, Heart } from 'lucide-react';
+import { Scale, FileText, Shield, Users, Building, Heart, Smartphone } from 'lucide-react';
 
 /**
  * SEO-optimized text section for the homepage.
