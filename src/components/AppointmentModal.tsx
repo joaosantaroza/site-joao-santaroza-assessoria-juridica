@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { X, CalendarIcon, Check, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -43,7 +43,38 @@ export const AppointmentModal = ({ isOpen, onClose }: AppointmentModalProps) => 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [bookedTimes, setBookedTimes] = useState<string[]>([]);
+  const [isLoadingSlots, setIsLoadingSlots] = useState(false);
   const { toast } = useToast();
+
+  useEffect(() => {
+    if (!date) {
+      setBookedTimes([]);
+      setTime("");
+      return;
+    }
+    const fetchBooked = async () => {
+      setIsLoadingSlots(true);
+      setTime("");
+      try {
+        const formatted = format(date, "yyyy-MM-dd");
+        const { data, error } = await supabase
+          .from("appointments")
+          .select("preferred_time")
+          .eq("preferred_date", formatted)
+          .eq("status", "confirmed");
+        if (!error && data) {
+          setBookedTimes(data.map((r) => r.preferred_time));
+        } else {
+          setBookedTimes([]);
+        }
+      } catch {
+        setBookedTimes([]);
+      }
+      setIsLoadingSlots(false);
+    };
+    fetchBooked();
+  }, [date]);
 
   if (!isOpen) return null;
 
@@ -209,10 +240,10 @@ export const AppointmentModal = ({ isOpen, onClose }: AppointmentModalProps) => 
                         </Button>
                       </PopoverTrigger>
                       <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar
+                         <Calendar
                           mode="single"
                           selected={date}
-                          onSelect={setDate}
+                          onSelect={(d) => setDate(d)}
                           disabled={disabledDays}
                           locale={ptBR}
                           className={cn("p-3 pointer-events-auto")}
@@ -224,14 +255,25 @@ export const AppointmentModal = ({ isOpen, onClose }: AppointmentModalProps) => 
 
                   <div>
                     <label className="block text-xs font-bold uppercase tracking-wider mb-1.5 text-muted-foreground">Horário *</label>
-                    <Select value={time} onValueChange={setTime}>
+                    <Select value={time} onValueChange={setTime} disabled={isLoadingSlots}>
                       <SelectTrigger className="bg-secondary">
-                        <SelectValue placeholder="Horário" />
+                        {isLoadingSlots ? (
+                          <span className="flex items-center gap-2 text-muted-foreground">
+                            <Loader2 className="h-4 w-4 animate-spin" /> Carregando...
+                          </span>
+                        ) : (
+                          <SelectValue placeholder="Horário" />
+                        )}
                       </SelectTrigger>
                       <SelectContent>
-                        {TIME_SLOTS.map(t => (
-                          <SelectItem key={t} value={t}>{t}</SelectItem>
-                        ))}
+                        {TIME_SLOTS.map(t => {
+                          const isBooked = bookedTimes.includes(t);
+                          return (
+                            <SelectItem key={t} value={t} disabled={isBooked}>
+                              {t}{isBooked ? " (Ocupado)" : ""}
+                            </SelectItem>
+                          );
+                        })}
                       </SelectContent>
                     </Select>
                     {errors.preferred_time && <p className="text-xs text-destructive mt-1">{errors.preferred_time}</p>}
