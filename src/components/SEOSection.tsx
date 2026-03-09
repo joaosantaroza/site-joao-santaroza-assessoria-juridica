@@ -109,7 +109,7 @@ export const SEOSection = () => {
             para clientes de qualquer localidade. Nossa equipe está preparada para analisar seu caso com 
             sigilo e agilidade, seja você um aposentado buscando a{' '}
             <em>isenção de imposto de renda por doença grave</em>, um empresário enfrentando{' '}
-            <em>bloqueio de contas judiciais</em>, ou um trabalhador com dúvidas sobre seus{' '}
+            <em>bloqueio de contas judiciais</em>, <em>recuperação de contas digitais hackeadas</em>, ou um trabalhador com dúvidas sobre seus{' '}
             <em>direitos na rescisão contratual</em>.
           </p>
           
