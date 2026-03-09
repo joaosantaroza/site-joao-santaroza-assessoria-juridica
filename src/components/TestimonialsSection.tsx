@@ -1,4 +1,4 @@
-import { Quote, Star } from "lucide-react";
+import { Quote, Star, Shield } from "lucide-react";
 import { motion } from "framer-motion";
 import { Testimonial, getTestimonialsByArea, getFeaturedTestimonials } from "@/lib/testimonials";
 
@@ -89,8 +89,15 @@ export const TestimonialsSection = ({
         <p className="text-sm text-muted-foreground">
           <span className="inline-flex items-center gap-1">
             <Star className="w-4 h-4 text-warning fill-warning" />
-            <strong className="text-foreground">4.9/5</strong> baseado em avaliações de clientes
+            Avaliações de clientes reais
           </span>
+          <span className="mx-1">•</span>
+          <span className="inline-flex items-center gap-1">
+            <Shield className="w-4 h-4 text-accent" />
+            OAB/PR 81.381
+          </span>
+          <span className="mx-1">•</span>
+          Sigilo garantido
         </p>
       </div>
     </section>
