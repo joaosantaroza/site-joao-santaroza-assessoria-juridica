@@ -58,15 +58,21 @@ export default function About() {
   useSEO({
     title: "Sobre o Advogado | Dr. João Victor Santaroza",
     description:
-      "Conheça o Dr. João Victor Santaroza – advogado inscrito na OAB/PR 81.381, especialista em Isenção de IR, Direito Trabalhista e Desbloqueio de Contas. Formação acadêmica, trajetória e valores.",
+      "Conheça o Dr. João Victor Santaroza – advogado inscrito na OAB/PR 81.381 com atuação em todo o Brasil. Especialista em Isenção de IR por doença grave, Desbloqueio de Contas Judiciais, Direito do Trabalho e Recuperação de Contas Digitais.",
     url: "/sobre",
     type: "profile",
     keywords: [
+      "advogado Umuarama",
       "advogado Maringá",
+      "advogado Tapejara PR",
+      "advogado Paraná",
       "OAB PR 81381",
       "João Santaroza advogado",
+      "João Victor Santaroza",
       "especialista isenção imposto de renda",
-      "direito tributário Paraná",
+      "advogado tributarista Paraná",
+      "recuperação conta instagram advogado",
+      "direito trabalhista Paraná",
     ],
   });
 
