@@ -16,21 +16,29 @@ export const Footer = () => (
           <p className="text-sm text-muted-foreground mb-1">{CONTACT_INFO.address}</p>
           <p className="text-sm font-bold text-accent">{CONTACT_INFO.oab}</p>
         </div>
-        <div className="flex gap-6">
-          <a 
-            href={`https://instagram.com/${CONTACT_INFO.instagram.replace('@','')}`} 
-            target="_blank" 
-            rel="noreferrer" 
-            className="text-muted-foreground hover:text-accent transition-colors"
+        <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
+          <Link 
+            to="/instalar" 
+            className="text-sm text-muted-foreground hover:text-accent transition-colors font-medium"
           >
-            <Instagram className="w-6 h-6" />
-          </a>
-          <a 
-            href={`mailto:${CONTACT_INFO.email}`} 
-            className="text-muted-foreground hover:text-accent transition-colors"
-          >
-            <Mail className="w-6 h-6" />
-          </a>
+            Instalar como App
+          </Link>
+          <div className="flex gap-6">
+            <a 
+              href={`https://instagram.com/${CONTACT_INFO.instagram.replace('@','')}`} 
+              target="_blank" 
+              rel="noreferrer" 
+              className="text-muted-foreground hover:text-accent transition-colors"
+            >
+              <Instagram className="w-6 h-6" />
+            </a>
+            <a 
+              href={`mailto:${CONTACT_INFO.email}`} 
+              className="text-muted-foreground hover:text-accent transition-colors"
+            >
+              <Mail className="w-6 h-6" />
+            </a>
+          </div>
         </div>
       </div>
       <div className="border-t border-border pt-8 text-xs text-muted-foreground text-justify leading-relaxed font-light">
