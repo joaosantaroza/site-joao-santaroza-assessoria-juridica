@@ -190,7 +190,7 @@ export const HomePage = ({ onNavigate, onContact }: HomePageProps) => {
     {/* Testimonials Section */}
     <section className="py-12 bg-background">
       <div className="container mx-auto px-4">
-        <TestimonialsSection maxItems={3} />
+        <TestimonialsSection maxItems={6} />
       </div>
     </section>
 
