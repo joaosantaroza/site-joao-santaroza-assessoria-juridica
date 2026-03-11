@@ -187,6 +187,13 @@ export const HomePage = ({ onNavigate, onContact }: HomePageProps) => {
     {/* Blog Section */}
     <BlogSection onContact={onContact} />
 
+    {/* Testimonials Section */}
+    <section className="py-12 bg-background">
+      <div className="container mx-auto px-4">
+        <TestimonialsSection maxItems={3} />
+      </div>
+    </section>
+
     {/* FAQ Section */}
     <FAQSection />
 
