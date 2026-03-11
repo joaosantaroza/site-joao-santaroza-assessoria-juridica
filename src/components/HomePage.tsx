@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { BlogSection } from "@/components/BlogSection";
 import FAQSection from "@/components/FAQSection";
 import { SEOSection } from "@/components/SEOSection";
+import { TestimonialsSection } from "@/components/TestimonialsSection";
 import { useNavigate } from "react-router-dom";
 import { LocalBusinessSchema, WebsiteSchema } from "@/components/seo";
 
@@ -185,6 +186,13 @@ export const HomePage = ({ onNavigate, onContact }: HomePageProps) => {
 
     {/* Blog Section */}
     <BlogSection onContact={onContact} />
+
+    {/* Testimonials Section */}
+    <section className="py-12 bg-background">
+      <div className="container mx-auto px-4">
+        <TestimonialsSection maxItems={3} />
+      </div>
+    </section>
 
     {/* FAQ Section */}
     <FAQSection />
