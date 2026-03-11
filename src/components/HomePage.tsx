@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { BlogSection } from "@/components/BlogSection";
 import FAQSection from "@/components/FAQSection";
 import { SEOSection } from "@/components/SEOSection";
+import { TestimonialsSection } from "@/components/TestimonialsSection";
 import { useNavigate } from "react-router-dom";
 import { LocalBusinessSchema, WebsiteSchema } from "@/components/seo";
 
