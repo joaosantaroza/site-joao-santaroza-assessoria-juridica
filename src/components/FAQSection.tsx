@@ -97,6 +97,31 @@ const faqs = [
         answer: "Holding familiar é uma pessoa jurídica criada para concentrar e administrar o patrimônio da família. As principais vantagens são: economia tributária na transmissão de bens, maior facilidade no processo de sucessão, proteção patrimonial contra credores e planejamento societário eficiente."
       }
     ]
+  },
+  {
+    category: "Auxílio-Acidente",
+    questions: [
+      {
+        question: "O que é o auxílio-acidente e qual a diferença para o auxílio-doença?",
+        answer: "O auxílio-acidente é um benefício indenizatório pago pelo INSS ao segurado que sofreu acidente ou doença ocupacional e ficou com sequelas permanentes que reduzem sua capacidade de trabalho. Diferente do auxílio-doença, que é temporário e substituí o salário, o auxílio-acidente tem caráter permanente e pode ser recebido junto com o salário."
+      },
+      {
+        question: "É possível receber auxílio-acidente e continuar trabalhando?",
+        answer: "Sim. Como o auxílio-acidente tem natureza indenizatória (e não substitutiva do salário), ele pode ser acumulado com a remuneração do trabalho. O segurado continua exercendo sua atividade profissional e recebe o benefício como compensação pela redução de sua capacidade laborativa."
+      },
+      {
+        question: "Como converter auxílio-doença em auxílio-acidente?",
+        answer: "A conversão ocorre quando o segurado recebe alta do INSS após período de auxílio-doença, mas permanece com sequelas que reduzem sua capacidade de trabalho. É necessário laudo médico comprovando as sequelas permanentes. Caso o INSS negue a conversão, é possível requerer judicialmente."
+      },
+      {
+        question: "Posso receber retroativos do auxílio-acidente?",
+        answer: "Sim. Se o benefício deveria ter sido concedido em data anterior, é possível pleitear judicialmente o pagamento das parcelas retroativas, respeitando o prazo prescricional de 5 anos. Os valores são corrigidos monetariamente e podem representar quantias significativas."
+      },
+      {
+        question: "Doenças ocupacionais como LER/DORT dão direito ao auxílio-acidente?",
+        answer: "Sim. A legislação equipara doenças ocupacionais a acidentes de trabalho. Condições como LER/DORT, perda auditiva induzida por ruído e problemas de coluna causados pelo trabalho podem dar direito ao auxílio-acidente, desde que comprovado o nexo causal e a redução da capacidade laborativa."
+      }
+    ]
   }
 ];
 

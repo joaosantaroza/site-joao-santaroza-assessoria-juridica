@@ -5,6 +5,39 @@ import { motion } from "framer-motion";
 import { PracticeAreaArticles } from "@/components/PracticeAreaArticles";
 import { TestimonialsSection } from "@/components/TestimonialsSection";
 import { PRACTICE_AREA_CATEGORIES, PRACTICE_AREA_ARTICLE_TITLES } from "@/lib/practiceAreaCategories";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import { SectionTitle } from "@/components/ui/SectionTitle";
+import { FAQSchema } from "@/components/seo/FAQSchema";
+
+const SERVICE_FAQS: Record<string, { question: string; answer: string }[]> = {
+  auxilio_acidente: [
+    {
+      question: "O que é o auxílio-acidente e qual a diferença para o auxílio-doença?",
+      answer: "O auxílio-acidente é um benefício indenizatório pago pelo INSS ao segurado que ficou com sequelas permanentes após acidente ou doença ocupacional. Diferente do auxílio-doença (temporário e substitutivo do salário), o auxílio-acidente é permanente e pode ser acumulado com o salário."
+    },
+    {
+      question: "É possível receber auxílio-acidente e continuar trabalhando?",
+      answer: "Sim. O auxílio-acidente tem natureza indenizatória, podendo ser acumulado com a remuneração do trabalho. O segurado continua trabalhando e recebe o benefício como compensação pela redução da capacidade laborativa."
+    },
+    {
+      question: "Como funciona a conversão de auxílio-doença em auxílio-acidente?",
+      answer: "A conversão ocorre quando o segurado recebe alta do INSS após auxílio-doença, mas permanece com sequelas que reduzem sua capacidade de trabalho. É necessário laudo médico comprovando as sequelas. Caso o INSS negue, é possível requerer judicialmente."
+    },
+    {
+      question: "Posso receber valores retroativos do auxílio-acidente?",
+      answer: "Sim. Se o benefício deveria ter sido concedido anteriormente, é possível pleitear judicialmente as parcelas retroativas dos últimos 5 anos, com correção monetária, o que pode representar valores significativos."
+    },
+    {
+      question: "Doenças ocupacionais como LER/DORT dão direito ao auxílio-acidente?",
+      answer: "Sim. A legislação equipara doenças ocupacionais a acidentes de trabalho. LER/DORT, perda auditiva e problemas de coluna causados pelo trabalho podem gerar direito ao auxílio-acidente, desde que comprovado o nexo causal e a redução da capacidade laborativa."
+    }
+  ]
+};
 
 interface ServicePageProps {
   service: Service;
@@ -93,6 +126,30 @@ export const ServicePage = ({ service, onBack, onContact }: ServicePageProps) =>
             </motion.div>
           ))}
         </motion.div>
+
+        {/* Service-specific FAQ */}
+        {SERVICE_FAQS[service.id] && (
+          <div className="max-w-4xl mx-auto mt-16">
+            <FAQSchema faqs={SERVICE_FAQS[service.id]} />
+            <SectionTitle className="text-center mb-8">Perguntas Frequentes</SectionTitle>
+            <Accordion type="single" collapsible className="space-y-2">
+              {SERVICE_FAQS[service.id].map((faq, index) => (
+                <AccordionItem
+                  key={index}
+                  value={`faq-${index}`}
+                  className="bg-card border border-border rounded-lg px-4"
+                >
+                  <AccordionTrigger className="text-left text-foreground hover:text-primary">
+                    {faq.question}
+                  </AccordionTrigger>
+                  <AccordionContent className="text-muted-foreground leading-relaxed">
+                    {faq.answer}
+                  </AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
+          </div>
+        )}
 
         {/* Testimonials Section */}
         <div className="max-w-6xl mx-auto mt-16">
