@@ -1,76 +1,41 @@
 
 
-# Corrigir Erros de Build + Exportacao de Relatorios em PDF e CSV
+## Plano: Nova Especialidade "Auxílio-Acidente" + 5 Artigos
 
-## Parte 1: Corrigir erros de build (pre-requisito)
+### O que será feito
 
-Existem dois erros de build que precisam ser corrigidos antes de qualquer nova funcionalidade:
+1. **Nova área de atuação em Especialidades** — card "Auxílio-Acidente" com ícone, descrição e página dedicada com features baseadas no PDF (conversão de auxílio-doença, requisitos, retroativos, acumulação com salário).
 
-### 1.1 CSS @import deve vir antes de outras declaracoes
-O arquivo `src/index.css` tem `@import url(...)` na linha 5, depois dos `@tailwind`. Mover o `@import` para a linha 1 (antes dos `@tailwind`).
+2. **5 artigos gerados via IA** sobre o tema, usando o sistema de geração de artigos já existente no admin.
 
-### 1.2 PWA: arquivo muito grande para pre-cache
-O asset `ebook-gestante-capa.png` (2.55 MB) excede o limite padrao de 2 MB do Workbox. Solucao: adicionar `maximumFileSizeToCacheInBytes: 3 * 1024 * 1024` na configuracao do workbox em `vite.config.ts`, e excluir PNGs grandes do glob de pre-cache.
-
-**Arquivo:** `vite.config.ts` - adicionar `maximumFileSizeToCacheInBytes: 3 * 1024 * 1024` dentro de `workbox`
-**Arquivo:** `src/index.css` - mover `@import url(...)` para antes dos `@tailwind`
+3. **Sugestões adicionais de conteúdo** ao final.
 
 ---
 
-## Parte 2: Exportacao de Relatorios em PDF e CSV
+### Alterações técnicas
 
-### O que sera feito
-Adicionar botoes de exportacao no painel admin para gerar relatorios em PDF e CSV de tres conjuntos de dados:
-- **Leads de E-books** (ja tem CSV, adicionar PDF)
-- **Agendamentos** (adicionar CSV e PDF)
-- **Analytics/WhatsApp** (ja tem CSV, adicionar PDF)
+**`src/lib/constants.ts`**
+- Adicionar entrada `auxilio_acidente` no objeto `SERVICES` com:
+  - Título: "Auxílio-Acidente"
+  - Descrição: conversão de auxílio-doença, sequelas permanentes, acumulação com salário
+  - Features: Conversão de Benefício, Retroativos do INSS, Perícia Médica, Acumulação com Salário
+- Atualizar `ViewType` para incluir `'auxilio_acidente'`
 
-### Abordagem tecnica
-Geracao de PDF sera feita 100% no frontend usando uma utilidade leve que cria PDFs com a API nativa do Canvas + Blob, sem dependencias externas pesadas. O PDF tera o visual institucional (cores Navy/Bronze, logotipo).
+**`src/lib/practiceAreaCategories.ts`**
+- Adicionar categorias: `['Previdenciário', 'Auxílio-Acidente', 'INSS', 'Benefício', 'Incapacidade']`
+- Adicionar título de artigos: "Artigos sobre Auxílio-Acidente"
 
-### Novo arquivo: `src/lib/exportUtils.ts`
-Utilidades compartilhadas para exportacao:
-- `exportToCSV(headers, rows, filename)` - funcao generica de CSV (refatorar o codigo existente)
-- `exportToPDF(title, headers, rows, filename)` - gera PDF tabelar usando a abordagem de construcao manual de documento PDF (string-based, sem lib externa)
-- O PDF incluira: cabecalho com nome do escritorio, data de geracao, tabela formatada, rodape com pagina
+**`src/components/PracticeAreasHub.tsx`**
+- Adicionar novo `ServiceCard` com ícone `Activity` (já importado em constants) para "Auxílio-Acidente"
 
-### Modificacoes em `src/pages/Admin.tsx`
-1. **Aba Agenda**: Adicionar botoes "Exportar CSV" e "Exportar PDF" no cabecalho da tabela de agendamentos
-2. **Aba Leads**: Adicionar botao "Exportar PDF" ao lado dos botoes CSV existentes
-3. **Aba Leads (WhatsApp)**: Adicionar botao "Exportar PDF" ao lado do CSV existente
-4. Refatorar as funcoes de CSV existentes para usar `exportToCSV` do novo utilitario
+**5 Artigos — gerados via Edge Function `generate-article`**
+Os artigos serão criados no banco de dados com as seguintes pautas baseadas no PDF:
 
-### Formato do PDF
-- Cabecalho: "Joao Santaroza Advocacia - [Tipo do Relatorio]"
-- Data de geracao
-- Tabela com dados formatados
-- Cores: fundo de cabecalho navy (#273A5F), texto branco
-- Rodape com numero da pagina
+1. **"O que é o Auxílio-Acidente e quem tem direito?"** — conceito, natureza indenizatória, requisitos do art. 86 da Lei 8.213/91
+2. **"Conversão de Auxílio-Doença em Auxílio-Acidente: como funciona"** — procedimento, alta do INSS com sequelas, papel da perícia
+3. **"Auxílio-Acidente e trabalho: é possível acumular com salário?"** — natureza cumulativa, vedações, jurisprudência do STJ
+4. **"Retroativos do Auxílio-Acidente: como recuperar valores atrasados"** — parcelas não pagas, prazo prescricional, cálculo
+5. **"Doenças ocupacionais e Auxílio-Acidente: direitos do trabalhador"** — LER/DORT, frigoríficos, construção civil, nexo causal
 
-### Detalhes de implementacao
-
-**Exportacao de Agendamentos (CSV)**:
-- Colunas: Nome, Area, Data, Horario, Status, Telefone, E-mail
-- Nome do arquivo: `agendamentos-YYYY-MM-DD.csv`
-
-**Exportacao de Agendamentos (PDF)**:
-- Mesmas colunas, formatadas em tabela
-- Nome do arquivo: `agendamentos-YYYY-MM-DD.pdf`
-
-**Exportacao de Leads (PDF)**:
-- Versao segura (PII mascarado) e versao completa
-- Colunas: Nome, Telefone, E-book, Data
-- Nome do arquivo: `leads-ebooks-YYYY-MM-DD.pdf`
-
-**Exportacao WhatsApp (PDF)**:
-- Resumo por area (area, quantidade, percentual)
-- Nome do arquivo: `whatsapp-analytics-YYYY-MM-DD.pdf`
-
-### Arquivos a criar
-- `src/lib/exportUtils.ts` - utilidades de exportacao CSV e PDF
-
-### Arquivos a modificar
-- `vite.config.ts` - fix maximumFileSizeToCacheInBytes
-- `src/index.css` - fix @import order
-- `src/pages/Admin.tsx` - adicionar botoes de exportacao PDF e refatorar CSV
+Cada artigo será gerado com categorias `['Previdenciário', 'Auxílio-Acidente', 'INSS']`, modo informativo conforme Provimento 205/2021 da OAB, e extensão média (800-1200 palavras).
 
