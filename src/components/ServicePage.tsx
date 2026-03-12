@@ -129,6 +129,19 @@ export const ServicePage = ({ service, onBack, onContact }: ServicePageProps) =>
           ))}
         </motion.div>
 
+        {/* E-book Banner for Auxílio-Acidente */}
+        {service.id === 'auxilio_acidente' && (
+          <div className="max-w-4xl mx-auto">
+            <ArticleEbookBanner
+              ebookId="auxilio-acidente"
+              ebookTitle="Guia Completo do Auxílio-Acidente"
+              ebookSubtitle="Descubra seus direitos, requisitos e como garantir o benefício do INSS. Guia gratuito com 7 capítulos completos."
+              ebookCoverUrl={ebookAuxilioAcidenteCapa}
+              ebookPdfUrl=""
+            />
+          </div>
+        )}
+
         {/* Service-specific FAQ */}
         {SERVICE_FAQS[service.id] && (
           <div className="max-w-4xl mx-auto mt-16">

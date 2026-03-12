@@ -277,15 +277,17 @@ serve(async (req) => {
     let signedUrl: string | null = null;
     const SIGNED_URL_EXPIRY_SECONDS = 3600; // 1 hour
 
-    if (ebookPdfPath) {
-      // Dynamic eBook from storage
+    // Check standalone ebooks first, then dynamic
+    const standalonePath = STANDALONE_EBOOK_PATHS[ebook_id];
+    const pdfPathToSign = ebookPdfPath || standalonePath;
+
+    if (pdfPathToSign) {
       const { data: signedData, error: signedError } = await supabaseAdmin.storage
         .from("ebooks")
-        .createSignedUrl(ebookPdfPath, SIGNED_URL_EXPIRY_SECONDS);
+        .createSignedUrl(pdfPathToSign, SIGNED_URL_EXPIRY_SECONDS);
 
       if (signedError) {
         console.error("Failed to generate signed URL:", signedError.message);
-        // Return success anyway - client can fall back to direct URL
       } else {
         signedUrl = signedData.signedUrl;
       }
