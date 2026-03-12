@@ -1,4 +1,4 @@
-import { ArrowRight, BookOpen, Shield, Users, Clock, FileText, MessageCircle, Instagram, Facebook, ShoppingBag } from "lucide-react";
+import { ArrowRight, BookOpen, Shield, Users, Clock, FileText, MessageCircle, Instagram, Facebook, ShoppingBag, HeartPulse } from "lucide-react";
 import { SectionTitle } from "@/components/ui/SectionTitle";
 import { ServiceCard } from "@/components/ui/ServiceCard";
 import { CONTACT_INFO, ViewType } from "@/lib/constants";
