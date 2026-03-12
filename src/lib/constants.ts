@@ -8,6 +8,7 @@ import {
   Instagram,
   Facebook,
   ShoppingBag,
+  HeartPulse,
   LucideIcon 
 } from 'lucide-react';
 
