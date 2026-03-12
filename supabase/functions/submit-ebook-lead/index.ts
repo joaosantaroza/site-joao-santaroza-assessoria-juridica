@@ -57,7 +57,13 @@ const LEGACY_EBOOK_IDS = [
   "isencao-ir-hiv",
   "estabilidade-gestante",
   "ponto-britanico",
+  "auxilio-acidente",
 ];
+
+// Standalone ebook paths in the ebooks storage bucket (for signed URL generation)
+const STANDALONE_EBOOK_PATHS: Record<string, string> = {
+  "auxilio-acidente": "auxilio-acidente/guia-completo-auxilio-acidente.pdf",
+};
 
 // Input validation schema (server-side validation)
 const RequestSchema = z.object({
