@@ -24,6 +24,9 @@ export const PRACTICE_AREA_CATEGORIES: Record<string, string[]> = {
   recovery_instagram: ['Direito Digital', 'Recuperação de Contas', 'Instagram', 'Hackeamento'],
   recovery_facebook: ['Direito Digital', 'Recuperação de Contas', 'Facebook', 'Hackeamento'],
   recovery_mercadolivre: ['Direito Digital', 'Recuperação de Contas', 'Mercado Livre', 'Direito do Consumidor'],
+  
+  // Auxílio-Acidente
+  auxilio_acidente: ['Previdenciário', 'Auxílio-Acidente', 'INSS', 'Benefício', 'Incapacidade'],
 };
 
 /**
