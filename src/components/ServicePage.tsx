@@ -13,6 +13,8 @@ import {
 } from "@/components/ui/accordion";
 import { SectionTitle } from "@/components/ui/SectionTitle";
 import { FAQSchema } from "@/components/seo/FAQSchema";
+import { ArticleEbookBanner } from "@/components/ArticleEbookBanner";
+import ebookAuxilioAcidenteCapa from "@/assets/ebook-auxilio-acidente-capa.png";
 
 const SERVICE_FAQS: Record<string, { question: string; answer: string }[]> = {
   auxilio_acidente: [
