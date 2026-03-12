@@ -24,7 +24,7 @@ export default function PracticeAreasPage() {
   });
 
   const handleNavigate = (view: ViewType) => {
-    window.location.href = "/";
+    window.location.href = `/?view=${view}`;
   };
 
   return (

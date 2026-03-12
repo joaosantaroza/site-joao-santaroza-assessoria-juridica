@@ -10,7 +10,10 @@ import { AppointmentModal } from '@/components/AppointmentModal';
 import { SERVICES, ViewType } from '@/lib/constants';
 
 const Index = () => {
-  const [currentView, setCurrentView] = useState<ViewType | string>('home');
+  const [currentView, setCurrentView] = useState<ViewType | string>(() => {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('view') || 'home';
+  });
   const [showModal, setShowModal] = useState(false);
   const [showAppointment, setShowAppointment] = useState(false);
 
