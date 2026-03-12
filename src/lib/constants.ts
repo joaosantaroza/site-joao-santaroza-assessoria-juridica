@@ -8,6 +8,7 @@ import {
   Instagram,
   Facebook,
   ShoppingBag,
+  HeartPulse,
   LucideIcon 
 } from 'lucide-react';
 
@@ -129,6 +130,15 @@ export const SERVICES: Record<string, Service> = {
     heroTitle: 'Recuperação de Conta do Mercado Livre',
     heroSubtitle: 'Conta do Mercado Livre bloqueada ou suspensa indevidamente? Atuamos para reverter punições injustas e recuperar seu acesso à plataforma.',
     features: ['Notificação Extrajudicial', 'Ação Judicial', 'Tutela de Urgência', 'Recuperação de Saldo Retido']
+  },
+  auxilio_acidente: {
+    id: 'auxilio_acidente',
+    title: 'Auxílio-Acidente',
+    shortDesc: 'Conversão de auxílio-doença, sequelas permanentes e acumulação com salário.',
+    icon: HeartPulse,
+    heroTitle: 'Auxílio-Acidente: Seus Direitos',
+    heroSubtitle: 'O auxílio-acidente é um benefício indenizatório do INSS para segurados que sofreram acidente ou doença ocupacional e ficaram com sequelas permanentes. Saiba como converter seu benefício e recuperar valores retroativos.',
+    features: ['Conversão de Benefício', 'Retroativos do INSS', 'Perícia Médica', 'Acumulação com Salário']
   }
 };
 

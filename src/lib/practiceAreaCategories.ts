@@ -24,6 +24,9 @@ export const PRACTICE_AREA_CATEGORIES: Record<string, string[]> = {
   recovery_instagram: ['Direito Digital', 'Recuperação de Contas', 'Instagram', 'Hackeamento'],
   recovery_facebook: ['Direito Digital', 'Recuperação de Contas', 'Facebook', 'Hackeamento'],
   recovery_mercadolivre: ['Direito Digital', 'Recuperação de Contas', 'Mercado Livre', 'Direito do Consumidor'],
+  
+  // Auxílio-Acidente
+  auxilio_acidente: ['Previdenciário', 'Auxílio-Acidente', 'INSS', 'Benefício', 'Incapacidade'],
 };
 
 /**
@@ -40,4 +43,5 @@ export const PRACTICE_AREA_ARTICLE_TITLES: Record<string, string> = {
   recovery_instagram: 'Artigos sobre Recuperação de Instagram',
   recovery_facebook: 'Artigos sobre Recuperação de Facebook',
   recovery_mercadolivre: 'Artigos sobre Recuperação de Mercado Livre',
+  auxilio_acidente: 'Artigos sobre Auxílio-Acidente',
 };

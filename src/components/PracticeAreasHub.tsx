@@ -1,4 +1,4 @@
-import { ArrowRight, BookOpen, Shield, Users, Clock, FileText, MessageCircle, Instagram, Facebook, ShoppingBag } from "lucide-react";
+import { ArrowRight, BookOpen, Shield, Users, Clock, FileText, MessageCircle, Instagram, Facebook, ShoppingBag, HeartPulse } from "lucide-react";
 import { SectionTitle } from "@/components/ui/SectionTitle";
 import { ServiceCard } from "@/components/ui/ServiceCard";
 import { CONTACT_INFO, ViewType } from "@/lib/constants";
@@ -127,6 +127,16 @@ export const PracticeAreasHub = ({ onNavigate, onBack }: PracticeAreasHubProps) 
               description="Conta bloqueada ou suspensa? Atuação para reverter punições e recuperar saldo retido."
               ctaText="Recuperar Conta"
               onClick={() => onNavigate('recovery_mercadolivre')}
+            />
+          </motion.div>
+
+          <motion.div variants={itemVariants}>
+            <ServiceCard
+              icon={HeartPulse}
+              title="Auxílio-Acidente"
+              description="Conversão de auxílio-doença, sequelas permanentes e direito a retroativos do INSS."
+              ctaText="Verificar Direito"
+              onClick={() => onNavigate('auxilio_acidente')}
             />
           </motion.div>
 
