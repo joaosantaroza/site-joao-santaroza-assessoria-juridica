@@ -127,6 +127,30 @@ export const ServicePage = ({ service, onBack, onContact }: ServicePageProps) =>
           ))}
         </motion.div>
 
+        {/* Service-specific FAQ */}
+        {SERVICE_FAQS[service.id] && (
+          <div className="max-w-4xl mx-auto mt-16">
+            <FAQSchema faqs={SERVICE_FAQS[service.id]} />
+            <SectionTitle className="text-center mb-8">Perguntas Frequentes</SectionTitle>
+            <Accordion type="single" collapsible className="space-y-2">
+              {SERVICE_FAQS[service.id].map((faq, index) => (
+                <AccordionItem
+                  key={index}
+                  value={`faq-${index}`}
+                  className="bg-card border border-border rounded-lg px-4"
+                >
+                  <AccordionTrigger className="text-left text-foreground hover:text-primary">
+                    {faq.question}
+                  </AccordionTrigger>
+                  <AccordionContent className="text-muted-foreground leading-relaxed">
+                    {faq.answer}
+                  </AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
+          </div>
+        )}
+
         {/* Testimonials Section */}
         <div className="max-w-6xl mx-auto mt-16">
           <TestimonialsSection
