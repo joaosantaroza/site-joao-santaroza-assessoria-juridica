@@ -44,3 +44,6 @@ verify_jwt = false
 
 [functions.submit-contact]
 verify_jwt = false
+
+[functions.generate-auxilio-acidente-ebook]
+verify_jwt = false

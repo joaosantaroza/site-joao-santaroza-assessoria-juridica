@@ -13,6 +13,8 @@ import {
 } from "@/components/ui/accordion";
 import { SectionTitle } from "@/components/ui/SectionTitle";
 import { FAQSchema } from "@/components/seo/FAQSchema";
+import { ArticleEbookBanner } from "@/components/ArticleEbookBanner";
+import ebookAuxilioAcidenteCapa from "@/assets/ebook-auxilio-acidente-capa.png";
 
 const SERVICE_FAQS: Record<string, { question: string; answer: string }[]> = {
   auxilio_acidente: [
@@ -126,6 +128,19 @@ export const ServicePage = ({ service, onBack, onContact }: ServicePageProps) =>
             </motion.div>
           ))}
         </motion.div>
+
+        {/* E-book Banner for Auxílio-Acidente */}
+        {service.id === 'auxilio_acidente' && (
+          <div className="max-w-4xl mx-auto">
+            <ArticleEbookBanner
+              ebookId="auxilio-acidente"
+              ebookTitle="Guia Completo do Auxílio-Acidente"
+              ebookSubtitle="Descubra seus direitos, requisitos e como garantir o benefício do INSS. Guia gratuito com 7 capítulos completos."
+              ebookCoverUrl={ebookAuxilioAcidenteCapa}
+              ebookPdfUrl=""
+            />
+          </div>
+        )}
 
         {/* Service-specific FAQ */}
         {SERVICE_FAQS[service.id] && (
