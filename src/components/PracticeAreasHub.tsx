@@ -130,6 +130,16 @@ export const PracticeAreasHub = ({ onNavigate, onBack }: PracticeAreasHubProps) 
             />
           </motion.div>
 
+          <motion.div variants={itemVariants}>
+            <ServiceCard
+              icon={HeartPulse}
+              title="Auxílio-Acidente"
+              description="Conversão de auxílio-doença, sequelas permanentes e direito a retroativos do INSS."
+              ctaText="Verificar Direito"
+              onClick={() => onNavigate('auxilio_acidente')}
+            />
+          </motion.div>
+
           {/* Quick Contact Card */}
           <motion.div variants={itemVariants}>
             <div 
