@@ -18,6 +18,12 @@ export const Footer = () => (
         </div>
         <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
           <Link 
+            to="/temas/auxilio-acidente" 
+            className="text-sm text-muted-foreground hover:text-accent transition-colors font-medium"
+          >
+            Auxílio-Acidente
+          </Link>
+          <Link 
             to="/instalar" 
             className="text-sm text-muted-foreground hover:text-accent transition-colors font-medium"
           >
