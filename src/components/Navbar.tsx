@@ -75,6 +75,12 @@ export const Navbar = ({ onNavigate, onContact }: NavbarProps) => {
           >
             Artigos
           </Link>
+          <Link 
+            to="/temas/auxilio-acidente"
+            className={`text-sm font-bold uppercase tracking-wider transition-colors ${isActive("/temas/auxilio-acidente") ? "text-primary border-b-2 border-accent pb-1" : "text-muted-foreground hover:text-primary"}`}
+          >
+            Auxílio-Acidente
+          </Link>
           <Button onClick={onContact} size="sm">
             Agendar Consulta
           </Button>
