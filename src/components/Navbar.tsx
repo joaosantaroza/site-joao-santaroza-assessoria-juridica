@@ -144,6 +144,13 @@ export const Navbar = ({ onNavigate, onContact }: NavbarProps) => {
             >
               AUXÍLIO-ACIDENTE
             </Link>
+            <Link 
+              to="/temas/desbloqueio-mercado-livre"
+              onClick={() => setIsMenuOpen(false)}
+              className={`text-left font-bold ${isActive("/temas/desbloqueio-mercado-livre") ? "text-primary border-b-2 border-accent pb-1 inline-block" : "text-primary"}`}
+            >
+              MERCADO LIVRE
+            </Link>
             <Button
               onClick={() => { onContact(); setIsMenuOpen(false); }} 
               className="w-full"

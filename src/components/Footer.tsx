@@ -24,6 +24,12 @@ export const Footer = () => (
             Auxílio-Acidente
           </Link>
           <Link 
+            to="/temas/desbloqueio-mercado-livre" 
+            className="text-sm text-muted-foreground hover:text-accent transition-colors font-medium"
+          >
+            Mercado Livre
+          </Link>
+          <Link 
             to="/instalar" 
             className="text-sm text-muted-foreground hover:text-accent transition-colors font-medium"
           >

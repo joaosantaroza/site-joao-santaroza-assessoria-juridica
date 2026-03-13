@@ -17,6 +17,36 @@ import { ArticleEbookBanner } from "@/components/ArticleEbookBanner";
 import ebookAuxilioAcidenteCapa from "@/assets/ebook-auxilio-acidente-capa.png";
 
 const SERVICE_FAQS: Record<string, { question: string; answer: string }[]> = {
+  recovery_mercadolivre: [
+    {
+      question: "Por que o Mercado Livre está suspendendo tantas contas em 2025-2026?",
+      answer: "A partir de 2025, o Mercado Livre intensificou drasticamente a moderação algorítmica automatizada para combater fraudes. No entanto, esses algoritmos geram uma quantidade massiva de falsos positivos, atingindo lojistas legítimos com anos de histórico positivo. Suspensões ocorrem por cruzamento de dados de IP, desvios estatísticos mínimos ou associação indevida a contas banidas, sem análise humana prévia."
+    },
+    {
+      question: "A retenção do meu saldo no Mercado Pago por até 180 dias é legal?",
+      answer: "A retenção genérica e prolongada de valores sem ordem judicial e sem comprovação de fraude configura prática abusiva perante o Código de Defesa do Consumidor e pode caracterizar enriquecimento sem causa (Art. 884 do Código Civil). Os tribunais, especialmente o TJSP, têm concedido tutelas de urgência determinando a liberação imediata dos valores retidos, sob pena de multa diária (astreintes)."
+    },
+    {
+      question: "Quais são os fundamentos jurídicos para o desbloqueio da conta?",
+      answer: "A tese jurídica se apoia na eficácia horizontal dos direitos fundamentais (Art. 5º, LIV e LV da CF — devido processo legal e contraditório), no Marco Civil da Internet (Art. 7º — dever de transparência e motivação), no CDC (Arts. 6º e 39 — proteção contra práticas abusivas) e na responsabilidade civil objetiva (Art. 14 do CDC — falha na prestação do serviço). A plataforma não pode exercer poder de moderação de forma despótica e sem contraditório."
+    },
+    {
+      question: "Posso receber indenização por lucros cessantes durante o período de bloqueio?",
+      answer: "Sim. Os lucros cessantes representam o que o lojista razoavelmente deixou de faturar durante o bloqueio indevido. A apuração exige perícia contábil que analisa a média histórica de vendas, taxas de conversão, sazonalidade e margem de lucro líquido. Além disso, a jurisprudência reconhece danos morais pela afronta à imagem profissional, com indenizações que variam entre R$ 15.000 e R$ 25.000."
+    },
+    {
+      question: "Qual o passo a passo para buscar o desbloqueio judicialmente?",
+      answer: "O protocolo segue três fases: (1) Documentação preventiva — backup de extratos, prints de reputação, relatórios de vendas e comunicações da plataforma; (2) Esgotamento extrajudicial — registro no Consumidor.gov.br, Reclame Aqui e envio de Notificação Extrajudicial com prazo de 48-72 horas; (3) Ação judicial — com pedido de Tutela de Urgência (liminar) para restabelecimento imediato da conta e desbloqueio dos fundos, mediante comprovação do fumus boni iuris e periculum in mora."
+    },
+    {
+      question: "O que acontece se o Mercado Livre não cumprir a liminar?",
+      answer: "Caso a plataforma descumpra a ordem judicial de restabelecimento da conta ou liberação dos valores, o juiz pode impor multa diária (astreintes) com valores significativos até o cumprimento integral. O descumprimento reiterado pode ainda configurar crime de desobediência e ensejar responsabilização pessoal dos representantes legais da empresa."
+    },
+    {
+      question: "O lojista pessoa jurídica pode usar o Código de Defesa do Consumidor?",
+      answer: "Sim. A jurisprudência dominante, especialmente no TJSP, reconhece a incidência do CDC na relação entre plataforma e lojista, com base na teoria finalista mitigada. Isso ocorre pela vulnerabilidade tríplice do vendedor: técnica (desconhecimento dos critérios do algoritmo), informacional (ausência de dados sobre os motivos da suspensão) e econômica (dependência financeira do fluxo de caixa retido)."
+    }
+  ],
   auxilio_acidente: [
     {
       question: "O que é o auxílio-acidente e qual a diferença para o auxílio-doença?",

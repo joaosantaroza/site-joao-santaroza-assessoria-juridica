@@ -124,12 +124,21 @@ export const SERVICES: Record<string, Service> = {
   },
   recovery_mercadolivre: {
     id: 'recovery_mercadolivre',
-    title: 'Recuperação de Mercado Livre',
-    shortDesc: 'Assessoria jurídica para recuperação de contas bloqueadas no Mercado Livre.',
+    title: 'Desbloqueio de Mercado Livre',
+    shortDesc: 'Assessoria jurídica especializada contra suspensões algorítmicas e retenção de saldo no Mercado Pago.',
     icon: ShoppingBag,
-    heroTitle: 'Recuperação de Conta do Mercado Livre',
-    heroSubtitle: 'Conta do Mercado Livre bloqueada ou suspensa indevidamente? Atuamos para reverter punições injustas e recuperar seu acesso à plataforma.',
-    features: ['Notificação Extrajudicial', 'Ação Judicial', 'Tutela de Urgência', 'Recuperação de Saldo Retido']
+    heroTitle: 'Desbloqueio de Conta do Mercado Livre',
+    heroSubtitle: 'Em 2025-2026, a moderação algorítmica agressiva do Mercado Livre está suspendendo contas de lojistas legítimos em escala industrial. Atuamos com Notificação Extrajudicial, Tutela de Urgência e Perícia Contábil para restabelecer sua operação e liberar o saldo retido no Mercado Pago.',
+    features: [
+      'Notificação Extrajudicial 48h',
+      'Tutela de Urgência (Liminar)',
+      'Liberação de Saldo Mercado Pago',
+      'Perícia Contábil de Lucros Cessantes',
+      'Indenização por Danos Morais',
+      'Defesa contra Moderação Algorítmica',
+      'Esgotamento Extrajudicial Documentado',
+      'Ação Judicial contra Marketplace'
+    ]
   },
   auxilio_acidente: {
     id: 'auxilio_acidente',
