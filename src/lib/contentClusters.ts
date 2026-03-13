@@ -140,6 +140,31 @@ export const CONTENT_CLUSTERS: ContentCluster[] = [
     categories: ['Direito Digital', 'Recuperação de Contas', 'Instagram', 'Facebook', 'Mercado Livre'],
     icon: 'Laptop',
   },
+  {
+    id: 'desbloqueio-mercado-livre',
+    name: 'Desbloqueio de Contas no Mercado Livre',
+    description: 'Conteúdo especializado sobre suspensão algorítmica, retenção de saldo e defesa jurídica contra o Mercado Livre',
+    pillarSlug: '/temas/desbloqueio-mercado-livre',
+    pillarTitle: 'Tudo sobre Desbloqueio de Contas no Mercado Livre',
+    pillarDescription: 'Guia completo sobre desbloqueio de contas suspensas no Mercado Livre em 2025-2026: moderação algorítmica, retenção de saldo no Mercado Pago, fundamentação jurídica, lucros cessantes e tutela de urgência.',
+    pillarIntro: 'O cenário do e-commerce em **2025-2026** é marcado por uma crise sem precedentes: a moderação algorítmica agressiva do Mercado Livre está suspendendo contas de lojistas legítimos em escala industrial, sem análise humana e sem o devido processo legal.\n\nO bloqueio não é apenas um contratempo — ele congela saldos no Mercado Pago por até 180 dias, interrompe operações e pode levar empresas à insolvência em questão de dias. A plataforma frequentemente invoca violações genéricas dos Termos de Uso, sem detalhar a infração ou oferecer oportunidade real de defesa.\n\nNesta página, reunimos nossos artigos sobre como enfrentar juridicamente essas suspensões injustas, desde a **fundamentação constitucional** (eficácia horizontal dos direitos fundamentais) até a **tutela de urgência** para liberação imediata de valores retidos, passando pela **perícia contábil de lucros cessantes** e o passo a passo do esgotamento extrajudicial.',
+    keywords: [
+      'desbloqueio mercado livre',
+      'conta suspensa mercado livre',
+      'saldo retido mercado pago',
+      'liberação de saldo mercado pago',
+      'liminar mercado livre',
+      'tutela urgência marketplace',
+      'lucros cessantes e-commerce',
+      'moderação algorítmica',
+      'Marco Civil da Internet',
+      'CDC marketplace',
+      'advogado mercado livre',
+      'conta bloqueada mercado livre 2026',
+    ],
+    categories: ['Mercado Livre', 'Desbloqueio Mercado Livre', 'E-commerce', 'Marketplace', 'Direito do Consumidor'],
+    icon: 'ShoppingBag',
+  },
 ];
 
 /**

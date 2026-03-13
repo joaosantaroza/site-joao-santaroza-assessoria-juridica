@@ -1,57 +1,42 @@
 
+# Implementação Completa: Desbloqueio de Contas no Mercado Livre
 
-## Sugestões de Implementação — Conteúdo do PDF "Desbloqueio de Contas Mercado Livre"
+## Status: ✅ Concluído
 
-O documento é um **relatório estratégico e jurídico** de 18 páginas sobre prospecção de clientes, tese jurídica e marketing para desbloqueio de contas no ecossistema Mercado Livre. Ele contém material rico que pode ser aproveitado de **múltiplas formas** no site. Seguem as opções:
+### O que foi implementado
 
----
+#### 1. Página de Especialidade Enriquecida (`recovery_mercadolivre`)
+- **heroSubtitle** atualizado com dados do cenário 2025-2026 (moderação algorítmica agressiva)
+- **features** expandido com 8 itens: Notificação Extrajudicial 48h, Tutela de Urgência, Liberação de Saldo, Perícia Contábil de Lucros Cessantes, etc.
+- **FAQ com 7 perguntas** baseado no conteúdo jurídico do PDF: eficácia horizontal, retenção de 180 dias, CDC, Marco Civil, lucros cessantes
+- **FAQSchema** integrado para rich snippets do Google
 
-### Opção 1: Enriquecer a Página de Especialidade Existente (`recovery_mercadolivre`)
+#### 2. 5 Artigos de Blog Gerados
+1. **Conta Suspensa no Mercado Livre em 2026** — cenário algorítmico
+2. **Retenção de Saldo no Mercado Pago** — direitos e liberação judicial
+3. **Fundamentação Jurídica para Desbloqueio** — Constituição, Marco Civil, CDC
+4. **Lucros Cessantes em E-commerce** — perícia contábil e cálculo
+5. **Guia Prático: Do Esgotamento Extrajudicial à Liminar** — passo a passo
 
-A página de serviço atual é genérica. O PDF contém fundamentos jurídicos profundos que podem transformá-la numa referência.
+#### 3. E-book de Captura de Leads
+- Edge function `generate-desbloqueio-ml-ebook` criada com 7 capítulos
+- Capa gerada (`ebook-desbloqueio-ml-capa.png`)
+- Banner de e-book integrado na página de especialidade
 
-**O que muda:**
-- Atualizar `heroSubtitle` com dados do cenário 2025-2026 (moderação algorítmica agressiva)
-- Expandir `features` com itens como "Perícia Contábil de Lucros Cessantes", "Notificação Extrajudicial 48h", "Liberação de Saldo Mercado Pago"
-- Adicionar FAQ rico (5-7 perguntas) baseado no conteúdo jurídico do PDF — eficácia horizontal dos direitos fundamentais, retenção de 180 dias, danos morais, Marco Civil, CDC
-- Adicionar schema FAQ para rich snippets no Google
+#### 4. Pillar Page / Cluster de Conteúdo
+- Cluster `desbloqueio-mercado-livre` adicionado em `contentClusters.ts`
+- Rota `/temas/desbloqueio-mercado-livre` funcional
+- Links adicionados na Navbar (desktop + mobile) e Footer
+- Categorias expandidas em `practiceAreaCategories.ts`
 
----
+### Arquivos modificados
+- `src/lib/constants.ts` — serviço enriquecido
+- `src/components/ServicePage.tsx` — FAQ + e-book banner
+- `src/lib/contentClusters.ts` — novo cluster
+- `src/lib/practiceAreaCategories.ts` — categorias expandidas
+- `src/components/Navbar.tsx` — link Mercado Livre
+- `src/components/Footer.tsx` — link Mercado Livre
 
-### Opção 2: Gerar Artigos de Blog (como foi feito com Auxílio-Acidente)
-
-Criar 5 artigos especializados cobrindo os temas do PDF:
-
-1. **Conta Suspensa no Mercado Livre em 2026** — Cenário de moderação algorítmica e seus impactos
-2. **Retenção de Saldo no Mercado Pago: Seus Direitos** — Apropriação indébita, prazo de 180 dias, tutela de urgência
-3. **Fundamentação Jurídica para Desbloqueio** — Eficácia horizontal, Marco Civil, CDC, cláusulas abusivas
-4. **Lucros Cessantes em E-commerce** — Perícia contábil, cálculo de danos, jurisprudência TJSP
-5. **Guia Prático: Do Esgotamento Extrajudicial à Liminar** — Passo a passo, notificação, Consumidor.gov, ação judicial
-
----
-
-### Opção 3: Criar um E-book de Captura de Leads (como Auxílio-Acidente)
-
-Gerar um e-book gratuito "Guia Completo: Desbloqueio de Contas no Mercado Livre" com:
-- Capítulos baseados na estrutura do PDF (cenário, direitos, tese jurídica, passo a passo, lucros cessantes)
-- Banner de captura na página de serviço e nos artigos relacionados
-- PDF profissional com branding Navy/Bronze
-
----
-
-### Opção 4: Criar uma Pillar Page / Cluster de Conteúdo
-
-Criar `/temas/desbloqueio-mercado-livre` como página pilar que agrega todos os artigos e conecta à página de serviço — fortalecendo SEO topical authority.
-
----
-
-### Opção 5: Combinação Completa (Recomendado)
-
-Implementar **todas as opções acima** em sequência:
-1. Enriquecer a página de serviço com FAQ e dados do PDF
-2. Gerar os 5 artigos especializados
-3. Criar o e-book de captura de leads
-4. Montar a pillar page conectando tudo
-
-Isso replica o mesmo padrão de sucesso já aplicado ao Auxílio-Acidente.
-
+### Arquivos criados
+- `supabase/functions/generate-desbloqueio-ml-ebook/index.ts`
+- `src/assets/ebook-desbloqueio-ml-capa.png`
