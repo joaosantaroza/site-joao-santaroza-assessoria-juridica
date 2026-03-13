@@ -173,6 +173,19 @@ export const ServicePage = ({ service, onBack, onContact }: ServicePageProps) =>
           </div>
         )}
 
+        {/* E-book Banner for Desbloqueio Mercado Livre */}
+        {service.id === 'recovery_mercadolivre' && (
+          <div className="max-w-4xl mx-auto">
+            <ArticleEbookBanner
+              ebookId="desbloqueio-mercado-livre"
+              ebookTitle="Guia Completo: Desbloqueio de Contas no Mercado Livre"
+              ebookSubtitle="Seus direitos contra suspensões algorítmicas, retenção de saldo e como buscar indenização. Guia gratuito com 7 capítulos."
+              ebookCoverUrl={ebookDesbloqueioMlCapa}
+              ebookPdfUrl=""
+            />
+          </div>
+        )}
+
         {/* Service-specific FAQ */}
         {SERVICE_FAQS[service.id] && (
           <div className="max-w-4xl mx-auto mt-16">
