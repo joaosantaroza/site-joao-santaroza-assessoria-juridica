@@ -1,76 +1,57 @@
 
 
-# Corrigir Erros de Build + Exportacao de Relatorios em PDF e CSV
+## Sugestões de Implementação — Conteúdo do PDF "Desbloqueio de Contas Mercado Livre"
 
-## Parte 1: Corrigir erros de build (pre-requisito)
-
-Existem dois erros de build que precisam ser corrigidos antes de qualquer nova funcionalidade:
-
-### 1.1 CSS @import deve vir antes de outras declaracoes
-O arquivo `src/index.css` tem `@import url(...)` na linha 5, depois dos `@tailwind`. Mover o `@import` para a linha 1 (antes dos `@tailwind`).
-
-### 1.2 PWA: arquivo muito grande para pre-cache
-O asset `ebook-gestante-capa.png` (2.55 MB) excede o limite padrao de 2 MB do Workbox. Solucao: adicionar `maximumFileSizeToCacheInBytes: 3 * 1024 * 1024` na configuracao do workbox em `vite.config.ts`, e excluir PNGs grandes do glob de pre-cache.
-
-**Arquivo:** `vite.config.ts` - adicionar `maximumFileSizeToCacheInBytes: 3 * 1024 * 1024` dentro de `workbox`
-**Arquivo:** `src/index.css` - mover `@import url(...)` para antes dos `@tailwind`
+O documento é um **relatório estratégico e jurídico** de 18 páginas sobre prospecção de clientes, tese jurídica e marketing para desbloqueio de contas no ecossistema Mercado Livre. Ele contém material rico que pode ser aproveitado de **múltiplas formas** no site. Seguem as opções:
 
 ---
 
-## Parte 2: Exportacao de Relatorios em PDF e CSV
+### Opção 1: Enriquecer a Página de Especialidade Existente (`recovery_mercadolivre`)
 
-### O que sera feito
-Adicionar botoes de exportacao no painel admin para gerar relatorios em PDF e CSV de tres conjuntos de dados:
-- **Leads de E-books** (ja tem CSV, adicionar PDF)
-- **Agendamentos** (adicionar CSV e PDF)
-- **Analytics/WhatsApp** (ja tem CSV, adicionar PDF)
+A página de serviço atual é genérica. O PDF contém fundamentos jurídicos profundos que podem transformá-la numa referência.
 
-### Abordagem tecnica
-Geracao de PDF sera feita 100% no frontend usando uma utilidade leve que cria PDFs com a API nativa do Canvas + Blob, sem dependencias externas pesadas. O PDF tera o visual institucional (cores Navy/Bronze, logotipo).
+**O que muda:**
+- Atualizar `heroSubtitle` com dados do cenário 2025-2026 (moderação algorítmica agressiva)
+- Expandir `features` com itens como "Perícia Contábil de Lucros Cessantes", "Notificação Extrajudicial 48h", "Liberação de Saldo Mercado Pago"
+- Adicionar FAQ rico (5-7 perguntas) baseado no conteúdo jurídico do PDF — eficácia horizontal dos direitos fundamentais, retenção de 180 dias, danos morais, Marco Civil, CDC
+- Adicionar schema FAQ para rich snippets no Google
 
-### Novo arquivo: `src/lib/exportUtils.ts`
-Utilidades compartilhadas para exportacao:
-- `exportToCSV(headers, rows, filename)` - funcao generica de CSV (refatorar o codigo existente)
-- `exportToPDF(title, headers, rows, filename)` - gera PDF tabelar usando a abordagem de construcao manual de documento PDF (string-based, sem lib externa)
-- O PDF incluira: cabecalho com nome do escritorio, data de geracao, tabela formatada, rodape com pagina
+---
 
-### Modificacoes em `src/pages/Admin.tsx`
-1. **Aba Agenda**: Adicionar botoes "Exportar CSV" e "Exportar PDF" no cabecalho da tabela de agendamentos
-2. **Aba Leads**: Adicionar botao "Exportar PDF" ao lado dos botoes CSV existentes
-3. **Aba Leads (WhatsApp)**: Adicionar botao "Exportar PDF" ao lado do CSV existente
-4. Refatorar as funcoes de CSV existentes para usar `exportToCSV` do novo utilitario
+### Opção 2: Gerar Artigos de Blog (como foi feito com Auxílio-Acidente)
 
-### Formato do PDF
-- Cabecalho: "Joao Santaroza Advocacia - [Tipo do Relatorio]"
-- Data de geracao
-- Tabela com dados formatados
-- Cores: fundo de cabecalho navy (#273A5F), texto branco
-- Rodape com numero da pagina
+Criar 5 artigos especializados cobrindo os temas do PDF:
 
-### Detalhes de implementacao
+1. **Conta Suspensa no Mercado Livre em 2026** — Cenário de moderação algorítmica e seus impactos
+2. **Retenção de Saldo no Mercado Pago: Seus Direitos** — Apropriação indébita, prazo de 180 dias, tutela de urgência
+3. **Fundamentação Jurídica para Desbloqueio** — Eficácia horizontal, Marco Civil, CDC, cláusulas abusivas
+4. **Lucros Cessantes em E-commerce** — Perícia contábil, cálculo de danos, jurisprudência TJSP
+5. **Guia Prático: Do Esgotamento Extrajudicial à Liminar** — Passo a passo, notificação, Consumidor.gov, ação judicial
 
-**Exportacao de Agendamentos (CSV)**:
-- Colunas: Nome, Area, Data, Horario, Status, Telefone, E-mail
-- Nome do arquivo: `agendamentos-YYYY-MM-DD.csv`
+---
 
-**Exportacao de Agendamentos (PDF)**:
-- Mesmas colunas, formatadas em tabela
-- Nome do arquivo: `agendamentos-YYYY-MM-DD.pdf`
+### Opção 3: Criar um E-book de Captura de Leads (como Auxílio-Acidente)
 
-**Exportacao de Leads (PDF)**:
-- Versao segura (PII mascarado) e versao completa
-- Colunas: Nome, Telefone, E-book, Data
-- Nome do arquivo: `leads-ebooks-YYYY-MM-DD.pdf`
+Gerar um e-book gratuito "Guia Completo: Desbloqueio de Contas no Mercado Livre" com:
+- Capítulos baseados na estrutura do PDF (cenário, direitos, tese jurídica, passo a passo, lucros cessantes)
+- Banner de captura na página de serviço e nos artigos relacionados
+- PDF profissional com branding Navy/Bronze
 
-**Exportacao WhatsApp (PDF)**:
-- Resumo por area (area, quantidade, percentual)
-- Nome do arquivo: `whatsapp-analytics-YYYY-MM-DD.pdf`
+---
 
-### Arquivos a criar
-- `src/lib/exportUtils.ts` - utilidades de exportacao CSV e PDF
+### Opção 4: Criar uma Pillar Page / Cluster de Conteúdo
 
-### Arquivos a modificar
-- `vite.config.ts` - fix maximumFileSizeToCacheInBytes
-- `src/index.css` - fix @import order
-- `src/pages/Admin.tsx` - adicionar botoes de exportacao PDF e refatorar CSV
+Criar `/temas/desbloqueio-mercado-livre` como página pilar que agrega todos os artigos e conecta à página de serviço — fortalecendo SEO topical authority.
+
+---
+
+### Opção 5: Combinação Completa (Recomendado)
+
+Implementar **todas as opções acima** em sequência:
+1. Enriquecer a página de serviço com FAQ e dados do PDF
+2. Gerar os 5 artigos especializados
+3. Criar o e-book de captura de leads
+4. Montar a pillar page conectando tudo
+
+Isso replica o mesmo padrão de sucesso já aplicado ao Auxílio-Acidente.
 
