@@ -165,6 +165,29 @@ export const CONTENT_CLUSTERS: ContentCluster[] = [
     categories: ['Mercado Livre', 'Desbloqueio Mercado Livre', 'E-commerce', 'Marketplace', 'Direito do Consumidor'],
     icon: 'ShoppingBag',
   },
+  {
+    id: 'reajuste-plano-saude',
+    name: 'Reajuste Abusivo em Planos de Saúde',
+    description: 'Conteúdo especializado sobre reajustes abusivos em planos de saúde individuais e coletivos',
+    pillarSlug: '/temas/reajuste-plano-saude',
+    pillarTitle: 'Tudo sobre Reajuste Abusivo em Planos de Saúde',
+    pillarDescription: 'Guia completo sobre reajustes abusivos em planos de saúde: falso coletivo, teto ANS, sinistralidade, faixa etária, cancelamento unilateral e como reverter aumentos ilegais.',
+    pillarIntro: 'O mercado de **saúde suplementar** no Brasil atravessa uma crise de transparência. Enquanto a ANS limita o reajuste de planos individuais a 6,06% (2025), operadoras aplicam aumentos de 15% a 45% em planos coletivos — muitas vezes sem apresentar a composição atuarial que justifique a majoração.\n\nA **Tese do Falso Coletivo** tem ganhado força nos tribunais: planos vendidos via MEI ou PME com menos de 30 vidas, sem negociação real entre as partes, devem ser equiparados a planos individuais e submetidos ao teto da ANS. O **Tema 1082 do STJ** consolida a proteção contra cancelamentos unilaterais durante tratamentos.\n\nNesta página, reunimos nossos artigos sobre como identificar reajustes ilegais, contestá-los judicialmente e recuperar valores pagos a mais nos últimos 3 anos.',
+    keywords: [
+      'reajuste abusivo plano de saúde',
+      'falso coletivo plano de saúde',
+      'teto ANS reajuste',
+      'plano de saúde MEI reajuste',
+      'sinistralidade plano coletivo',
+      'reajuste faixa etária idoso',
+      'cancelamento plano de saúde',
+      'Tema 1082 STJ',
+      'advogado plano de saúde',
+      'reajuste plano coletivo ilegal',
+    ],
+    categories: ['Plano de Saúde', 'Direito do Consumidor', 'Reajuste Abusivo', 'Saúde Suplementar'],
+    icon: 'Stethoscope',
+  },
 ];
 
 /**

@@ -87,6 +87,12 @@ export const Navbar = ({ onNavigate, onContact }: NavbarProps) => {
           >
             Mercado Livre
           </Link>
+          <Link 
+            to="/temas/reajuste-plano-saude"
+            className={`text-sm font-bold uppercase tracking-wider transition-colors ${isActive("/temas/reajuste-plano-saude") ? "text-primary border-b-2 border-accent pb-1" : "text-muted-foreground hover:text-primary"}`}
+          >
+            Plano de Saúde
+          </Link>
           <Button onClick={onContact} size="sm">
             Agendar Consulta
           </Button>
@@ -150,6 +156,13 @@ export const Navbar = ({ onNavigate, onContact }: NavbarProps) => {
               className={`text-left font-bold ${isActive("/temas/desbloqueio-mercado-livre") ? "text-primary border-b-2 border-accent pb-1 inline-block" : "text-primary"}`}
             >
               MERCADO LIVRE
+            </Link>
+            <Link 
+              to="/temas/reajuste-plano-saude"
+              onClick={() => setIsMenuOpen(false)}
+              className={`text-left font-bold ${isActive("/temas/reajuste-plano-saude") ? "text-primary border-b-2 border-accent pb-1 inline-block" : "text-primary"}`}
+            >
+              PLANO DE SAÚDE
             </Link>
             <Button
               onClick={() => { onContact(); setIsMenuOpen(false); }} 

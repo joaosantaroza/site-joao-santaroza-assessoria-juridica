@@ -30,7 +30,13 @@ export const Footer = () => (
             Mercado Livre
           </Link>
           <Link 
-            to="/instalar" 
+            to="/temas/reajuste-plano-saude" 
+            className="text-sm text-muted-foreground hover:text-accent transition-colors font-medium"
+          >
+            Plano de Saúde
+          </Link>
+          <Link 
+            to="/instalar"
             className="text-sm text-muted-foreground hover:text-accent transition-colors font-medium"
           >
             Instalar como App
