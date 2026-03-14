@@ -47,4 +47,5 @@ export const PRACTICE_AREA_ARTICLE_TITLES: Record<string, string> = {
   recovery_facebook: 'Artigos sobre Recuperação de Facebook',
   recovery_mercadolivre: 'Artigos sobre Recuperação de Mercado Livre',
   auxilio_acidente: 'Artigos sobre Auxílio-Acidente',
+  reajuste_plano_saude: 'Artigos sobre Reajuste de Planos de Saúde',
 };

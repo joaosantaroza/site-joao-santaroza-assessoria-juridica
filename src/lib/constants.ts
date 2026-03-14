@@ -149,6 +149,24 @@ export const SERVICES: Record<string, Service> = {
     heroTitle: 'Auxílio-Acidente: Seus Direitos',
     heroSubtitle: 'O auxílio-acidente é um benefício indenizatório do INSS para segurados que sofreram acidente ou doença ocupacional e ficaram com sequelas permanentes. Saiba como converter seu benefício e recuperar valores retroativos.',
     features: ['Conversão de Benefício', 'Retroativos do INSS', 'Perícia Médica', 'Acumulação com Salário']
+  },
+  reajuste_plano_saude: {
+    id: 'reajuste_plano_saude',
+    title: 'Reajuste de Plano de Saúde',
+    shortDesc: 'Defesa contra reajustes abusivos em planos de saúde individuais e coletivos.',
+    icon: Stethoscope,
+    heroTitle: 'Reajuste Abusivo em Plano de Saúde',
+    heroSubtitle: 'Em 2025-2026, enquanto o teto da ANS para planos individuais é de 6,06%, operadoras aplicam reajustes de 15% a 45% em planos coletivos — muitas vezes sem transparência ou justificativa atuarial. Atuamos com a Tese do Falso Coletivo, Perícia Atuarial e Tutela de Urgência para reverter aumentos abusivos e recuperar valores pagos a mais.',
+    features: [
+      'Tese do Falso Coletivo (MEI/PME)',
+      'Equiparação ao Índice ANS',
+      'Perícia Atuarial de Sinistralidade',
+      'Proteção por Faixa Etária (Estatuto do Idoso)',
+      'Restituição Retroativa (3 anos)',
+      'Tutela de Urgência (Liminar)',
+      'Blindagem contra Cancelamento (Tema 1082 STJ)',
+      'Notificação Extrajudicial Estratégica'
+    ]
   }
 };
 
