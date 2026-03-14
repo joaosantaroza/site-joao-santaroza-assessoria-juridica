@@ -27,6 +27,9 @@ export const PRACTICE_AREA_CATEGORIES: Record<string, string[]> = {
   
   // Auxílio-Acidente
   auxilio_acidente: ['Previdenciário', 'Auxílio-Acidente', 'INSS', 'Benefício', 'Incapacidade'],
+  
+  // Reajuste de Plano de Saúde
+  reajuste_plano_saude: ['Plano de Saúde', 'Direito do Consumidor', 'Reajuste Abusivo', 'Saúde Suplementar', 'ANS'],
 };
 
 /**
