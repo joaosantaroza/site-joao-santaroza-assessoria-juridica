@@ -9,6 +9,7 @@ import {
   Facebook,
   ShoppingBag,
   HeartPulse,
+  Stethoscope,
   LucideIcon 
 } from 'lucide-react';
 
