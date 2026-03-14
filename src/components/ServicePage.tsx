@@ -70,6 +70,36 @@ const SERVICE_FAQS: Record<string, { question: string; answer: string }[]> = {
       question: "Doenças ocupacionais como LER/DORT dão direito ao auxílio-acidente?",
       answer: "Sim. A legislação equipara doenças ocupacionais a acidentes de trabalho. LER/DORT, perda auditiva e problemas de coluna causados pelo trabalho podem gerar direito ao auxílio-acidente, desde que comprovado o nexo causal e a redução da capacidade laborativa."
     }
+  ],
+  reajuste_plano_saude: [
+    {
+      question: "O que é um 'falso coletivo' e por que meu plano MEI/PME pode ser ilegal?",
+      answer: "Planos vendidos como coletivos através de MEI, sindicatos ou associações de fachada, mas que na prática reúnem menos de 30 vidas sem negociação real entre as partes, são considerados 'falsos coletivos'. A jurisprudência dos tribunais estaduais (TJSP, TJRJ) tem equiparado esses contratos a planos individuais, submetendo-os ao teto de reajuste fixado pela ANS — muito inferior aos 15-45% aplicados pelas operadoras."
+    },
+    {
+      question: "Meu plano coletivo pode ter reajuste limitado ao teto da ANS?",
+      answer: "Sim, quando se tratar de falso coletivo. Se o contrato foi celebrado via adesão a uma entidade sem vínculo real (MEI de fachada, associação genérica) e sem negociação paritária, o Judiciário pode determinar a equiparação ao índice da ANS. Em 2025, o teto foi fixado em 6,06%, enquanto muitos planos coletivos tiveram reajustes de 20% a 45%."
+    },
+    {
+      question: "A operadora pode cancelar meu plano por eu entrar com ação judicial?",
+      answer: "Não. O Tema 1082 do STJ consolidou que a operadora não pode rescindir unilateralmente o contrato durante tratamento em curso ou em razão de litígio judicial. O cancelamento retaliativo é considerado prática abusiva pelo CDC e pode ensejar danos morais, além de tutela de urgência para manutenção do plano."
+    },
+    {
+      question: "Como provar que o reajuste por sinistralidade é abusivo?",
+      answer: "A operadora tem o dever de transparência: deve apresentar a composição atuarial completa que justifica o reajuste, incluindo o VCMH (Variação de Custos Médico-Hospitalares), a taxa de sinistralidade real e a margem de lucro. Se não o fizer, ocorre a inversão do ônus da prova (Art. 6º, VIII do CDC). A perícia atuarial judicial pode revelar que o índice aplicado não guarda correspondência com os custos reais."
+    },
+    {
+      question: "O Estatuto do Idoso protege contra reajustes por faixa etária?",
+      answer: "Sim. O Art. 15, §3º do Estatuto do Idoso veda a discriminação do idoso nos planos de saúde mediante cobranças diferenciadas em razão da idade. O Tema 952 do STJ reforça que reajustes por faixa etária aos 59 anos (a chamada 'manobra da penúltima faixa') são abusivos quando resultam em aumentos desproporcionais que inviabilizam a permanência no plano."
+    },
+    {
+      question: "Posso recuperar valores pagos a mais nos últimos anos?",
+      answer: "Sim. A ação judicial pode incluir pedido de restituição retroativa dos valores pagos a maior nos últimos 3 anos (prazo prescricional do CDC), com correção monetária e juros de mora. Em casos de reajustes abusivos acumulados, os valores podem ser expressivos."
+    },
+    {
+      question: "A operadora pode cancelar meu plano durante um tratamento médico?",
+      answer: "Não. O Tema 1082 do STJ e a jurisprudência consolidada proíbem o cancelamento unilateral durante tratamento em curso. Mesmo em planos coletivos, a rescisão exige notificação prévia de 60 dias e não pode ocorrer durante internação ou tratamento continuado. A tutela de urgência pode ser obtida em 24-72 horas para manter o plano ativo."
+    }
   ]
 };
 
