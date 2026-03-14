@@ -217,6 +217,19 @@ export const ServicePage = ({ service, onBack, onContact }: ServicePageProps) =>
           </div>
         )}
 
+        {/* E-book Banner for Reajuste Plano de Saúde */}
+        {service.id === 'reajuste_plano_saude' && (
+          <div className="max-w-4xl mx-auto">
+            <ArticleEbookBanner
+              ebookId="reajuste-plano-saude"
+              ebookTitle="Guia Completo: Reajuste Abusivo em Planos de Saúde"
+              ebookSubtitle="Identifique reajustes ilegais, conheça a tese do falso coletivo e saiba como recuperar valores pagos a mais. Guia gratuito com 7 capítulos."
+              ebookCoverUrl={ebookReajustePlanoCapa}
+              ebookPdfUrl=""
+            />
+          </div>
+        )}
+
         {/* Service-specific FAQ */}
         {SERVICE_FAQS[service.id] && (
           <div className="max-w-4xl mx-auto mt-16">
