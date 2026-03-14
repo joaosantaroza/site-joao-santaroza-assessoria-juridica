@@ -87,6 +87,12 @@ export const Navbar = ({ onNavigate, onContact }: NavbarProps) => {
           >
             Mercado Livre
           </Link>
+          <Link 
+            to="/temas/reajuste-plano-saude"
+            className={`text-sm font-bold uppercase tracking-wider transition-colors ${isActive("/temas/reajuste-plano-saude") ? "text-primary border-b-2 border-accent pb-1" : "text-muted-foreground hover:text-primary"}`}
+          >
+            Plano de Saúde
+          </Link>
           <Button onClick={onContact} size="sm">
             Agendar Consulta
           </Button>
