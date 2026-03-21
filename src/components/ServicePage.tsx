@@ -18,6 +18,7 @@ import ebookAuxilioAcidenteCapa from "@/assets/ebook-auxilio-acidente-capa.png";
 import ebookDesbloqueioMlCapa from "@/assets/ebook-desbloqueio-ml-capa.png";
 import ebookReajustePlanoCapa from "@/assets/ebook-reajuste-plano-capa.png";
 import ebookContratosCapa from "@/assets/ebook-contratos-capa.png";
+import ebookConsumidorCapa from "@/assets/ebook-consumidor-capa.png";
 
 const SERVICE_FAQS: Record<string, { question: string; answer: string }[]> = {
   recovery_mercadolivre: [
@@ -130,6 +131,36 @@ const SERVICE_FAQS: Record<string, { question: string; answer: string }[]> = {
     {
       question: "É possível rescindir um contrato antes do prazo sem pagar multa?",
       answer: "Depende das cláusulas contratuais e da conduta das partes. A rescisão antecipada pode ocorrer sem multa quando há descumprimento contratual pela outra parte (exceção do contrato não cumprido — Art. 476 do CC), onerosidade excessiva (Art. 478 do CC) ou caso fortuito/força maior. A notificação extrajudicial prévia é essencial para constituir a outra parte em mora e documentar os fundamentos da rescisão."
+    }
+  ],
+  direito_consumidor: [
+    {
+      question: "O que fazer quando sou negativado indevidamente no SPC/Serasa?",
+      answer: "A negativação indevida configura dano moral presumido (in re ipsa), conforme entendimento consolidado do STJ. O consumidor pode requerer tutela de urgência para remoção imediata da inscrição e indenização por danos morais, com valores que variam entre R$ 5.000 e R$ 20.000 dependendo da gravidade e do tempo de permanência da negativação."
+    },
+    {
+      question: "Como funciona a repetição de indébito em cobranças indevidas?",
+      answer: "O Art. 42, parágrafo único do CDC prevê que valores cobrados indevidamente devem ser devolvidos em dobro, com correção monetária e juros. Se o fornecedor cobrou algo que não era devido ou em valor superior ao contratado, o consumidor tem direito à restituição do dobro da quantia paga a mais."
+    },
+    {
+      question: "Qual o prazo de garantia legal para produtos?",
+      answer: "O CDC estabelece garantia legal de 30 dias para produtos não duráveis e 90 dias para produtos duráveis, a contar da entrega. Essa garantia é obrigatória e independe de contrato. A garantia contratual (do fabricante) é complementar e soma-se à legal. Para vícios ocultos, o prazo começa a contar da descoberta do defeito."
+    },
+    {
+      question: "Comprei online e me arrependi. Posso devolver?",
+      answer: "Sim. O Art. 49 do CDC garante o direito de arrependimento em 7 dias corridos para compras realizadas fora do estabelecimento comercial (internet, telefone, catálogo). O consumidor deve receber o reembolso integral, incluindo frete, sem necessidade de justificar o motivo da desistência."
+    },
+    {
+      question: "Posso revisar juros abusivos cobrados por bancos e financeiras?",
+      answer: "Sim. Juros que ultrapassam significativamente a média de mercado divulgada pelo Banco Central são considerados abusivos pelo Judiciário. A ação revisional permite reduzir as taxas ao patamar de mercado, recalcular o saldo devedor e obter a restituição (em dobro) de valores pagos a mais. O STJ reconhece que a simples discrepância acentuada entre os juros contratados e a média já configura abusividade."
+    },
+    {
+      question: "A loja é obrigada a trocar produto com defeito?",
+      answer: "Sim. O Art. 18 do CDC determina que, se o vício não for sanado em 30 dias, o consumidor pode exigir: substituição por outro produto, restituição do valor pago (com correção) ou abatimento proporcional do preço. Para vícios de qualidade que tornem o produto impróprio para o uso, a troca ou devolução pode ser imediata."
+    },
+    {
+      question: "Posso processar uma empresa por propaganda enganosa?",
+      answer: "Sim. A propaganda enganosa é prática abusiva prevista nos Arts. 37 e 67 do CDC. O fornecedor é obrigado a cumprir exatamente o que anunciou (princípio da vinculação). Caso não cumpra, o consumidor pode exigir o cumprimento forçado da oferta, aceitar produto equivalente ou rescindir o contrato com restituição integral e indenização por danos morais e materiais."
     }
   ]
 };
@@ -269,6 +300,19 @@ export const ServicePage = ({ service, onBack, onContact }: ServicePageProps) =>
               ebookTitle="Guia Completo: Elaboração de Contratos"
               ebookSubtitle="Proteja seu negócio com contratos blindados. Cláusulas essenciais, LGPD, acordos societários e muito mais. Guia gratuito com 7 capítulos."
               ebookCoverUrl={ebookContratosCapa}
+              ebookPdfUrl=""
+            />
+          </div>
+        )}
+
+        {/* E-book Banner for Direito do Consumidor */}
+        {service.id === 'direito_consumidor' && (
+          <div className="max-w-4xl mx-auto">
+            <ArticleEbookBanner
+              ebookId="direito-consumidor"
+              ebookTitle="Guia Completo: Direitos do Consumidor"
+              ebookSubtitle="Negativação indevida, cobranças abusivas, vícios de produto e direito de arrependimento. Guia gratuito com 7 capítulos."
+              ebookCoverUrl={ebookConsumidorCapa}
               ebookPdfUrl=""
             />
           </div>

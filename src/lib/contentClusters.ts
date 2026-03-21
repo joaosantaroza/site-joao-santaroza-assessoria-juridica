@@ -213,6 +213,31 @@ export const CONTENT_CLUSTERS: ContentCluster[] = [
     categories: ['Elaboração de Contratos', 'Direito Empresarial', 'Contrato', 'Societário', 'LGPD'],
     icon: 'FileText',
   },
+  {
+    id: 'direito-consumidor',
+    name: 'Direito do Consumidor',
+    description: 'Conteúdo especializado sobre defesa do consumidor, cobranças indevidas, negativação e vícios de produto',
+    pillarSlug: '/temas/direito-consumidor',
+    pillarTitle: 'Tudo sobre Direito do Consumidor',
+    pillarDescription: 'Guia completo sobre direitos do consumidor: negativação indevida, cobranças abusivas, vícios de produto, direito de arrependimento, juros abusivos e como processar empresas que desrespeitam o CDC.',
+    pillarIntro: 'O **Código de Defesa do Consumidor** (Lei 8.078/90) é uma das legislações mais avançadas do mundo em proteção ao consumidor. Em 2025-2026, com o crescimento exponencial do e-commerce e dos serviços digitais, as violações aos direitos do consumidor se multiplicaram — desde negativações indevidas até cobranças abusivas por bancos e financeiras.\n\nO CDC estabelece um sistema de proteção robusto que inclui a **inversão do ônus da prova** em favor do consumidor, a **responsabilidade objetiva** do fornecedor (independente de culpa), o **direito de arrependimento** em compras online e a **repetição em dobro** de valores cobrados indevidamente.\n\nNesta página, reunimos nossos artigos sobre como exercer seus direitos como consumidor — desde a defesa contra negativação ilegal até a revisão de contratos bancários com juros abusivos.',
+    keywords: [
+      'direito do consumidor',
+      'negativação indevida',
+      'cobrança indevida',
+      'vício de produto',
+      'direito de arrependimento',
+      'CDC',
+      'juros abusivos',
+      'danos morais consumidor',
+      'repetição de indébito',
+      'garantia legal',
+      'propaganda enganosa',
+      'advogado consumidor',
+    ],
+    categories: ['Direito do Consumidor', 'Consumidor', 'CDC', 'Negativação', 'Cobranças Indevidas'],
+    icon: 'Scale',
+  },
 ];
 
 /**

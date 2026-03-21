@@ -30,6 +30,9 @@ export const PRACTICE_AREA_CATEGORIES: Record<string, string[]> = {
   
   // Reajuste de Plano de Saúde
   reajuste_plano_saude: ['Plano de Saúde', 'Direito do Consumidor', 'Reajuste Abusivo', 'Saúde Suplementar', 'ANS'],
+
+  // Direito do Consumidor
+  direito_consumidor: ['Direito do Consumidor', 'Consumidor', 'CDC', 'Negativação', 'Cobranças Indevidas', 'Vício de Produto', 'E-commerce'],
 };
 
 /**
@@ -48,4 +51,5 @@ export const PRACTICE_AREA_ARTICLE_TITLES: Record<string, string> = {
   recovery_mercadolivre: 'Artigos sobre Recuperação de Mercado Livre',
   auxilio_acidente: 'Artigos sobre Auxílio-Acidente',
   reajuste_plano_saude: 'Artigos sobre Reajuste de Planos de Saúde',
+  direito_consumidor: 'Artigos sobre Direito do Consumidor',
 };

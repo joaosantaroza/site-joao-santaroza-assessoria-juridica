@@ -42,6 +42,12 @@ export const Footer = () => (
             Contratos
           </Link>
           <Link 
+            to="/temas/direito-consumidor" 
+            className="text-sm text-muted-foreground hover:text-accent transition-colors font-medium"
+          >
+            Consumidor
+          </Link>
+          <Link 
             to="/instalar"
             className="text-sm text-muted-foreground hover:text-accent transition-colors font-medium"
           >

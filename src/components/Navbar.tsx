@@ -99,6 +99,12 @@ export const Navbar = ({ onNavigate, onContact }: NavbarProps) => {
           >
             Contratos
           </Link>
+          <Link 
+            to="/temas/direito-consumidor"
+            className={`text-sm font-bold uppercase tracking-wider transition-colors ${isActive("/temas/direito-consumidor") ? "text-primary border-b-2 border-accent pb-1" : "text-muted-foreground hover:text-primary"}`}
+          >
+            Consumidor
+          </Link>
           <Button onClick={onContact} size="sm">
             Agendar Consulta
           </Button>
@@ -176,6 +182,13 @@ export const Navbar = ({ onNavigate, onContact }: NavbarProps) => {
               className={`text-left font-bold ${isActive("/temas/elaboracao-contratos") ? "text-primary border-b-2 border-accent pb-1 inline-block" : "text-primary"}`}
             >
               CONTRATOS
+            </Link>
+            <Link 
+              to="/temas/direito-consumidor"
+              onClick={() => setIsMenuOpen(false)}
+              className={`text-left font-bold ${isActive("/temas/direito-consumidor") ? "text-primary border-b-2 border-accent pb-1 inline-block" : "text-primary"}`}
+            >
+              CONSUMIDOR
             </Link>
             <Button
               onClick={() => { onContact(); setIsMenuOpen(false); }} 
