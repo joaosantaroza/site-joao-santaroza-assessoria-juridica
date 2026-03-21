@@ -30,6 +30,9 @@ export const PRACTICE_AREA_CATEGORIES: Record<string, string[]> = {
   
   // Reajuste de Plano de Saúde
   reajuste_plano_saude: ['Plano de Saúde', 'Direito do Consumidor', 'Reajuste Abusivo', 'Saúde Suplementar', 'ANS'],
+
+  // Direito do Consumidor
+  direito_consumidor: ['Direito do Consumidor', 'Consumidor', 'CDC', 'Negativação', 'Cobranças Indevidas', 'Vício de Produto', 'E-commerce'],
 };
 
 /**
