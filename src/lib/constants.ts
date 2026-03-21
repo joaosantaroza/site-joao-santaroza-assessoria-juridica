@@ -98,12 +98,21 @@ export const SERVICES: Record<string, Service> = {
   },
   contracts: {
     id: 'contracts',
-    title: 'Contratos e Societário',
-    shortDesc: 'Elaboração e revisão de contratos empresariais.',
+    title: 'Elaboração de Contratos',
+    shortDesc: 'Elaboração, revisão e blindagem de contratos empresariais, societários e de prestação de serviços.',
     icon: FileText,
-    heroTitle: 'Assessoria Contratual',
-    heroSubtitle: 'Elaboração e revisão de instrumentos contratuais para conferir maior segurança jurídica às suas relações comerciais.',
-    features: ['Elaboração de Contratos', 'Revisão de Cláusulas', 'Alterações Societárias', 'Acordos de Sócios']
+    heroTitle: 'Elaboração de Contratos',
+    heroSubtitle: 'Em 2025-2026, a informalidade contratual é a principal causa de litígios empresariais no Brasil. Atuamos na elaboração, revisão e blindagem de contratos comerciais, societários e de prestação de serviços — com cláusulas protetivas, mecanismos de resolução de disputas e adequação à LGPD.',
+    features: [
+      'Elaboração de Contratos Sob Medida',
+      'Revisão e Blindagem Contratual',
+      'Contratos de Prestação de Serviços',
+      'Acordos de Sócios e Vesting',
+      'Cláusulas de Não-Concorrência',
+      'Adequação à LGPD',
+      'Distrato e Rescisão Contratual',
+      'Contratos de Franquia e Licenciamento'
+    ]
   },
   recovery_instagram: {
     id: 'recovery_instagram',
