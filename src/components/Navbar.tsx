@@ -93,6 +93,12 @@ export const Navbar = ({ onNavigate, onContact }: NavbarProps) => {
           >
             Plano de Saúde
           </Link>
+          <Link 
+            to="/temas/elaboracao-contratos"
+            className={`text-sm font-bold uppercase tracking-wider transition-colors ${isActive("/temas/elaboracao-contratos") ? "text-primary border-b-2 border-accent pb-1" : "text-muted-foreground hover:text-primary"}`}
+          >
+            Contratos
+          </Link>
           <Button onClick={onContact} size="sm">
             Agendar Consulta
           </Button>
@@ -163,6 +169,13 @@ export const Navbar = ({ onNavigate, onContact }: NavbarProps) => {
               className={`text-left font-bold ${isActive("/temas/reajuste-plano-saude") ? "text-primary border-b-2 border-accent pb-1 inline-block" : "text-primary"}`}
             >
               PLANO DE SAÚDE
+            </Link>
+            <Link 
+              to="/temas/elaboracao-contratos"
+              onClick={() => setIsMenuOpen(false)}
+              className={`text-left font-bold ${isActive("/temas/elaboracao-contratos") ? "text-primary border-b-2 border-accent pb-1 inline-block" : "text-primary"}`}
+            >
+              CONTRATOS
             </Link>
             <Button
               onClick={() => { onContact(); setIsMenuOpen(false); }} 

@@ -188,6 +188,31 @@ export const CONTENT_CLUSTERS: ContentCluster[] = [
     categories: ['Plano de Saúde', 'Direito do Consumidor', 'Reajuste Abusivo', 'Saúde Suplementar'],
     icon: 'Stethoscope',
   },
+  {
+    id: 'elaboracao-contratos',
+    name: 'Elaboração de Contratos',
+    description: 'Conteúdo especializado sobre elaboração, revisão e blindagem de contratos empresariais e societários',
+    pillarSlug: '/temas/elaboracao-contratos',
+    pillarTitle: 'Tudo sobre Elaboração de Contratos Empresariais',
+    pillarDescription: 'Guia completo sobre elaboração de contratos: cláusulas essenciais, blindagem contratual, acordos societários, LGPD, prestação de serviços, franquias e resolução de disputas.',
+    pillarIntro: 'A **elaboração de contratos** é o alicerce da segurança jurídica nas relações comerciais. Em 2025-2026, a complexidade regulatória crescente — especialmente com a LGPD e as novas normas de compliance — torna indispensável que empresas e profissionais invistam em instrumentos contratuais bem estruturados.\n\nContratos mal redigidos são a principal causa de litígios empresariais no Brasil. Cláusulas ambíguas, omissões sobre responsabilidades e ausência de mecanismos de resolução de disputas geram insegurança e exposição desnecessária a riscos.\n\nNesta página, reunimos nossos artigos sobre as melhores práticas na elaboração contratual — desde contratos de prestação de serviços até acordos societários complexos, passando por adequação à LGPD e estratégias de blindagem patrimonial.',
+    keywords: [
+      'elaboração de contratos',
+      'revisão contratual',
+      'contrato de prestação de serviços',
+      'acordo de sócios',
+      'blindagem contratual',
+      'contrato empresarial',
+      'LGPD contratos',
+      'cláusula de não-concorrência',
+      'distrato contratual',
+      'contrato de franquia',
+      'advogado contratual',
+      'direito empresarial contratos',
+    ],
+    categories: ['Elaboração de Contratos', 'Direito Empresarial', 'Contrato', 'Societário', 'LGPD'],
+    icon: 'FileText',
+  },
 ];
 
 /**

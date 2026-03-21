@@ -17,6 +17,7 @@ import { ArticleEbookBanner } from "@/components/ArticleEbookBanner";
 import ebookAuxilioAcidenteCapa from "@/assets/ebook-auxilio-acidente-capa.png";
 import ebookDesbloqueioMlCapa from "@/assets/ebook-desbloqueio-ml-capa.png";
 import ebookReajustePlanoCapa from "@/assets/ebook-reajuste-plano-capa.png";
+import ebookContratosCapa from "@/assets/ebook-contratos-capa.png";
 
 const SERVICE_FAQS: Record<string, { question: string; answer: string }[]> = {
   recovery_mercadolivre: [
@@ -99,6 +100,36 @@ const SERVICE_FAQS: Record<string, { question: string; answer: string }[]> = {
     {
       question: "A operadora pode cancelar meu plano durante um tratamento médico?",
       answer: "Não. O Tema 1082 do STJ e a jurisprudência consolidada proíbem o cancelamento unilateral durante tratamento em curso. Mesmo em planos coletivos, a rescisão exige notificação prévia de 60 dias e não pode ocorrer durante internação ou tratamento continuado. A tutela de urgência pode ser obtida em 24-72 horas para manter o plano ativo."
+    }
+  ],
+  contracts: [
+    {
+      question: "Por que preciso de um contrato formal se já tenho um acordo verbal?",
+      answer: "Acordos verbais são válidos no direito brasileiro, mas extremamente difíceis de provar em caso de litígio. Um contrato formal documenta obrigações, prazos, valores e penalidades, servindo como prova robusta perante o Judiciário. Além disso, cláusulas específicas como foro de eleição, limitação de responsabilidade e mecanismo de resolução de disputas só podem ser estipuladas por escrito."
+    },
+    {
+      question: "Qual a diferença entre revisão e blindagem contratual?",
+      answer: "A revisão contratual analisa o documento existente para identificar riscos, ambiguidades e cláusulas abusivas. Já a blindagem vai além: reestrutura o contrato com cláusulas protetivas (limitação de responsabilidade, multas escalonadas, gatilhos de rescisão, cláusula arbitral), antecipando cenários de conflito e criando mecanismos de defesa preventiva."
+    },
+    {
+      question: "O que é um Acordo de Sócios e por que toda empresa deveria ter?",
+      answer: "O Acordo de Sócios (ou Shareholders' Agreement) regula questões que o Contrato Social não aborda: direito de preferência na venda de cotas, cláusula de tag along/drag along, vesting de participação, não-concorrência, distribuição de lucros e mecanismo de resolução de impasses societários (deadlock). Sem esse instrumento, divergências entre sócios frequentemente resultam em dissolução litigiosa da empresa."
+    },
+    {
+      question: "Contratos de prestação de serviços precisam de cláusula sobre LGPD?",
+      answer: "Sim, obrigatoriamente. A Lei Geral de Proteção de Dados (Lei 13.709/2018) exige que contratos entre controladores e operadores de dados contenham cláusulas específicas sobre tratamento, armazenamento, compartilhamento e eliminação de dados pessoais. A ausência dessas cláusulas pode gerar multas de até 2% do faturamento, limitadas a R$ 50 milhões por infração."
+    },
+    {
+      question: "Como funciona a cláusula de não-concorrência em contratos empresariais?",
+      answer: "A cláusula de não-concorrência impede que uma parte exerça atividade concorrente durante e após o término do contrato. Para ser válida, deve ter limitação temporal razoável (geralmente 2 a 5 anos), escopo geográfico definido e, preferencialmente, compensação financeira correspondente. Cláusulas sem esses limites podem ser consideradas abusivas pelo Judiciário."
+    },
+    {
+      question: "Qual o risco de usar modelos de contrato da internet?",
+      answer: "Modelos genéricos não consideram as particularidades do seu negócio, do seu setor ou da legislação aplicável. Frequentemente contêm cláusulas conflitantes, terminologia inadequada ou omitem proteções essenciais. Em caso de litígio, um contrato mal redigido pode ser mais prejudicial do que a ausência de contrato, pois cria expectativas jurídicas que podem ser interpretadas contra você."
+    },
+    {
+      question: "É possível rescindir um contrato antes do prazo sem pagar multa?",
+      answer: "Depende das cláusulas contratuais e da conduta das partes. A rescisão antecipada pode ocorrer sem multa quando há descumprimento contratual pela outra parte (exceção do contrato não cumprido — Art. 476 do CC), onerosidade excessiva (Art. 478 do CC) ou caso fortuito/força maior. A notificação extrajudicial prévia é essencial para constituir a outra parte em mora e documentar os fundamentos da rescisão."
     }
   ]
 };
@@ -225,6 +256,19 @@ export const ServicePage = ({ service, onBack, onContact }: ServicePageProps) =>
               ebookTitle="Guia Completo: Reajuste Abusivo em Planos de Saúde"
               ebookSubtitle="Identifique reajustes ilegais, conheça a tese do falso coletivo e saiba como recuperar valores pagos a mais. Guia gratuito com 7 capítulos."
               ebookCoverUrl={ebookReajustePlanoCapa}
+              ebookPdfUrl=""
+            />
+          </div>
+        )}
+
+        {/* E-book Banner for Elaboração de Contratos */}
+        {service.id === 'contracts' && (
+          <div className="max-w-4xl mx-auto">
+            <ArticleEbookBanner
+              ebookId="elaboracao-contratos"
+              ebookTitle="Guia Completo: Elaboração de Contratos"
+              ebookSubtitle="Proteja seu negócio com contratos blindados. Cláusulas essenciais, LGPD, acordos societários e muito mais. Guia gratuito com 7 capítulos."
+              ebookCoverUrl={ebookContratosCapa}
               ebookPdfUrl=""
             />
           </div>

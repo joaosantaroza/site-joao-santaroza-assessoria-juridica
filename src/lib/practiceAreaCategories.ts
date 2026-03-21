@@ -18,7 +18,7 @@ export const PRACTICE_AREA_CATEGORIES: Record<string, string[]> = {
   prescription: ['Prescrição', 'Dívida', 'Execução Fiscal', 'Passivo'],
   
   // Contratos e Societário
-  contracts: ['Contrato', 'Societário', 'Holding', 'Empresarial', 'Tributário', 'Planejamento'],
+  contracts: ['Contrato', 'Societário', 'Holding', 'Empresarial', 'Elaboração de Contratos', 'LGPD', 'Direito Empresarial', 'Planejamento'],
   
   // Recuperação de Contas Digitais
   recovery_instagram: ['Direito Digital', 'Recuperação de Contas', 'Instagram', 'Hackeamento'],
