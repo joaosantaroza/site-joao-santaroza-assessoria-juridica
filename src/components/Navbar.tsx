@@ -99,6 +99,12 @@ export const Navbar = ({ onNavigate, onContact }: NavbarProps) => {
           >
             Contratos
           </Link>
+          <Link 
+            to="/temas/direito-consumidor"
+            className={`text-sm font-bold uppercase tracking-wider transition-colors ${isActive("/temas/direito-consumidor") ? "text-primary border-b-2 border-accent pb-1" : "text-muted-foreground hover:text-primary"}`}
+          >
+            Consumidor
+          </Link>
           <Button onClick={onContact} size="sm">
             Agendar Consulta
           </Button>
