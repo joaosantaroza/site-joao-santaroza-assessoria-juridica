@@ -170,6 +170,13 @@ export const Navbar = ({ onNavigate, onContact }: NavbarProps) => {
             >
               PLANO DE SAÚDE
             </Link>
+            <Link 
+              to="/temas/elaboracao-contratos"
+              onClick={() => setIsMenuOpen(false)}
+              className={`text-left font-bold ${isActive("/temas/elaboracao-contratos") ? "text-primary border-b-2 border-accent pb-1 inline-block" : "text-primary"}`}
+            >
+              CONTRATOS
+            </Link>
             <Button
               onClick={() => { onContact(); setIsMenuOpen(false); }} 
               className="w-full"

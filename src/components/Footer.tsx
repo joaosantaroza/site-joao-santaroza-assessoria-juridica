@@ -36,6 +36,12 @@ export const Footer = () => (
             Plano de Saúde
           </Link>
           <Link 
+            to="/temas/elaboracao-contratos" 
+            className="text-sm text-muted-foreground hover:text-accent transition-colors font-medium"
+          >
+            Contratos
+          </Link>
+          <Link 
             to="/instalar"
             className="text-sm text-muted-foreground hover:text-accent transition-colors font-medium"
           >

@@ -261,6 +261,19 @@ export const ServicePage = ({ service, onBack, onContact }: ServicePageProps) =>
           </div>
         )}
 
+        {/* E-book Banner for Elaboração de Contratos */}
+        {service.id === 'contracts' && (
+          <div className="max-w-4xl mx-auto">
+            <ArticleEbookBanner
+              ebookId="elaboracao-contratos"
+              ebookTitle="Guia Completo: Elaboração de Contratos"
+              ebookSubtitle="Proteja seu negócio com contratos blindados. Cláusulas essenciais, LGPD, acordos societários e muito mais. Guia gratuito com 7 capítulos."
+              ebookCoverUrl={ebookContratosCapa}
+              ebookPdfUrl=""
+            />
+          </div>
+        )}
+
         {/* Service-specific FAQ */}
         {SERVICE_FAQS[service.id] && (
           <div className="max-w-4xl mx-auto mt-16">
