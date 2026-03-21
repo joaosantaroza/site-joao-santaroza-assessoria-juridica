@@ -18,6 +18,7 @@ import ebookAuxilioAcidenteCapa from "@/assets/ebook-auxilio-acidente-capa.png";
 import ebookDesbloqueioMlCapa from "@/assets/ebook-desbloqueio-ml-capa.png";
 import ebookReajustePlanoCapa from "@/assets/ebook-reajuste-plano-capa.png";
 import ebookContratosCapa from "@/assets/ebook-contratos-capa.png";
+import ebookConsumidorCapa from "@/assets/ebook-consumidor-capa.png";
 
 const SERVICE_FAQS: Record<string, { question: string; answer: string }[]> = {
   recovery_mercadolivre: [
