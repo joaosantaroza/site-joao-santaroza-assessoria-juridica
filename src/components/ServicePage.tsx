@@ -304,6 +304,19 @@ export const ServicePage = ({ service, onBack, onContact }: ServicePageProps) =>
           </div>
         )}
 
+        {/* E-book Banner for Direito do Consumidor */}
+        {service.id === 'direito_consumidor' && (
+          <div className="max-w-4xl mx-auto">
+            <ArticleEbookBanner
+              ebookId="direito-consumidor"
+              ebookTitle="Guia Completo: Direitos do Consumidor"
+              ebookSubtitle="Negativação indevida, cobranças abusivas, vícios de produto e direito de arrependimento. Guia gratuito com 7 capítulos."
+              ebookCoverUrl={ebookConsumidorCapa}
+              ebookPdfUrl=""
+            />
+          </div>
+        )}
+
         {/* Service-specific FAQ */}
         {SERVICE_FAQS[service.id] && (
           <div className="max-w-4xl mx-auto mt-16">

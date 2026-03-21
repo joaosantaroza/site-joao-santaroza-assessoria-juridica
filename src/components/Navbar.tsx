@@ -183,6 +183,13 @@ export const Navbar = ({ onNavigate, onContact }: NavbarProps) => {
             >
               CONTRATOS
             </Link>
+            <Link 
+              to="/temas/direito-consumidor"
+              onClick={() => setIsMenuOpen(false)}
+              className={`text-left font-bold ${isActive("/temas/direito-consumidor") ? "text-primary border-b-2 border-accent pb-1 inline-block" : "text-primary"}`}
+            >
+              CONSUMIDOR
+            </Link>
             <Button
               onClick={() => { onContact(); setIsMenuOpen(false); }} 
               className="w-full"
