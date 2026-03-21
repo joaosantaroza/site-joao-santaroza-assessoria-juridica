@@ -93,6 +93,12 @@ export const Navbar = ({ onNavigate, onContact }: NavbarProps) => {
           >
             Plano de Saúde
           </Link>
+          <Link 
+            to="/temas/elaboracao-contratos"
+            className={`text-sm font-bold uppercase tracking-wider transition-colors ${isActive("/temas/elaboracao-contratos") ? "text-primary border-b-2 border-accent pb-1" : "text-muted-foreground hover:text-primary"}`}
+          >
+            Contratos
+          </Link>
           <Button onClick={onContact} size="sm">
             Agendar Consulta
           </Button>
