@@ -148,6 +148,8 @@ export const TESTIMONIALS: Testimonial[] = [
 ];
 
 /**
+ * Get testimonials for a specific practice area
+ */
 export const getTestimonialsByArea = (areaId: string): Testimonial[] => {
   return TESTIMONIALS.filter(t => t.practiceAreas.includes(areaId));
 };
