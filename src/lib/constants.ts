@@ -10,6 +10,7 @@ import {
   ShoppingBag,
   HeartPulse,
   Stethoscope,
+  Scale,
   LucideIcon 
 } from 'lucide-react';
 
