@@ -117,7 +117,37 @@ export const TESTIMONIALS: Testimonial[] = [
 
 /**
  * Get testimonials for a specific practice area
- */
+  // Direito do Consumidor
+  {
+    id: 'test-consumidor-1',
+    name: 'L.F. - Curitiba/PR',
+    text: 'Fui negativado indevidamente por uma dívida que já havia pago. O Dr. João conseguiu liminar em 48 horas para retirada do nome e indenização por danos morais.',
+    rating: 5,
+    date: 'Fevereiro 2026',
+    practiceAreas: ['direito_consumidor'],
+    areaLabel: 'Direito do Consumidor',
+  },
+  {
+    id: 'test-consumidor-2',
+    name: 'P.R. - Maringá/PR',
+    text: 'Comprei um produto com defeito e a loja se recusou a trocar. Entrei com ação e além da troca, recebi indenização. Atendimento excelente!',
+    rating: 5,
+    date: 'Janeiro 2026',
+    practiceAreas: ['direito_consumidor'],
+    areaLabel: 'Direito do Consumidor',
+  },
+  {
+    id: 'test-consumidor-3',
+    name: 'C.M. - Londrina/PR',
+    text: 'A financeira estava cobrando juros muito acima do mercado. Consegui a revisão contratual e a devolução em dobro dos valores cobrados a mais.',
+    rating: 5,
+    date: 'Março 2026',
+    practiceAreas: ['direito_consumidor'],
+    areaLabel: 'Direito do Consumidor',
+  },
+];
+
+/**
 export const getTestimonialsByArea = (areaId: string): Testimonial[] => {
   return TESTIMONIALS.filter(t => t.practiceAreas.includes(areaId));
 };

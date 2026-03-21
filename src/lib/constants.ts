@@ -177,6 +177,24 @@ export const SERVICES: Record<string, Service> = {
       'Blindagem contra Cancelamento (Tema 1082 STJ)',
       'Notificação Extrajudicial Estratégica'
     ]
+  },
+  direito_consumidor: {
+    id: 'direito_consumidor',
+    title: 'Direito do Consumidor',
+    shortDesc: 'Defesa contra práticas abusivas, cobranças indevidas, vícios de produtos e negativação indevida.',
+    icon: Scale,
+    heroTitle: 'Direito do Consumidor',
+    heroSubtitle: 'Em 2025-2026, as relações de consumo se tornaram mais complexas com o crescimento do e-commerce e dos serviços digitais. Atuamos na defesa contra cobranças indevidas, negativação ilegal, vícios de produto, descumprimento de garantia e práticas abusivas — com pedidos de indenização e tutela de urgência.',
+    features: [
+      'Negativação Indevida (SPC/Serasa)',
+      'Cobranças Indevidas e Repetição de Indébito',
+      'Vício de Produto e Garantia Legal',
+      'Práticas Abusivas e Cláusulas Leoninas',
+      'Compras Online e E-commerce',
+      'Banco e Financeiras (Juros Abusivos)',
+      'Recall e Responsabilidade do Fornecedor',
+      'Tutela de Urgência e Danos Morais'
+    ]
   }
 };
 
